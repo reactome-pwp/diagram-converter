@@ -1,0 +1,82 @@
+package org.reactome.server.diagram.converter.qa.diagram;
+
+import org.reactome.server.diagram.converter.layout.output.*;
+import org.reactome.server.diagram.converter.qa.common.DiagramTest;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
+/**
+ * @author Antonio Fabregat <fabregat@ebi.ac.uk>
+ */
+@SuppressWarnings("unused")
+@DiagramTest
+public class IsolatedGlyphs implements DiagramQA {
+
+    private static final List<String> lines = new ArrayList<>();
+
+    @Override
+    public String getName() {
+        return getClass().getSimpleName();
+    }
+
+    @Override
+    public String getDescription() {
+        return "Iterates over all Edges and Links and identifies the isolated glyphs. The method can also apply a fix by removing this glyph from the list of Nodes.";
+    }
+
+    @Override
+    public List<String> getReport() {
+        if(!lines.isEmpty()) lines.add(0, "Diagram,DiagramName,PhysicalEntity,PhysicalEntityName");
+        return lines;
+    }
+
+    @Override
+    public void run(Diagram diagram) {
+        // proceed only if nodes and edges are not null
+        if (diagram.getNodes() == null || diagram.getEdges() == null) {
+            return;
+        }
+
+        // generate a map of all nodes excluding the ProcessNodes (ugly green boxes)
+        HashMap<Long, Node> nodesMap = new HashMap<>();
+        for (NodeCommon node : diagram.getNodes()) {
+            if (!node.renderableClass.equals("ProcessNode") && node.isFadeOut == null) {
+                nodesMap.put(node.id, (Node) node);
+            }
+        }
+
+        // iterate over all Edges and check their ReactionParts
+        for (Edge edge : diagram.getEdges()) {
+            filterNodes(nodesMap, edge.inputs);
+            filterNodes(nodesMap, edge.outputs);
+            filterNodes(nodesMap, edge.catalysts);
+            filterNodes(nodesMap, edge.activators);
+            filterNodes(nodesMap, edge.inhibitors);
+        }
+
+        // iterate over all Links and check their ReactionParts
+        for (Link link : diagram.getLinks()) {
+            filterNodes(nodesMap, link.inputs);
+            filterNodes(nodesMap, link.outputs);
+        }
+
+        if (nodesMap.size() > 0) {
+            for (Node node : nodesMap.values()) {
+                diagram.removeNode(node);
+                lines.add(String.format("%s,\"%s\",%s,\"%s\"", diagram.getStableId(), diagram.getDisplayName(), node.reactomeId, node.displayName));
+            }
+        }
+    }
+
+
+    private void filterNodes(HashMap<Long, Node> nodesMap, List<ReactionPart> reactionPartList) {
+        if (reactionPartList != null) {
+            for (ReactionPart reactionPart : reactionPartList) {
+                nodesMap.remove(reactionPart.id);
+            }
+        }
+    }
+
+}
