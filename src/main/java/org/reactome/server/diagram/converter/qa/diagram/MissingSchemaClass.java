@@ -26,7 +26,7 @@ public class MissingSchemaClass implements DiagramQA {
 
     @Override
     public String getDescription() {
-        return ".";
+        return "Detects diagrams containing entities without a SchemaClass.";
     }
 
     @Override

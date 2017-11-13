@@ -23,7 +23,7 @@ public class DuplicatedReactionParts implements DiagramQA {
 
     @Override
     public String getDescription() {
-        return "Detects diagrams without any nodes inside them.";
+        return "Detects diagram reactions with duplicate inputs, outputs, catalysts, activators, inhibitors pointing to the same diagram entity.";
     }
 
     @Override

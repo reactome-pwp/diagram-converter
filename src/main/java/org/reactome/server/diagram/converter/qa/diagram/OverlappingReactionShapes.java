@@ -24,7 +24,7 @@ public class OverlappingReactionShapes implements DiagramQA {
 
     @Override
     public String getDescription() {
-        return "Detects cases where the reaction shapes (Circle for binding etc) overlap in the diagram layout.";
+        return "Detects cases where the reaction shapes (Rectangle for transition, Circle for binding etc) overlap in the diagram layout.";
     }
 
     @Override

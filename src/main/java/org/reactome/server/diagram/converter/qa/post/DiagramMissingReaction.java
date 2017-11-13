@@ -26,7 +26,7 @@ public class DiagramMissingReaction implements PostQA {
 
     @Override
     public String getDescription() {
-        return null;
+        return "Detects diagrams with missing reactions compared to how they are annotated in the database.";
     }
 
     @Override

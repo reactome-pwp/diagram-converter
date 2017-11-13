@@ -27,7 +27,7 @@ public class RenderableClassMismatch implements DiagramQA {
 
     @Override
     public String getDescription() {
-        return ".";
+        return "Detects diagrams containing entities with a mismatch in their annotated RenderableClass.";
     }
 
     @Override
