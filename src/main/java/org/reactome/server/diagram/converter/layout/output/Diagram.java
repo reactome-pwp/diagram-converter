@@ -115,6 +115,10 @@ public class Diagram {
         return rtn.isEmpty() ? null : rtn;
     }
 
+    public DiagramObject getDiagramObjectByDiagramId(Long id){
+        return objectMap.get(id);
+    }
+
     public void removeNode(Node node) {
         this.nodes.getElements(node.reactomeId).remove(node);
         //noinspection Duplicates
@@ -127,19 +131,6 @@ public class Diagram {
             if (lofNodes != null) lofNodes.remove(entityId);
         }
     }
-
-//    public void removeEdge(Edge edge){
-//        this.edges.getElements(edge.reactomeId).remove(edge);
-//        //noinspection Duplicates
-//        if (isDisease != null) {
-//            Long edgeId = edge.id;
-//            if (normalComponents != null) normalComponents.remove(edgeId);
-//            if (crossedComponents != null) crossedComponents.remove(edgeId);
-//            if (notFadeOut != null) notFadeOut.remove(edgeId);
-//            if (diseaseComponents != null) diseaseComponents.remove(edgeId);
-//            if (lofNodes != null) lofNodes.remove(edgeId);
-//        }
-//    }
 
     public Boolean isDisease() {
         return (isDisease!=null && isDisease);
@@ -205,6 +196,10 @@ public class Diagram {
         return nodes.values();
     }
 
+    public Set<Node> getNodes(Long identifier){
+        return nodes.getElements(identifier);
+    }
+
     public boolean addNode(Node node) {
         if (isDisease == null || !isDisease || shouldBeIncluded(node.id)) {
             node = Beautifier.processName(node);
@@ -239,6 +234,10 @@ public class Diagram {
 
     public Collection<Edge> getEdges() {
         return edges.values();
+    }
+
+    public Set<Edge> getEdges(Long dbId){
+        return edges.getElements(dbId);
     }
 
     public boolean addEdge(Edge edge) {
