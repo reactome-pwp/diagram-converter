@@ -19,6 +19,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.NumberFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
@@ -107,8 +108,13 @@ public class QATests {
 
         System.out.println("\n\n· Reports:");
 
+        // Sorting tests by name
+        List<Class<? extends ConverterQA>> sortedTests = tests.stream()
+                .sorted(Comparator.comparing(Class::getSimpleName))
+                .collect(Collectors.toList());
+
         List<String> reports = new ArrayList<>();
-        for (Class<?> test : tests) {
+        for (Class<?> test : sortedTests) {
             try {
                 Object object = test.newInstance();
                 ConverterQA qa = (ConverterQA) object;
@@ -117,7 +123,6 @@ public class QATests {
             } catch (InstantiationException | IllegalAccessException e) { /*Nothing here*/}
         }
         //Printing the reports sorted by name
-        Collections.sort(reports);
         reports.forEach(System.out::println);
 
         //Next bit creates the failed pathways report and stores it in a file
@@ -137,7 +142,7 @@ public class QATests {
             try {
                 Files.write(createFile(fileName), lines, Charset.forName("UTF-8"));
                 String entries = numberFormat.format(lines.size() - 1);
-                System.out.println(String.format("\t'%s.csv' > %s entries", fileName, entries));
+                return  String.format("\t'%s.csv' > %s entries", fileName, entries);
             } catch (IOException e) {
                 e.printStackTrace();
             }
