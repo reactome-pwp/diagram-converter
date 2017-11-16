@@ -18,10 +18,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.NumberFormat;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
@@ -120,7 +117,8 @@ public class QATests {
             } catch (InstantiationException | IllegalAccessException e) { /*Nothing here*/}
         }
         //Printing the reports sorted by name
-        reports.stream().sorted(String::compareTo).forEachOrdered(System.out::println);
+        Collections.sort(reports);
+        reports.forEach(System.out::println);
 
         //Next bit creates the failed pathways report and stores it in a file
         if (!failed.isEmpty()) {
