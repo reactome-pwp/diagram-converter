@@ -46,6 +46,9 @@ public class Node extends NodeCommon {
         }
         connectors = new LinkedList<>();
 
+        // Fix the Gene shape's height
+        this.fixGeneHeight();
+
         // Calculate the arrow shape of the Gene
         this.setEndShape();
 
@@ -133,6 +136,12 @@ public class Node extends NodeCommon {
         this.maxX = Collections.max(xx);
         this.minY = Collections.min(yy);
         this.maxY = Collections.max(yy);
+    }
+
+    private void fixGeneHeight() {
+        if (this.renderableClass.equals("Gene") && this.prop.height < 51) {
+            this.prop.height = 51; //override the height to the default
+        }
     }
 
     private void setEndShape() {
