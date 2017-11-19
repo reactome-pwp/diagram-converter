@@ -53,6 +53,11 @@ public class Graph {
         return displayName;
     }
 
+    @JsonIgnore
+    public EntityNode getNode(Long dbId){
+        return nodes.get(dbId);
+    }
+
     public Collection<EntityNode> getNodes() {
         return nodes.values();
     }

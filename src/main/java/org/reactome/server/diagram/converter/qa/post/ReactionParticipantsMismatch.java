@@ -1,5 +1,6 @@
 package org.reactome.server.diagram.converter.qa.post;
 
+import org.reactome.server.diagram.converter.graph.output.EntityNode;
 import org.reactome.server.diagram.converter.graph.output.EventNode;
 import org.reactome.server.diagram.converter.graph.output.Graph;
 import org.reactome.server.diagram.converter.layout.output.Diagram;
@@ -35,7 +36,7 @@ public class ReactionParticipantsMismatch implements PostQA {
 
     @Override
     public List<String> getReport() {
-        if (!lines.isEmpty()) lines.add(0, "Diagram,Reaction,Participant,Role,Created,Modified");
+        if (!lines.isEmpty()) lines.add(0, "Pathway,PathwayName,Reaction,ReactionName,Participant,ParticipantName,Role,Created,Modified");
         return lines;
     }
 
@@ -44,20 +45,20 @@ public class ReactionParticipantsMismatch implements PostQA {
         if (graph.getEdges() == null) return;
         for (EventNode eventNode : graph.getEdges()) {
             for (Edge edge : diagram.getEdges(eventNode.dbId)) {
-                check(diagram, eventNode, eventNode.inputs, edge.inputs, "input");
-                check(diagram, eventNode, eventNode.outputs, edge.outputs, "output");
-                check(diagram, eventNode, eventNode.catalysts, edge.catalysts, "catalyst");
-                check(diagram, eventNode, eventNode.inhibitors, edge.inhibitors, "inhibitor");
+                check(diagram, graph, eventNode, eventNode.inputs, edge.inputs, "input");
+                check(diagram, graph, eventNode, eventNode.outputs, edge.outputs, "output");
+                check(diagram, graph, eventNode, eventNode.catalysts, edge.catalysts, "catalyst");
+                check(diagram, graph, eventNode, eventNode.inhibitors, edge.inhibitors, "inhibitor");
                 //activators and requirements are kept separately in the eventNode
                 List<Long> aux = new ArrayList<>();
                 if (eventNode.activators != null) aux.addAll(eventNode.activators);
                 if (eventNode.requirements != null) aux.addAll(eventNode.requirements);
-                check(diagram, eventNode, aux, edge.activators, "activator");
+                check(diagram, graph, eventNode, aux, edge.activators, "activator");
             }
         }
     }
 
-    private void check(Diagram diagram, EventNode reaction, List<Long> graphParticipants, List<ReactionPart> diagramParticipants, String role) {
+    private void check(Diagram diagram, Graph graph, EventNode reaction, List<Long> graphParticipants, List<ReactionPart> diagramParticipants, String role) {
         if (diagramParticipants != null && graphParticipants != null) { // The "else" is reported in another test!
             for (Long graphParticipant : graphParticipants) {
                 boolean found = false;
@@ -66,16 +67,19 @@ public class ReactionParticipantsMismatch implements PostQA {
                     found = Objects.equals(diagramObject.reactomeId, graphParticipant);
                     if (found) break;
                 }
-                if (!found) addReport(diagram.getStableId(), reaction, graphParticipant, role);
+                if (!found) addReport(diagram, reaction, graph.getNode(graphParticipant), role);
             }
         }
     }
 
-    private void addReport(String diagram, EventNode reaction, Long participant, String role) {
-        lines.add(String.format("%s,%s,%s,%s,%s",
-                diagram,
-                reaction.stId,
-                participant,
+    private void addReport(Diagram diagram, EventNode reaction, EntityNode participant, String role) {
+        lines.add(String.format("%s,\"%s\",%s,\"%s\",%s,\"%s\",%s,%s",
+                diagram.getStableId(),
+                diagram.getDisplayName(),
+                reaction.getStId(),
+                reaction.getDisplayName(),
+                participant.stId,
+                participant.displayName,
                 role,
                 TestReportsHelper.getCreatedModified(reaction.dbId)
         ));
