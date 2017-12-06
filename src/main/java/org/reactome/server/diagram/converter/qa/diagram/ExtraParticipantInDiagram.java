@@ -1,17 +1,20 @@
 package org.reactome.server.diagram.converter.qa.diagram;
 
-import org.reactome.server.diagram.converter.qa.common.ConverterReport;
+import org.reactome.server.diagram.converter.layout.output.Diagram;
+import org.reactome.server.diagram.converter.layout.output.Node;
+import org.reactome.server.diagram.converter.qa.common.DiagramTest;
 import org.reactome.server.diagram.converter.utils.TestReportsHelper;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
 @SuppressWarnings("unused")
-@ConverterReport
+@DiagramTest
 public class ExtraParticipantInDiagram implements DiagramQA {
 
     private static final List<String> lines = new ArrayList<>();
@@ -32,13 +35,28 @@ public class ExtraParticipantInDiagram implements DiagramQA {
         return lines;
     }
 
-    public static void add(String diagramStId, String diagramName, Long entityId, String entityName) {
+    @Override
+    public void run(Diagram diagram) {
+        Map<Long, String> map = TestReportsHelper.getParticipantsSchemaClass(diagram.getDbId());
+        for (Node node : diagram.getNodes()) {
+            String targetSchemaClass = map.get(node.reactomeId);
+            if (targetSchemaClass == null) {
+                if (!"Pathway".equals(node.schemaClass) && !"ProcessNode".equals(node.renderableClass)) {
+                    if (node.isFadeOut == null || !node.isFadeOut) {
+                        add(diagram.getStableId(), diagram.getDisplayName(), node.reactomeId, node.displayName);
+                    }
+                }
+            }
+        }
+    }
+
+    private static void add(String diagramStId, String diagramName, Long entityId, String entityName) {
         lines.add(String.format("%s,\"%s\",%d,\"%s\",%s",
                 diagramStId,
                 diagramName,
                 entityId,
                 entityName,
                 TestReportsHelper.getCreatedModified(entityId)
-                ));
+        ));
     }
 }
