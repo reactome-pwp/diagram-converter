@@ -4,7 +4,10 @@ import org.gk.model.GKInstance;
 import org.reactome.server.diagram.converter.layout.input.model.*;
 import org.reactome.server.diagram.converter.layout.input.model.Process;
 import org.reactome.server.diagram.converter.layout.output.*;
-import org.reactome.server.diagram.converter.qa.diagram.*;
+import org.reactome.server.diagram.converter.qa.diagram.DuplicatedReactionParts;
+import org.reactome.server.diagram.converter.qa.diagram.MissingSchemaClass;
+import org.reactome.server.diagram.converter.qa.diagram.RenderableClassMismatch;
+import org.reactome.server.diagram.converter.qa.diagram.SchemaClassMismatch;
 import org.reactome.server.diagram.converter.utils.TestReportsHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,13 +44,16 @@ public abstract class LayoutFactory {
             outputDiagram.setLofNodes(ListToSet(extractListFromString(inputProcess.getLofNodes(), ",")));
 
             //Parse Nodes
-            for (NodeCommon nodeCommon : extractNodesList(inputProcess.getNodes())) {
-                if (nodeCommon instanceof Node) {
-                    outputDiagram.addNode((Node) nodeCommon);
-                } else if (nodeCommon instanceof Note) {
-                    outputDiagram.addNote((Note) nodeCommon);
-                } else if (nodeCommon instanceof Compartment) {
-                    outputDiagram.addCompartment((Compartment) nodeCommon);
+            List<NodeCommon> nodes = extractNodesList(inputProcess.getNodes());
+            if(nodes!=null) {
+                for (NodeCommon nodeCommon : nodes) {
+                    if (nodeCommon instanceof Node) {
+                        outputDiagram.addNode((Node) nodeCommon);
+                    } else if (nodeCommon instanceof Note) {
+                        outputDiagram.addNote((Note) nodeCommon);
+                    } else if (nodeCommon instanceof Compartment) {
+                        outputDiagram.addCompartment((Compartment) nodeCommon);
+                    }
                 }
             }
 
@@ -138,16 +144,13 @@ public abstract class LayoutFactory {
     // Sometimes a node does not have a schemaClass
     private static boolean fixSchemaClass(Node node, Map<Long, String> map) {
         String targetSchemaClass = map.get(node.reactomeId);
-
+        boolean rtn = true;
         if (targetSchemaClass == null) {
             if (node.schemaClass == null) {
                 //Cannot be fixed!
                 MissingSchemaClass.add(outputDiagram.getStableId(), outputDiagram.getDisplayName(), node.reactomeId);
-                return false;
-            } else if (!"Pathway".equals(node.schemaClass) && !"ProcessNode".equals(node.renderableClass)) {
-                ExtraParticipantInDiagram.add(outputDiagram.getStableId(), outputDiagram.getDisplayName(), node.reactomeId, node.displayName);
+                rtn = false;
             }
-            return true;
         } else if (!targetSchemaClass.equals(node.schemaClass)) {
             //Report BEFORE changing it!
             SchemaClassMismatch.lines.add(String.format("%s,\"%s\",%s,\"%s\",%s,%s,%s",
@@ -161,7 +164,7 @@ public abstract class LayoutFactory {
             ));
             node.schemaClass = targetSchemaClass;
         }
-        return true;
+        return rtn;
     }
 
     private static List<EdgeCommon> extractEdgesList(Edges inputEdges) {
