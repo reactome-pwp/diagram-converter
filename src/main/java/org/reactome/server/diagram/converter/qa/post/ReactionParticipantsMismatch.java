@@ -64,7 +64,7 @@ public class ReactionParticipantsMismatch implements PostQA {
                 boolean found = false;
                 for (ReactionPart part : diagramParticipants) {
                     DiagramObject diagramObject = diagram.getDiagramObjectByDiagramId(part.id);
-                    found = Objects.equals(diagramObject.reactomeId, graphParticipant);
+                    found = (diagramObject != null) && Objects.equals(diagramObject.reactomeId, graphParticipant);
                     if (found) break;
                 }
                 if (!found) addReport(diagram, reaction, graph.getNode(graphParticipant), role);
