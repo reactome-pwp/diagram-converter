@@ -13,6 +13,7 @@ import org.reactome.server.diagram.converter.utils.TestReportsHelper;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * @author Antonio Fabregat (fabregat@ebi.ac.uk)
@@ -44,16 +45,19 @@ public class ReactionParticipantsMismatch implements PostQA {
     public void run(Diagram diagram, Graph graph) {
         if (graph.getEdges() == null) return;
         for (EventNode eventNode : graph.getEdges()) {
-            for (Edge edge : diagram.getEdges(eventNode.dbId)) {
-                check(diagram, graph, eventNode, eventNode.inputs, edge.inputs, "input");
-                check(diagram, graph, eventNode, eventNode.outputs, edge.outputs, "output");
-                check(diagram, graph, eventNode, eventNode.catalysts, edge.catalysts, "catalyst");
-                check(diagram, graph, eventNode, eventNode.inhibitors, edge.inhibitors, "inhibitor");
-                //activators and requirements are kept separately in the eventNode
-                List<Long> aux = new ArrayList<>();
-                if (eventNode.activators != null) aux.addAll(eventNode.activators);
-                if (eventNode.requirements != null) aux.addAll(eventNode.requirements);
-                check(diagram, graph, eventNode, aux, edge.activators, "activator");
+            Set<Edge> edges = diagram.getEdges(eventNode.dbId);
+            if (edges != null && !edges.isEmpty()) {  //The opposite is reported in DiagramsMissingReaction test
+                for (Edge edge : edges) {
+                    check(diagram, graph, eventNode, eventNode.inputs, edge.inputs, "input");
+                    check(diagram, graph, eventNode, eventNode.outputs, edge.outputs, "output");
+                    check(diagram, graph, eventNode, eventNode.catalysts, edge.catalysts, "catalyst");
+                    check(diagram, graph, eventNode, eventNode.inhibitors, edge.inhibitors, "inhibitor");
+                    //activators and requirements are kept separately in the eventNode
+                    List<Long> aux = new ArrayList<>();
+                    if (eventNode.activators != null) aux.addAll(eventNode.activators);
+                    if (eventNode.requirements != null) aux.addAll(eventNode.requirements);
+                    check(diagram, graph, eventNode, aux, edge.activators, "activator");
+                }
             }
         }
     }

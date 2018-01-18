@@ -39,7 +39,7 @@ public class DiagramMissingReaction implements PostQA {
     public void run(Diagram diagram, Graph graph) {
         if (graph.getEdges() != null) {
             for (EventNode eventNode : graph.getEdges()) {
-                if (!diagram.containsEdge(eventNode.dbId)) {
+                if (!diagram.containsEdge(eventNode.dbId) || diagram.getEdges(eventNode.dbId).isEmpty()) {
                     lines.add(String.format("%s,\"%s\",%s,\"%s\",%s",
                             diagram.getStableId(),
                             diagram.getDisplayName(),
