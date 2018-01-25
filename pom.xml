@@ -130,7 +130,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>org.reactome.server.diagram.Main</mainClass>
+                            <mainClass>org.reactome.server.diagram.converter.Main</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>
