@@ -42,7 +42,9 @@ public class ExtraParticipantInDiagram implements DiagramQA {
             String targetSchemaClass = map.get(node.reactomeId);
             if (targetSchemaClass == null) {
                 if (!"Pathway".equals(node.schemaClass) && !"ProcessNode".equals(node.renderableClass)) {
-                    if (node.isFadeOut == null || !node.isFadeOut) {
+                    boolean isFadeOut = node.isFadeOut != null && node.isFadeOut;
+                    boolean isCrossed = node.isCrossed != null && node.isCrossed;
+                    if (!isFadeOut && !isCrossed){
                         add(diagram.getStableId(), diagram.getDisplayName(), node.reactomeId, node.displayName);
                     }
                 }

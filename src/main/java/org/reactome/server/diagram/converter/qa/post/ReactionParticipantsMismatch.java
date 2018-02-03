@@ -4,8 +4,8 @@ import org.reactome.server.diagram.converter.graph.output.EntityNode;
 import org.reactome.server.diagram.converter.graph.output.EventNode;
 import org.reactome.server.diagram.converter.graph.output.Graph;
 import org.reactome.server.diagram.converter.layout.output.Diagram;
-import org.reactome.server.diagram.converter.layout.output.DiagramObject;
 import org.reactome.server.diagram.converter.layout.output.Edge;
+import org.reactome.server.diagram.converter.layout.output.Node;
 import org.reactome.server.diagram.converter.layout.output.ReactionPart;
 import org.reactome.server.diagram.converter.qa.common.PostTest;
 import org.reactome.server.diagram.converter.utils.TestReportsHelper;
@@ -67,8 +67,12 @@ public class ReactionParticipantsMismatch implements PostQA {
             for (Long graphParticipant : graphParticipants) {
                 boolean found = false;
                 for (ReactionPart part : diagramParticipants) {
-                    DiagramObject diagramObject = diagram.getDiagramObjectByDiagramId(part.id);
-                    found = (diagramObject != null) && Objects.equals(diagramObject.reactomeId, graphParticipant);
+                    Node node = (Node) diagram.getDiagramObjectByDiagramId(part.id);
+                    if (node != null) {
+                        boolean isFadeOut = node.isFadeOut != null && node.isFadeOut;
+                        boolean isCrossed = node.isCrossed != null && node.isCrossed;
+                        found = isFadeOut || isCrossed || Objects.equals(node.reactomeId, graphParticipant);
+                    }
                     if (found) break;
                 }
                 if (!found) addReport(diagram, reaction, graph.getNode(graphParticipant), role);
