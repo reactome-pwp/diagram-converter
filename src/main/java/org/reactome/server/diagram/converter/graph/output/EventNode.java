@@ -11,17 +11,18 @@ import java.util.List;
  */
 public class EventNode extends GraphNode {
 
-    private List<Long> preceding = null;
-    private List<Long> following = null;
+    private List<Long> preceding;
+    private List<Long> following;
 
-    public List<Long> inputs = null;
-    public List<Long> outputs = null;
-    public List<Long> catalysts = null;
+    public List<Long> inputs;
+    public List<Long> outputs;
+    public List<Long> catalysts;
+    public List<Long> efs;
     public List<Long> inhibitors = null;
     public List<Long> activators = null;
     public List<Long> requirements = null;
 
-    public List<Long> diagramIds = null;
+    public List<Long> diagramIds;
 
 
     public EventNode(EdgesQueryResult edge, List<Long> diagramIds) {
@@ -34,6 +35,7 @@ public class EventNode extends GraphNode {
         this.inputs = edge.getInputs();
         this.outputs = edge.getOutputs();
         this.catalysts = edge.getCatalysts();
+        this.efs = edge.getEfs();
 
         for (RegulationQueryResult reg : edge.getRegulation()) {
             switch (reg.getType()) {
@@ -88,6 +90,10 @@ public class EventNode extends GraphNode {
 
     public List<Long> getCatalysts() {
         return catalysts;
+    }
+
+    public List<Long> getEntityFunctionalStatus() {
+        return efs;
     }
 
     public List<Long> getInhibitors() {
