@@ -108,7 +108,8 @@ public class DiagramGraphFactory {
                 "WITH DISTINCT p, LAST(NODES(path)) AS rle " +
                 "OPTIONAL MATCH (rle)-[:input]->(i:PhysicalEntity) " +
                 "OPTIONAL MATCH (rle)-[:output]->(o:PhysicalEntity) " +
-                "OPTIONAL MATCH (rle)-[:catalystActivity|entityFunctionalStatus|physicalEntity*]->(c:PhysicalEntity) " +
+                "OPTIONAL MATCH (rle)-[:catalystActivity|physicalEntity*]->(c:PhysicalEntity) " +
+                "OPTIONAL MATCH (rle)-[:entityFunctionalStatus|physicalEntity*]->(e:PhysicalEntity) " +
                 "OPTIONAL MATCH (rle)-[:regulatedBy]->(reg:Regulation)-[:regulator]->(r:PhysicalEntity) " +
                 "OPTIONAL MATCH (pre:ReactionLikeEvent)<-[:precedingEvent]-(rle) " +
                 "OPTIONAL MATCH (fol:ReactionLikeEvent)-[:precedingEvent]->(rle) " +
@@ -116,6 +117,7 @@ public class DiagramGraphFactory {
                 "        COLLECT(DISTINCT i.dbId) AS inputs, " +
                 "        COLLECT(DISTINCT o.dbId) AS outputs, " +
                 "        COLLECT(DISTINCT c.dbId) AS catalysts, " +
+                "        COLLECT(DISTINCT e.dbId) AS efs, " +
                 "        CASE WHEN reg IS NULL THEN [] ELSE COLLECT(DISTINCT {type: reg.schemaClass, dbId: r.dbId}) END AS regulation, " +
                 "        COLLECT(DISTINCT pre.dbId) AS preceding, " +
                 "        COLLECT(DISTINCT fol.dbId) AS following";

@@ -8,6 +8,7 @@ public class EdgesQueryResult extends QueryResult {
     private List<Long> inputs;
     private List<Long> outputs;
     private List<Long> catalysts;
+    private List<Long> efs;
     private List<RegulationQueryResult> regulation;
     private List<Long> preceding;
     private List<Long> following;
@@ -22,6 +23,10 @@ public class EdgesQueryResult extends QueryResult {
 
     public List<Long> getCatalysts() {
         return catalysts.isEmpty() ? null : catalysts;
+    }
+
+    public List<Long> getEfs() {
+        return efs;
     }
 
     public List<RegulationQueryResult> getRegulation() {
