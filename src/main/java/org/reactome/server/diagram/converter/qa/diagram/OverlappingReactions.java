@@ -1,0 +1,58 @@
+package org.reactome.server.diagram.converter.qa.diagram;
+
+import org.reactome.server.diagram.converter.layout.output.Diagram;
+import org.reactome.server.diagram.converter.layout.output.Edge;
+import org.reactome.server.diagram.converter.qa.common.DiagramTest;
+import org.reactome.server.diagram.converter.utils.TestReportsHelper;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * @author Antonio Fabregat <fabregat@ebi.ac.uk>
+ */
+@SuppressWarnings("unused")
+@DiagramTest
+public class OverlappingReactions implements DiagramQA {
+
+    private static final List<String> lines = new ArrayList<>();
+
+    @Override
+    public String getName() {
+        return getClass().getSimpleName();
+    }
+
+    @Override
+    public String getDescription() {
+        return "Detects pairs of reactions which main shapes physically overlap in the diagram.";
+    }
+
+    @Override
+    public List<String> getReport() {
+        if (!lines.isEmpty())
+            lines.add(0, "Diagram,DiagramName,Reaction1,Reaction1_Name,Reaction2,Reaction2_Name,Created,Modified");
+        return lines;
+    }
+
+    @Override
+    public void run(Diagram diagram) {
+        for (Edge edge1 : diagram.getEdges()) {
+            for (Edge edge2 : diagram.getEdges()) {
+                boolean edge1Fadeout = edge1.isFadeOut != null && edge1.isFadeOut;
+                boolean edge2Fadeout = edge2.isFadeOut != null && edge2.isFadeOut;
+                if (edge1.reactomeId < edge2.reactomeId && !edge1Fadeout && !edge2Fadeout) {
+                    if (edge1.reactionShape.overlaps(edge2.reactionShape)) {
+                        lines.add(String.format("%s,\"%s\",%s,\"%s\",%s,\"%s\",%s",
+                                diagram.getStableId(),
+                                diagram.getDisplayName(),
+                                edge1.reactomeId,
+                                edge1.displayName,
+                                edge2.reactomeId,
+                                edge2.displayName,
+                                TestReportsHelper.getCreatedModified(edge2.reactomeId)));
+                    }
+                }
+            }
+        }
+    }
+}
