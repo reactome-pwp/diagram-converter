@@ -13,13 +13,13 @@ import java.util.List;
  */
 @SuppressWarnings("unused")
 @DiagramTest
-public class OverlappingReactionShapes implements DiagramQA {
+public class WronglyPlacedReactionShape implements DiagramQA {
 
     private static final List<String> lines = new ArrayList<>();
 
     @Override
     public String getName() {
-        return "OverlappingReactionShapesOnReactomeCurator";
+        return "WronglyPlacedReactionShape_OnReactomeCurator";
     }
 
     @Override
