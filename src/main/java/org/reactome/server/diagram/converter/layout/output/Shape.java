@@ -8,6 +8,7 @@ import java.util.List;
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
+@SuppressWarnings("WeakerAccess")
 public class Shape {
     public enum Type { ARROW, BOX, CIRCLE, DOUBLE_CIRCLE, STOP }
 
@@ -53,7 +54,7 @@ public class Shape {
         }
         this.c = c;
         this.r = r;
-        if(empty){
+        if(empty){ //Otherwise is left 'null' so it does NOT appear in the serialisation
             this.empty = true;
         }
         this.type = type;
@@ -63,14 +64,14 @@ public class Shape {
     transient Integer minX; transient Integer maxX;
     transient Integer minY; transient Integer maxY;
 
-    protected void setBoundaries(){
-        List<Integer> xx =  new ArrayList<>();
+    protected void setBoundaries() {
+        List<Integer> xx = new ArrayList<>();
         List<Integer> yy = new ArrayList<>();
-        switch (type){
+        switch (type) {
             case CIRCLE:
             case DOUBLE_CIRCLE:
-                xx.add(c.x+r); yy.add(c.y+r);
-                xx.add(c.x-r); yy.add(c.y-r);
+                xx.add(c.x + r); yy.add(c.y + r);
+                xx.add(c.x - r); yy.add(c.y - r);
                 break;
             case ARROW:
                 xx.add(c.x); yy.add(c.y);
@@ -83,5 +84,16 @@ public class Shape {
         this.maxX = Collections.max(xx);
         this.minY = Collections.min(yy);
         this.maxY = Collections.max(yy);
+    }
+
+    public boolean overlaps(Shape o2){
+        return pointInRectangle(o2.minX, o2.minY) ||
+               pointInRectangle(o2.minX, o2.maxY) ||
+               pointInRectangle(o2.maxX, o2.minY) ||
+               pointInRectangle(o2.maxX, o2.maxY);
+    }
+
+    private boolean pointInRectangle(int x, int y) {
+        return x >= minX && x <= maxX && y >= minY && y <= maxY;
     }
 }

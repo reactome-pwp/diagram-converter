@@ -141,13 +141,14 @@ public class QATests {
         if (lines != null && !lines.isEmpty()) {
             try {
                 Files.write(createFile(fileName), lines, Charset.forName("UTF-8"));
-                String entries = numberFormat.format(lines.size() - 1);
-                return  String.format("\t'%s.csv' > %s entries", fileName, entries);
+                String number = numberFormat.format(lines.size() - 1);
+                String entries = (lines.size() - 1) > 1 ? "entries" : "entry";
+                return  String.format("\t'%s.csv': %s %s", fileName, number, entries);
             } catch (IOException e) {
                 e.printStackTrace();
             }
         } else {
-            return String.format("\t'%s.csv' > 0 entries", fileName);
+            return String.format("\t'%s.csv': 0 entries", fileName);
         }
         return null;
     }

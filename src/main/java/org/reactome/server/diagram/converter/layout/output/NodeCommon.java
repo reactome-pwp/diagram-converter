@@ -58,6 +58,29 @@ public abstract class NodeCommon extends DiagramObject {
         setBoundaries();
     }
 
+    public boolean overlaps(NodeCommon o2){
+        int offset = 3;
+        switch (renderableClass){
+            case "Chemical":
+            case "ChemicalDrug":
+                if(o2.renderableClass.equals("Chemical") || o2.renderableClass.equals("ChemicalDrug")) offset += 3;
+                if(o2.renderableClass.equals("Complex")) offset += 2;
+            break;
+            case "Complex":
+                if(o2.renderableClass.equals("Chemical") || o2.renderableClass.equals("ChemicalDrug")) offset += 2;
+                break;
+            case "RNA":
+                if(o2.renderableClass.equals("RNA")) offset += 3;
+                break;
+            case "Gene":
+                if(o2.renderableClass.equals("Gene")) offset += 3;
+                break;
+        }
+
+        //If boxes containing the node do not overlap one each other, we know for SURE the glyph do not overlap
+        return prop.overlaps(o2.prop, offset);
+    }
+
     protected static List<Long> getComponents(Method method, Object object){
         List<Long> rtn = new LinkedList<>();
         try{
