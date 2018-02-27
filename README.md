@@ -2,13 +2,18 @@
 
 # Diagram-Converter
 #### What is the Diagram Converter?
-The Diagram converter contains a collection of server-side tools, mainly focusing on the generation of a set of 
+The Diagram-Converter contains a collection of server-side tools, mainly focusing on the generation of a set of 
 JSON files to be consumed by the Pathway Diagram Viewer v3.0. As illustrated in the following figure, 
-the Diagram-core utilises the Reactome-Core to generate two different types of files for every single pathway diagram. 
-The first file includes layout information (nodes, edges, coordinates, glyphs, names, shades, etc.), 
-while the second file includes a graph of the pathway diagram and all its contained entities.
+the Diagram-Converter relies on the XML diagram files and the GraphDB to generate two different types of files for every single pathway diagram. 
+The first file includes layout information necessary to render a diagram (nodes, edges, coordinates, glyphs, names, shades, etc.), 
+while the second file includes a graph of the pathway diagram and all its contained entities. Additionally, the converter performs a 
+series of quality assurance (QA) checks to ensure the consistency of our pathway diagrams. 
 
-![Overview of the Diagram-Core](./doc/diagramCore.png "Overview of the Diagram-Core")
+It should be noted that this conversion takes place during our data release, typically on a quarterly basis.
+
+To learn more about the techniques and methods we use to boost the rendering of our diagrams, you can have a look at our most recent [publication](https://doi.org/10.1093/bioinformatics/btx752). 
+
+![Overview of the Diagram-Converter](./doc/diagramConverter.png "Overview of the Diagram-Converter")
 
 #### How do I generate all pathway diagrams ?
 ** Maven Setup: https://maven.apache.org/guides/getting-started/maven-in-five-minutes.html.
