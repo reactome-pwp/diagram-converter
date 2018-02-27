@@ -46,10 +46,13 @@ public class DiagramGraphFactory {
     private Set<EntityNode> getGraphNodes(Diagram diagram) {
         Set<EntityNode> rtn = new HashSet<>();
 
+        Collection<Long> processNodes = getProcessNodes(diagram.getDbId());
         List<Long> greenboxes = new ArrayList<>();
         for (Node node : diagram.getNodes()) {
             if(node.renderableClass.equals("ProcessNode")){
                 greenboxes.add(node.reactomeId);
+                //Changing the renderableClass here won't alter the RenderableClassMismatch test result since it has already been executed at this point
+                if(!processNodes.contains(node.reactomeId)) node.renderableClass = "EncapsulatedNode";
             }
         }
 
@@ -159,5 +162,20 @@ public class DiagramGraphFactory {
             e.printStackTrace();
         }
         return rtn.isEmpty() ? null : rtn;
+    }
+
+    private Collection<Long> getProcessNodes(Long dbId) {
+        String query = "" +
+//                "MATCH path=(p:Pathway{dbId:{dbId}})-[:hasEvent*]->(sp:Pathway) " +
+                "MATCH path=(p:Pathway{dbId:{dbId}})-[:hasEvent*]->(sp:Pathway{hasDiagram:True}) " +
+                "WHERE SINGLE(x IN TAIL(NODES(path)) WHERE NOT x.hasDiagram IS NULL AND x.hasDiagram) " +
+                "RETURN DISTINCT sp.dbId";
+        Map<String, Object> params = new HashMap<>();
+        params.put("dbId", dbId);
+        try {
+            return advancedDatabaseObjectService.customQueryResults(Long.class, query, params);
+        } catch (CustomQueryException e) {
+            return Collections.emptyList();
+        }
     }
 }
