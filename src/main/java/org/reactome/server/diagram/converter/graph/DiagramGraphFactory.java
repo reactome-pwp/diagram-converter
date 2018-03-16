@@ -79,9 +79,11 @@ public class DiagramGraphFactory {
                 "MATCH path=(p:Pathway{dbId:{dbId}})-[:hasEvent*]->(rle:ReactionLikeEvent) " +
                 "WHERE SINGLE(x IN NODES(path) WHERE (x:Pathway) AND x.hasDiagram) " +
                 "MATCH (rle)-[:input|output|catalystActivity|entityFunctionalStatus|physicalEntity|regulatedBy|regulator|hasComponent|hasMember|hasCandidate|repeatedUnit*]->(pe:PhysicalEntity) " +
-                "WITH DISTINCT pe " +
+                "WITH COLLECT(DISTINCT pe) AS pes " +
+                "UNWIND pes AS pe " +
                 "OPTIONAL MATCH (pe)-[:hasComponent|hasMember|hasCandidate|repeatedUnit]->(children:PhysicalEntity) " +
                 "OPTIONAL MATCH (parent:PhysicalEntity)-[:hasComponent|hasMember|hasCandidate|repeatedUnit]->(pe) " +
+                "WHERE parent IN pes " +
                 "OPTIONAL MATCH (pe)-[:referenceEntity]->(re:ReferenceEntity) " +
                 "OPTIONAL MATCH (pe)-[:species]->(s:Species) " +
                 "RETURN pe.dbId AS dbId, pe.stId AS stId, pe.displayName AS displayName, pe.schemaClass AS schemaClass, " +
@@ -114,8 +116,8 @@ public class DiagramGraphFactory {
                 "OPTIONAL MATCH (rle)-[:catalystActivity|physicalEntity*]->(c:PhysicalEntity) " +
                 "OPTIONAL MATCH (rle)-[:entityFunctionalStatus|physicalEntity*]->(e:PhysicalEntity) " +
                 "OPTIONAL MATCH (rle)-[:regulatedBy]->(reg:Regulation)-[:regulator]->(r:PhysicalEntity) " +
-                "OPTIONAL MATCH (pre:ReactionLikeEvent)<-[:precedingEvent]-(rle) " +
-                "OPTIONAL MATCH (fol:ReactionLikeEvent)-[:precedingEvent]->(rle) " +
+                "OPTIONAL MATCH (p)-[:hasEvent*]->(pre:ReactionLikeEvent)<-[:precedingEvent]-(rle) " +
+                "OPTIONAL MATCH (p)-[:hasEvent*]->(fol:ReactionLikeEvent)-[:precedingEvent]->(rle) " +
                 "RETURN  rle.dbId AS dbId, rle.stId as stId, rle.displayName AS displayName, rle.schemaClass AS schemaClass, " +
                 "        COLLECT(DISTINCT i.dbId) AS inputs, " +
                 "        COLLECT(DISTINCT o.dbId) AS outputs, " +
