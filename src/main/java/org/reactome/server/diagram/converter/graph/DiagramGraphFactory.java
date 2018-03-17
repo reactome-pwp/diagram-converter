@@ -116,8 +116,10 @@ public class DiagramGraphFactory {
                 "OPTIONAL MATCH (rle)-[:catalystActivity|physicalEntity*]->(c:PhysicalEntity) " +
                 "OPTIONAL MATCH (rle)-[:entityFunctionalStatus|physicalEntity*]->(e:PhysicalEntity) " +
                 "OPTIONAL MATCH (rle)-[:regulatedBy]->(reg:Regulation)-[:regulator]->(r:PhysicalEntity) " +
-                "OPTIONAL MATCH (p)-[:hasEvent*]->(pre:ReactionLikeEvent)<-[:precedingEvent]-(rle) " +
-                "OPTIONAL MATCH (p)-[:hasEvent*]->(fol:ReactionLikeEvent)-[:precedingEvent]->(rle) " +
+                "OPTIONAL MATCH prep=(p)-[:hasEvent*]->(pre:ReactionLikeEvent)<-[:precedingEvent]-(rle) " +
+                "WHERE SINGLE(x IN NODES(prep) WHERE (x:Pathway) AND x.hasDiagram) " +
+                "OPTIONAL MATCH folp=(p)-[:hasEvent*]->(fol:ReactionLikeEvent)-[:precedingEvent]->(rle) " +
+                "WHERE SINGLE(x IN NODES(folp) WHERE (x:Pathway) AND x.hasDiagram) " +
                 "RETURN  rle.dbId AS dbId, rle.stId as stId, rle.displayName AS displayName, rle.schemaClass AS schemaClass, " +
                 "        COLLECT(DISTINCT i.dbId) AS inputs, " +
                 "        COLLECT(DISTINCT o.dbId) AS outputs, " +
