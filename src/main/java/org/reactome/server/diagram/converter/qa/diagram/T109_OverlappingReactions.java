@@ -2,7 +2,9 @@ package org.reactome.server.diagram.converter.qa.diagram;
 
 import org.reactome.server.diagram.converter.layout.output.Diagram;
 import org.reactome.server.diagram.converter.layout.output.Edge;
-import org.reactome.server.diagram.converter.qa.common.DiagramTest;
+import org.reactome.server.diagram.converter.qa.common.AbstractConverterQA;
+import org.reactome.server.diagram.converter.qa.common.QAPriority;
+import org.reactome.server.diagram.converter.qa.common.annotation.DiagramTest;
 import org.reactome.server.diagram.converter.utils.TestReportsHelper;
 
 import java.util.ArrayList;
@@ -13,14 +15,9 @@ import java.util.List;
  */
 @SuppressWarnings("unused")
 @DiagramTest
-public class OverlappingReactions implements DiagramQA {
+public class T109_OverlappingReactions extends AbstractConverterQA implements DiagramQA {
 
     private static final List<String> lines = new ArrayList<>();
-
-    @Override
-    public String getName() {
-        return getClass().getSimpleName();
-    }
 
     @Override
     public String getDescription() {
@@ -28,10 +25,18 @@ public class OverlappingReactions implements DiagramQA {
     }
 
     @Override
+    public QAPriority getPriority() {
+        return QAPriority.HIGH;
+    }
+
+    @Override
+    protected String getHeader() {
+        return "Diagram,DiagramName,Reaction1,Reaction1_Name,Reaction2,Reaction2_Name,Created,Modified";
+    }
+
+    @Override
     public List<String> getReport() {
-        if (!lines.isEmpty())
-            lines.add(0, "Diagram,DiagramName,Reaction1,Reaction1_Name,Reaction2,Reaction2_Name,Created,Modified");
-        return lines;
+        return getReport(lines);
     }
 
     @Override

@@ -13,6 +13,7 @@ import org.reactome.server.diagram.converter.layout.util.FileUtil;
 import org.reactome.server.diagram.converter.layout.util.JsonWriter;
 import org.reactome.server.diagram.converter.layout.util.TrivialChemicals;
 import org.reactome.server.diagram.converter.qa.QATests;
+import org.reactome.server.diagram.converter.qa.conversion.T001_FailedPathways;
 import org.reactome.server.diagram.converter.utils.ProgressBar;
 import org.reactome.server.graph.domain.model.Pathway;
 import org.reactome.server.graph.service.GeneralService;
@@ -21,9 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.text.NumberFormat;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
@@ -42,8 +41,6 @@ class Converter {
     private static ProcessFactory processFactory;
 
     private static TrivialChemicals trivialChemicals;
-
-    private static List<Pathway> failed = new ArrayList<>();
 
     static void run(Collection<Pathway> pathways, MySQLAdaptor dba, String output, String trivialChemicalsFile) {
         diagramFetcher = new DiagramFetcher(dba);
@@ -66,20 +63,19 @@ class Converter {
             ProgressBar.updateProgressBar(pathway.getStId(), i++, tot);
             try {
                 GKInstance p = diagramFetcher.getInstance(pathway.getDbId() + "");
-                if (!convert(p, output)) reportFailed(pathway);
+                if (!convert(p, output)) T001_FailedPathways.add(pathway);
             } catch (Exception e) {
-                logger.error(String.format("%s - \"%s\" failed", pathway.getStId(), pathway.getDisplayName()), e);
-                reportFailed(pathway, e.getMessage());
+                T001_FailedPathways.add(pathway, e.getMessage());
             }
         }
         ProgressBar.done(tot);
-        QATests.writeReports(failed);
+        QATests.writeReports();
         Long time = System.currentTimeMillis() - start;
 
-        String conv = numberFormat.format(tot - failed.size());
+        String conv = numberFormat.format(tot - T001_FailedPathways.size());
         System.out.println(String.format("\n· Task finished: %s pathway diagrams have been successfully converted (%s)", conv, getTimeFormatted(time)));
+        System.out.println();
     }
-
 
     private static boolean convert(GKInstance pathway, String outputDir) {
         Diagram diagram = getDiagram(pathway);
@@ -116,19 +112,6 @@ class Converter {
             logger.error("[" + stId + "] conversion failed. The following error occurred while converting pathway diagram:", e);
         }
         return null;
-    }
-
-    private static void reportFailed(Pathway pathway) {
-        reportFailed(pathway, null);
-    }
-
-    private static void reportFailed(Pathway pathway, String msg) {
-        failed.add(pathway);
-        if (msg != null) {
-            logger.error(String.format("[%s] '%s': Cannot be converted. Reason: %s", pathway.getStId(), pathway.getDisplayName(), msg));
-        } else {
-            logger.error(String.format("[%s] '%s': Cannot be converted.", pathway.getStId(), pathway.getDisplayName()));
-        }
     }
 
     private static String getTimeFormatted(Long millis) {

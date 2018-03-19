@@ -2,7 +2,9 @@ package org.reactome.server.diagram.converter.qa.diagram;
 
 import org.reactome.server.diagram.converter.layout.output.Diagram;
 import org.reactome.server.diagram.converter.layout.output.Node;
-import org.reactome.server.diagram.converter.qa.common.DiagramTest;
+import org.reactome.server.diagram.converter.qa.common.AbstractConverterQA;
+import org.reactome.server.diagram.converter.qa.common.QAPriority;
+import org.reactome.server.diagram.converter.qa.common.annotation.DiagramTest;
 import org.reactome.server.diagram.converter.utils.TestReportsHelper;
 
 import java.util.ArrayList;
@@ -15,13 +17,13 @@ import java.util.Map;
  */
 @SuppressWarnings("unused")
 @DiagramTest
-public class ExtraParticipantInDiagram implements DiagramQA {
+public class T103_ExtraParticipantInDiagram extends AbstractConverterQA implements DiagramQA {
 
     private static final List<String> lines = new ArrayList<>();
 
     @Override
-    public String getName() {
-        return getClass().getSimpleName();
+    public List<String> getReport() {
+        return getReport(lines);
     }
 
     @Override
@@ -30,9 +32,13 @@ public class ExtraParticipantInDiagram implements DiagramQA {
     }
 
     @Override
-    public List<String> getReport() {
-        if (!lines.isEmpty()) lines.add(0, "Diagram,DiagramName,Entity,EntityName,Created,Modified");
-        return lines;
+    public QAPriority getPriority() {
+        return QAPriority.BLOCKER;
+    }
+
+    @Override
+    protected String getHeader() {
+        return "Diagram,DiagramName,Entity,EntityName,Created,Modified";
     }
 
     @Override
@@ -52,7 +58,7 @@ public class ExtraParticipantInDiagram implements DiagramQA {
         }
     }
 
-    private static void add(String diagramStId, String diagramName, Long entityId, String entityName) {
+    private void add(String diagramStId, String diagramName, Long entityId, String entityName) {
         lines.add(String.format("%s,\"%s\",%d,\"%s\",%s",
                 diagramStId,
                 diagramName,

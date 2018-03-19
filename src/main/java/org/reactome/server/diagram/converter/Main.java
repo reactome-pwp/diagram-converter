@@ -56,6 +56,7 @@ public class Main {
                 config.getString("graph_password"),
                 ReactomeNeo4jConfig.class
         );
+        Integer version = ReactomeGraphCore.getService(GeneralService.class).getDBVersion();
 
         MySQLAdaptor dba = new MySQLAdaptor(
                 config.getString("rel_host"),
@@ -68,12 +69,11 @@ public class Main {
         //Checking whether the relational and the graph database are using the same released data
         try {
             Integer relDB = dba.getReleaseNumber();
-            Integer graphDB = ReactomeGraphCore.getService(GeneralService.class).getDBVersion();
-            if (!Objects.equals(relDB, graphDB)){
+            if (!Objects.equals(relDB, version)){
                 System.err.println(
                         String.format("The databases are from different versions.\n\t Relational db contains version %d (%s)\n\tGraph database contains version %d (%s)",
                                 relDB, config.getString("rel_database"),
-                                graphDB, "Neo4j"));
+                                version, "Neo4j"));
                 System.exit(1);
             }
         } catch (Exception e) {
@@ -89,7 +89,7 @@ public class Main {
         String trivialChemicalsFile = config.getString("trivial");
 
         //Tests initialisation
-        QATests.initialise();
+        QATests.initialise(version);
 
         //Check if target pathways are specified
         String[] target = config.getStringArray("target");

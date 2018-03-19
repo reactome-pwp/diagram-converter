@@ -9,7 +9,11 @@ public interface ConverterQA {
 
     String getName();
 
+    String getNumeratedName();
+
     String getDescription();
+
+    QAPriority getPriority();
 
     List<String> getReport();
 }

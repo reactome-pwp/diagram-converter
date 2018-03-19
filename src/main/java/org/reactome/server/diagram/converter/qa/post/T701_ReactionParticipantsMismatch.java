@@ -7,7 +7,9 @@ import org.reactome.server.diagram.converter.layout.output.Diagram;
 import org.reactome.server.diagram.converter.layout.output.Edge;
 import org.reactome.server.diagram.converter.layout.output.Node;
 import org.reactome.server.diagram.converter.layout.output.ReactionPart;
-import org.reactome.server.diagram.converter.qa.common.PostTest;
+import org.reactome.server.diagram.converter.qa.common.AbstractConverterQA;
+import org.reactome.server.diagram.converter.qa.common.QAPriority;
+import org.reactome.server.diagram.converter.qa.common.annotation.PostTest;
 import org.reactome.server.diagram.converter.utils.TestReportsHelper;
 
 import java.util.ArrayList;
@@ -21,14 +23,9 @@ import java.util.Set;
  */
 @SuppressWarnings("unused")
 @PostTest
-public class ReactionParticipantsMismatch implements PostQA {
+public class T701_ReactionParticipantsMismatch extends AbstractConverterQA implements PostQA {
 
     private static final List<String> lines = new ArrayList<>();
-
-    @Override
-    public String getName() {
-        return "ReactionParticipantsMismatch";
-    }
 
     @Override
     public String getDescription() {
@@ -36,9 +33,18 @@ public class ReactionParticipantsMismatch implements PostQA {
     }
 
     @Override
+    public QAPriority getPriority() {
+        return QAPriority.BLOCKER;
+    }
+
+    @Override
+    protected String getHeader() {
+        return "Pathway,PathwayName,Reaction,ReactionName,Participant,ParticipantName,Role,Created,Modified";
+    }
+
+    @Override
     public List<String> getReport() {
-        if (!lines.isEmpty()) lines.add(0, "Pathway,PathwayName,Reaction,ReactionName,Participant,ParticipantName,Role,Created,Modified");
-        return lines;
+        return getReport(lines);
     }
 
     @Override

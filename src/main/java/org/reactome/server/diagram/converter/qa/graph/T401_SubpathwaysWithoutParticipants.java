@@ -1,7 +1,9 @@
 package org.reactome.server.diagram.converter.qa.graph;
 
 import org.reactome.server.diagram.converter.graph.output.Graph;
-import org.reactome.server.diagram.converter.qa.common.GraphTest;
+import org.reactome.server.diagram.converter.qa.common.AbstractConverterQA;
+import org.reactome.server.diagram.converter.qa.common.QAPriority;
+import org.reactome.server.diagram.converter.qa.common.annotation.GraphTest;
 import org.reactome.server.diagram.converter.utils.SupathwayDetails;
 import org.reactome.server.graph.exception.CustomQueryException;
 import org.reactome.server.graph.service.AdvancedDatabaseObjectService;
@@ -18,15 +20,11 @@ import java.util.Map;
  */
 @SuppressWarnings("unused")
 @GraphTest
-public class SubpathwaysWithoutParticipants implements GraphQA {
+public class T401_SubpathwaysWithoutParticipants extends AbstractConverterQA implements GraphQA {
 
     private static final AdvancedDatabaseObjectService ads = ReactomeGraphCore.getService(AdvancedDatabaseObjectService.class);
-    private static final List<String> lines = new ArrayList<>();
 
-    @Override
-    public String getName() {
-        return getClass().getSimpleName();
-    }
+    private static final List<String> lines = new ArrayList<>();
 
     @Override
     public String getDescription() {
@@ -34,9 +32,18 @@ public class SubpathwaysWithoutParticipants implements GraphQA {
     }
 
     @Override
+    public QAPriority getPriority() {
+        return QAPriority.BLOCKER;
+    }
+
+    @Override
+    protected String getHeader() {
+        return "Diagram,DiagramName,Subpathway,SubpathwayName,Created,Modified";
+    }
+
+    @Override
     public List<String> getReport() {
-        if (!lines.isEmpty()) lines.add(0, "Diagram,DiagramName,Subpathway,SubpathwayName,Created,Modified");
-        return lines;
+        return getReport(lines);
     }
 
     @Override

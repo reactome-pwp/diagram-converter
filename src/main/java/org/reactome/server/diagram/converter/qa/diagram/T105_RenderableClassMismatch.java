@@ -1,9 +1,9 @@
 package org.reactome.server.diagram.converter.qa.diagram;
 
-import org.reactome.server.diagram.converter.qa.common.ConverterReport;
+import org.reactome.server.diagram.converter.qa.common.AbstractConverterQA;
+import org.reactome.server.diagram.converter.qa.common.QAPriority;
+import org.reactome.server.diagram.converter.qa.common.annotation.ConverterReport;
 import org.reactome.server.diagram.converter.utils.TestReportsHelper;
-import org.reactome.server.graph.service.AdvancedDatabaseObjectService;
-import org.reactome.server.graph.utils.ReactomeGraphCore;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,16 +14,9 @@ import java.util.List;
  */
 @SuppressWarnings("unused")
 @ConverterReport
-public class RenderableClassMismatch implements DiagramQA {
-
-    private static final AdvancedDatabaseObjectService ads = ReactomeGraphCore.getService(AdvancedDatabaseObjectService.class);
+public class T105_RenderableClassMismatch extends AbstractConverterQA implements DiagramQA {
 
     private static final List<String> lines = new ArrayList<>();
-
-    @Override
-    public String getName() {
-        return getClass().getSimpleName();
-    }
 
     @Override
     public String getDescription() {
@@ -31,9 +24,18 @@ public class RenderableClassMismatch implements DiagramQA {
     }
 
     @Override
+    public QAPriority getPriority() {
+        return QAPriority.MEDIUM;
+    }
+
+    @Override
+    protected String getHeader() {
+        return "Diagram,DiagramName,Entity,EntitySchemaClass,EntityName,RenderableClass,SuggestedRenderableClass,Created,Modified";
+    }
+
+    @Override
     public List<String> getReport() {
-        if (!lines.isEmpty()) lines.add(0, "Diagram,DiagramName,Entity,EntitySchemaClass,EntityName,RenderableClass,SuggestedRenderableClass,Created,Modified");
-        return lines;
+        return getReport(lines);
     }
 
     public static void add(String diagramStId, String diagramName, Long entityId, String schemaClass, String entityName,String wrongRC, String rightRC){

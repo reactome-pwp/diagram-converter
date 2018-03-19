@@ -3,11 +3,16 @@ package org.reactome.server.diagram.converter.qa;
 import org.apache.commons.io.FileUtils;
 import org.reactome.server.diagram.converter.graph.output.Graph;
 import org.reactome.server.diagram.converter.layout.output.Diagram;
-import org.reactome.server.diagram.converter.qa.common.*;
+import org.reactome.server.diagram.converter.qa.common.ConverterQA;
+import org.reactome.server.diagram.converter.qa.common.QAPriority;
+import org.reactome.server.diagram.converter.qa.common.annotation.ConverterReport;
+import org.reactome.server.diagram.converter.qa.common.annotation.DiagramTest;
+import org.reactome.server.diagram.converter.qa.common.annotation.GraphTest;
+import org.reactome.server.diagram.converter.qa.common.annotation.PostTest;
 import org.reactome.server.diagram.converter.qa.diagram.DiagramQA;
 import org.reactome.server.diagram.converter.qa.graph.GraphQA;
 import org.reactome.server.diagram.converter.qa.post.PostQA;
-import org.reactome.server.graph.domain.model.Pathway;
+import org.reactome.server.diagram.converter.utils.Report;
 import org.reflections.Reflections;
 
 import java.io.File;
@@ -17,8 +22,9 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.text.NumberFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -26,36 +32,43 @@ import java.util.stream.Collectors;
  */
 public class QATests {
 
-    private static NumberFormat numberFormat = NumberFormat.getNumberInstance(Locale.US);
-
     private static final List<Class<?>> diagramQATests = new ArrayList<>();
     private static final List<Class<?>> graphQATests = new ArrayList<>();
     private static final List<Class<?>> finalQATests = new ArrayList<>();
 
+    private static Integer version;
     private static String path = "./reports";
 
-    public static void initialise() {
-        System.out.println("· Converter initialisation:");
+    public static void initialise(Integer version) {
+        QATests.version = version;
+
+        System.out.println("· Diagram converter initialisation:");
         System.out.print("\t>Initialising tests infrastructure...");
         Reflections reflections = new Reflections(QATests.class.getPackage().getName());
 
-        int converterReports = 0;
+        int d = 0, converterReports = 0;
         Set<Class<? extends ConverterQA>> tests = reflections.getSubTypesOf(ConverterQA.class);
         for (Class<?> test : tests) {
-            for (Annotation annotation : test.getAnnotations()) {
-                if (annotation instanceof DiagramTest) {
-                    diagramQATests.add(test);
-                } else if (annotation instanceof GraphTest) {
-                    graphQATests.add(test);
-                } else if (annotation instanceof PostTest) {
-                    finalQATests.add(test);
-                } else if (annotation instanceof ConverterReport) {
-                    converterReports++;
+            if (test.getAnnotation(Deprecated.class) != null) d++;
+            else {
+                for (Annotation annotation : test.getAnnotations()) {
+                    if (annotation instanceof DiagramTest) {
+                        diagramQATests.add(test);
+                    } else if (annotation instanceof GraphTest) {
+                        graphQATests.add(test);
+                    } else if (annotation instanceof PostTest) {
+                        finalQATests.add(test);
+                    } else if (annotation instanceof ConverterReport) {
+                        converterReports++;
+                    }
                 }
             }
         }
-        int n = diagramQATests.size() + graphQATests.size() + finalQATests.size() + converterReports;
-        System.out.println(String.format("\r\t> %d tests have been set up.", n));
+        int a = diagramQATests.size() + graphQATests.size() + finalQATests.size() + converterReports;
+        int t = a + d;
+        System.out.println(String.format("\r\t>%3d test%s found:", t, t == 1 ? "" : "s"));
+        System.out.println(String.format("\t\t-%3d test%s active", a, a == 1 ? "" : "s"));
+        System.out.println(String.format("\t\t-%3d test%s excluded ('@Deprecated')", d, d == 1 ? "" : "s"));
 
         //Cleans up previous reports
         try {
@@ -102,58 +115,60 @@ public class QATests {
         }
     }
 
-    public static void writeReports(List<Pathway> failed) {
+    public static void writeReports() {
         Reflections reflections = new Reflections(QATests.class.getPackage().getName());
         Set<Class<? extends ConverterQA>> tests = reflections.getSubTypesOf(ConverterQA.class);
 
-        System.out.println("\n\n· Reports:");
-
-        // Sorting tests by name
-        List<Class<? extends ConverterQA>> sortedTests = tests.stream()
-                .sorted(Comparator.comparing(Class::getSimpleName))
-                .collect(Collectors.toList());
-
-        List<String> reports = new ArrayList<>();
-        for (Class<?> test : sortedTests) {
+        List<Report> reports = new ArrayList<>();
+        for (Class<?> test : tests) {
             try {
                 Object object = test.newInstance();
                 ConverterQA qa = (ConverterQA) object;
-                String report = report(qa.getName(), qa.getReport());
-                if (report != null) reports.add(report);
+                storeCSV(qa.getNumeratedName(), qa.getReport());
+                reports.add( new Report(qa.getPriority(), qa.getNumeratedName(), qa.getDescription(), qa.getReport()));
             } catch (InstantiationException | IllegalAccessException e) { /*Nothing here*/}
         }
-        //Printing the reports sorted by name
-        reports.forEach(System.out::println);
 
-        //Next bit creates the failed pathways report and stores it in a file
-        if (!failed.isEmpty()) {
-            List<String> lines = new ArrayList<>();
-            lines.add("Pathway,PathwayName");
-            for (Pathway pathway : failed) {
-                lines.add(String.format("%s,\"%s\"", pathway.getStId(), pathway.getDisplayName()));
-            }
-            System.out.println(report("FailedPathways", lines));
-        }
+        //Printing the reports sorted by name
+        System.out.println("\n\n· Reports:");
+        reports.stream().sorted().forEach(Report::printColoured);
+        System.out.println("\n· Priorities meaning:");
+        QAPriority.list().forEach(QAPriority::printColoured);
+        long c = reports.stream().filter(Report::hasEntries).count();
+        System.out.println(String.format("\nConversion finished. %d QA test%s generated reports.", c, c == 1 ? "" : "s"));
+
+        //Storing the report in a CSV file
+        storeReport(reports);
     }
 
-    private static String report(String fileName, List<String> lines) {
-        if (fileName == null || fileName.isEmpty()) return null;
-        if (lines != null && !lines.isEmpty()) {
+    private static void storeCSV(String fileName, List<String> lines){
+        if(!lines.isEmpty()){
             try {
-                Files.write(createFile(fileName), lines, Charset.forName("UTF-8"));
-                String number = numberFormat.format(lines.size() - 1);
-                String entries = (lines.size() - 1) > 1 ? "entries" : "entry";
-                return  String.format("\t'%s.csv': %s %s", fileName, number, entries);
+                //Store the corresponding CSV file when content has been generated
+                Files.write(getFilePath(fileName), lines, Charset.forName("UTF-8"));
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        } else {
-            return String.format("\t'%s.csv': 0 entries", fileName);
         }
-        return null;
     }
 
-    private static Path createFile(String fileName) throws IOException {
+    private static void storeReport(List<Report> reports) {
+        if (reports.isEmpty()) return;
+        List<String> lines = new ArrayList<>();
+        lines.add(Report.getCSVHeader());
+        lines.addAll(reports.stream()
+                .filter(Report::toReport)
+                .sorted()
+                .map(Report::getCSV)
+                .collect(Collectors.toList()));
+        try {
+            Files.write(getFilePath("DiagramQA_Summary_v" + version), lines, Charset.forName("UTF-8"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static Path getFilePath(String fileName) throws IOException {
         Path p = Paths.get(path + "/" + fileName + ".csv");
         Files.deleteIfExists(p);
         if (!Files.isSymbolicLink(p.getParent())) Files.createDirectories(p.getParent());

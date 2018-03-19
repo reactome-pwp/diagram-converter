@@ -1,7 +1,9 @@
 package org.reactome.server.diagram.converter.qa.diagram;
 
 import org.reactome.server.diagram.converter.layout.output.Diagram;
-import org.reactome.server.diagram.converter.qa.common.DiagramTest;
+import org.reactome.server.diagram.converter.qa.common.AbstractConverterQA;
+import org.reactome.server.diagram.converter.qa.common.QAPriority;
+import org.reactome.server.diagram.converter.qa.common.annotation.DiagramTest;
 import org.reactome.server.diagram.converter.utils.TestReportsHelper;
 
 import java.util.ArrayList;
@@ -13,14 +15,9 @@ import java.util.List;
  */
 @SuppressWarnings("unused")
 @DiagramTest
-public class DiagramEmpty implements DiagramQA {
+public class T101_DiagramEmpty extends AbstractConverterQA implements DiagramQA {
 
     private static final List<String> lines = new ArrayList<>();
-
-    @Override
-    public String getName() {
-        return getClass().getSimpleName();
-    }
 
     @Override
     public String getDescription() {
@@ -28,14 +25,23 @@ public class DiagramEmpty implements DiagramQA {
     }
 
     @Override
+    public QAPriority getPriority() {
+        return QAPriority.BLOCKER;
+    }
+
+    @Override
     public List<String> getReport() {
-        if (!lines.isEmpty()) lines.add(0, "Diagram,DiagramName,Created,Modified");
-        return lines;
+        return getReport(lines);
+    }
+
+    @Override
+    protected String getHeader() {
+        return "Diagram,DiagramName,Created,Modified";
     }
 
     @Override
     public void run(Diagram diagram) {
-        if(diagram.getNodes()==null || diagram.getNodes().isEmpty()){
+        if (diagram.getNodes() == null || diagram.getNodes().isEmpty()) {
             lines.add(String.format("%s,\"%s\",%s",
                     diagram.getStableId(),
                     diagram.getDisplayName(),

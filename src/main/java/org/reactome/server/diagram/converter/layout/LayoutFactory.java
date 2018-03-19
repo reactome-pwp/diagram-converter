@@ -4,10 +4,10 @@ import org.gk.model.GKInstance;
 import org.reactome.server.diagram.converter.layout.input.model.*;
 import org.reactome.server.diagram.converter.layout.input.model.Process;
 import org.reactome.server.diagram.converter.layout.output.*;
-import org.reactome.server.diagram.converter.qa.diagram.DuplicatedReactionParts;
-import org.reactome.server.diagram.converter.qa.diagram.MissingSchemaClass;
-import org.reactome.server.diagram.converter.qa.diagram.RenderableClassMismatch;
-import org.reactome.server.diagram.converter.qa.diagram.SchemaClassMismatch;
+import org.reactome.server.diagram.converter.qa.diagram.T102_MissingSchemaClass;
+import org.reactome.server.diagram.converter.qa.diagram.T104_DuplicatedReactionParticipants;
+import org.reactome.server.diagram.converter.qa.diagram.T105_RenderableClassMismatch;
+import org.reactome.server.diagram.converter.qa.diagram.T106_SchemaClassMismatch;
 import org.reactome.server.diagram.converter.utils.TestReportsHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,7 +45,7 @@ public abstract class LayoutFactory {
 
             //Parse Nodes
             List<NodeCommon> nodes = extractNodesList(inputProcess.getNodes());
-            if(nodes!=null) {
+            if (nodes != null) {
                 for (NodeCommon nodeCommon : nodes) {
                     if (nodeCommon instanceof Node) {
                         outputDiagram.addNode((Node) nodeCommon);
@@ -148,20 +148,19 @@ public abstract class LayoutFactory {
         if (targetSchemaClass == null) {
             if (node.schemaClass == null) {
                 //Cannot be fixed!
-                MissingSchemaClass.add(outputDiagram.getStableId(), outputDiagram.getDisplayName(), node.reactomeId);
+                T102_MissingSchemaClass.add(outputDiagram.getStableId(), outputDiagram.getDisplayName(), node.reactomeId);
                 rtn = false;
             }
         } else if (!targetSchemaClass.equals(node.schemaClass)) {
             //Report BEFORE changing it!
-            SchemaClassMismatch.lines.add(String.format("%s,\"%s\",%s,\"%s\",%s,%s,%s",
+            T106_SchemaClassMismatch.add(
                     outputDiagram.getStableId(),
                     outputDiagram.getDisplayName(),
                     node.reactomeId,
                     node.displayName,
                     node.schemaClass,
-                    targetSchemaClass,
-                    TestReportsHelper.getCreatedModified(node.reactomeId)
-            ));
+                    targetSchemaClass
+            );
             node.schemaClass = targetSchemaClass;
         }
         return rtn;
@@ -212,7 +211,15 @@ public abstract class LayoutFactory {
             }
             if (!correction.isEmpty()) {
                 //Reports has to be done BEFORE correcting it
-                RenderableClassMismatch.add(outputDiagram.getStableId(), outputDiagram.getDisplayName(), obj.reactomeId, obj.schemaClass, obj.displayName, obj.renderableClass, correction);
+                T105_RenderableClassMismatch.add(
+                        outputDiagram.getStableId(),
+                        outputDiagram.getDisplayName(),
+                        obj.reactomeId,
+                        obj.schemaClass,
+                        obj.displayName,
+                        obj.renderableClass,
+                        correction
+                );
                 obj.renderableClass = correction;
             }
         } catch (NullPointerException e) {
@@ -240,7 +247,12 @@ public abstract class LayoutFactory {
                 ReactionPart reactionPart = it.next();
                 if (!aux.add(reactionPart.id)) {
                     it.remove();
-                    DuplicatedReactionParts.add(outputDiagram.getStableId(), outputDiagram.getDisplayName(), edgeId, reactionPart.id);
+                    T104_DuplicatedReactionParticipants.add(
+                            outputDiagram.getStableId(),
+                            outputDiagram.getDisplayName(),
+                            edgeId,
+                            reactionPart.id
+                    );
                 }
             }
         }
@@ -248,9 +260,9 @@ public abstract class LayoutFactory {
     }
 
     /*
-    * Convert a string of values into a Set
-    * 123 45 23 77 90 54
-    */
+     * Convert a string of values into a Set
+     * 123 45 23 77 90 54
+     */
     private static <E> Set<E> ListToSet(List<E> inputList) {
         Set<E> rtn = null;
         if (inputList != null && !inputList.isEmpty()) {

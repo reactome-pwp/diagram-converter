@@ -3,7 +3,9 @@ package org.reactome.server.diagram.converter.qa.post;
 import org.reactome.server.diagram.converter.graph.output.EventNode;
 import org.reactome.server.diagram.converter.graph.output.Graph;
 import org.reactome.server.diagram.converter.layout.output.Diagram;
-import org.reactome.server.diagram.converter.qa.common.PostTest;
+import org.reactome.server.diagram.converter.qa.common.AbstractConverterQA;
+import org.reactome.server.diagram.converter.qa.common.QAPriority;
+import org.reactome.server.diagram.converter.qa.common.annotation.PostTest;
 import org.reactome.server.diagram.converter.utils.TestReportsHelper;
 
 import java.util.ArrayList;
@@ -14,15 +16,9 @@ import java.util.List;
  */
 @SuppressWarnings("unused")
 @PostTest
-public class DiagramMissingReaction implements PostQA {
-
+public class T702_DiagramMissingReaction extends AbstractConverterQA implements PostQA {
 
     private static final List<String> lines = new ArrayList<>();
-
-    @Override
-    public String getName() {
-        return "DiagramsMissingReaction";
-    }
 
     @Override
     public String getDescription() {
@@ -30,9 +26,18 @@ public class DiagramMissingReaction implements PostQA {
     }
 
     @Override
+    public QAPriority getPriority() {
+        return QAPriority.BLOCKER;
+    }
+
+    @Override
+    protected String getHeader() {
+        return "Diagram,DiagramName,Reaction,ReactionName,Created,Modified";
+    }
+
+    @Override
     public List<String> getReport() {
-        if (!lines.isEmpty()) lines.add(0, "Diagram,DiagramName,Reaction,ReactionName,Created,Modified");
-        return lines;
+        return getReport(lines);
     }
 
     @Override
@@ -51,5 +56,4 @@ public class DiagramMissingReaction implements PostQA {
             }
         }
     }
-
 }
