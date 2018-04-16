@@ -67,7 +67,7 @@ public class DiagramGraphFactory {
                 "                p.schemaClass AS schemaClass, " +
                 "                s.dbId AS speciesID";
         try {
-            Collection<QueryResult> nodesQueryResults = advancedDatabaseObjectService.customQueryForObjects(QueryResult.class, query, parametersMap);
+            Collection<QueryResult> nodesQueryResults = advancedDatabaseObjectService.getCustomQueryResults(QueryResult.class, query, parametersMap);
             for (QueryResult result : nodesQueryResults) {
                 rtn.add(new EntityNode(result, diagram.getDiagramIds(result.getDbId())));
             }
@@ -95,7 +95,7 @@ public class DiagramGraphFactory {
 
         parametersMap.put("dbId", diagram.getDbId());
         try {
-            Collection<NodesQueryResult> nodesQueryResults = advancedDatabaseObjectService.customQueryForObjects(NodesQueryResult.class, query, parametersMap);
+            Collection<NodesQueryResult> nodesQueryResults = advancedDatabaseObjectService.getCustomQueryResults(NodesQueryResult.class, query, parametersMap);
             for (NodesQueryResult result : nodesQueryResults) {
                 rtn.add(new EntityNode(result, diagram.getDiagramIds(result.getDbId())));
             }
@@ -131,7 +131,7 @@ public class DiagramGraphFactory {
         Map<String, Object> parametersMap = new HashMap<>();
         parametersMap.put("dbId", diagram.getDbId());
         try {
-            Collection<EdgesQueryResult> edgesQueryResults = advancedDatabaseObjectService.customQueryForObjects(EdgesQueryResult.class, query, parametersMap);
+            Collection<EdgesQueryResult> edgesQueryResults = advancedDatabaseObjectService.getCustomQueryResults(EdgesQueryResult.class, query, parametersMap);
             for (EdgesQueryResult result : edgesQueryResults) {
                rtn.add(new EventNode(result, diagram.getDiagramIds(result.getDbId())));
             }
@@ -158,7 +158,7 @@ public class DiagramGraphFactory {
         Map<String, Object> parametersMap = new HashMap<>();
         parametersMap.put("dbId", diagram.getDbId());
         try {
-            Collection<SubpathwaysQueryResult> subpathwaysQueryResults = advancedDatabaseObjectService.customQueryForObjects(SubpathwaysQueryResult.class, query, parametersMap);
+            Collection<SubpathwaysQueryResult> subpathwaysQueryResults = advancedDatabaseObjectService.getCustomQueryResults(SubpathwaysQueryResult.class, query, parametersMap);
             for (SubpathwaysQueryResult result : subpathwaysQueryResults) {
                 rtn.add(new SubpathwayNode(result));
             }
@@ -177,7 +177,7 @@ public class DiagramGraphFactory {
         Map<String, Object> params = new HashMap<>();
         params.put("dbId", dbId);
         try {
-            return advancedDatabaseObjectService.customQueryResults(Long.class, query, params);
+            return advancedDatabaseObjectService.getCustomQueryResults(Long.class, query, params);
         } catch (CustomQueryException e) {
             return Collections.emptyList();
         }

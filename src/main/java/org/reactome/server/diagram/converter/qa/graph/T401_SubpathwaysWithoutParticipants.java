@@ -62,7 +62,7 @@ public class T401_SubpathwaysWithoutParticipants extends AbstractConverterQA imp
         Map<String, Object> parametersMap = new HashMap<>();
         parametersMap.put("stId", graph.getStId());
         try {
-            for (SupathwayDetails sp : ads.customQueryForObjects(SupathwayDetails.class, query, parametersMap)) {
+            for (SupathwayDetails sp : ads.getCustomQueryResults(SupathwayDetails.class, query, parametersMap)) {
                 lines.add(String.format("%s,\"%s\",%s,\"%s\",\"%s\",\"%s\"",
                         graph.getStId(),
                         graph.getDisplayName(),

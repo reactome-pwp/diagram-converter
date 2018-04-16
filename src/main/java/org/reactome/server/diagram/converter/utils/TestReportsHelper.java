@@ -20,7 +20,7 @@ public abstract class TestReportsHelper {
         Map<String, Object> parametersMap = new HashMap<>();
         parametersMap.put("dbId", dbId);
         try {
-            CurationDetails rtn = ads.customQueryForObject(CurationDetails.class, "" +
+            CurationDetails rtn = ads.getCustomQueryResult(CurationDetails.class, "" +
                             "MATCH (d:DatabaseObject{dbId:{dbId}}) " +
                             "OPTIONAL MATCH (a)-[:created]->(d) " +
                             "OPTIONAL MATCH (m)-[:modified]->(d) " +
@@ -63,7 +63,7 @@ public abstract class TestReportsHelper {
         Map<String, Object> params = new HashMap<>();
         params.put("dbId", diagramDbId);
         try {
-            for (SimpleDatabaseObject simpleDatabaseObject : ads.customQueryForObjects(SimpleDatabaseObject.class, query, params)) {
+            for (SimpleDatabaseObject simpleDatabaseObject : ads.getCustomQueryResults(SimpleDatabaseObject.class, query, params)) {
                 cache.put(simpleDatabaseObject.getDbId(), simpleDatabaseObject.getSchemaClass());
             }
 

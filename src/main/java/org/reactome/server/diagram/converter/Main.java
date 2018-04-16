@@ -149,7 +149,7 @@ public class Main {
         System.out.print("\n· Retrieving target pathways...");
         Collection<Pathway> pathways = null;
         try {
-            pathways = advancedDatabaseObjectService.customQueryForDatabaseObjects(Pathway.class, query, parametersMap);
+            pathways = advancedDatabaseObjectService.getCustomQueryResults(Pathway.class, query, parametersMap);
         } catch (CustomQueryException e) {
             e.printStackTrace();
         }
