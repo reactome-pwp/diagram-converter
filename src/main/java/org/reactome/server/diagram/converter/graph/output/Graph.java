@@ -17,16 +17,18 @@ public class Graph {
     private Long dbId;
     private String stId;
     private transient String displayName;
+    private String speciesName;
 
     private Map<Long, EntityNode> nodes = new HashMap<>();
     private Map<Long, EventNode> edges = new HashMap<>();
 
     private Collection<SubpathwayNode> subpathways;
 
-    public Graph(Long dbId, String stId, String displayName, Collection<EntityNode> nodes, Collection<EventNode> edges, Collection<SubpathwayNode> subpathways) {
+    public Graph(Long dbId, String stId, String displayName, String speciesName, Collection<EntityNode> nodes, Collection<EventNode> edges, Collection<SubpathwayNode> subpathways) {
         this.dbId = dbId;
         this.stId = stId;
         this.displayName = displayName;
+        this.speciesName = speciesName;
         if(nodes!=null) {
             for (EntityNode node : nodes) {
                 this.nodes.put(node.dbId, node);
@@ -51,6 +53,10 @@ public class Graph {
     @JsonIgnore
     public String getDisplayName() {
         return displayName;
+    }
+
+    public String getSpeciesName() {
+        return speciesName;
     }
 
     @JsonIgnore

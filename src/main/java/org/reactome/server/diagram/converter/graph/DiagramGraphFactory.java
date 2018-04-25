@@ -31,6 +31,7 @@ public class DiagramGraphFactory {
         return new Graph(diagram.getDbId(),
                 diagram.getStableId(),
                 diagram.getDisplayName(),
+                diagram.getSpeciesName(),
                 getGraphNodes(diagram),
                 getGraphEdges(diagram),
                 getSubpathways(diagram));
