@@ -1,5 +1,6 @@
 package org.reactome.server.diagram.converter.layout.output;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.reactome.server.diagram.converter.graph.output.SubpathwayNode;
 import org.reactome.server.diagram.converter.layout.shadows.ShadowsUtil;
 import org.reactome.server.diagram.converter.layout.util.Beautifier;
@@ -26,7 +27,7 @@ public class Diagram {
     private Long dbId;
     private String stableId;
     private String displayName;
-    private String speciesName;
+    private transient String speciesName;
     private Boolean forNormalDraw = Boolean.TRUE;
     private Long lastId = 0L;
 
@@ -177,6 +178,7 @@ public class Diagram {
         this.displayName = displayName;
     }
 
+    @JsonIgnore
     public String getSpeciesName() {
         return speciesName;
     }
