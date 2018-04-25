@@ -1,6 +1,7 @@
 package org.reactome.server.diagram.converter.layout;
 
 import org.gk.model.GKInstance;
+import org.gk.model.ReactomeJavaConstants;
 import org.reactome.server.diagram.converter.layout.input.model.*;
 import org.reactome.server.diagram.converter.layout.input.model.Process;
 import org.reactome.server.diagram.converter.layout.output.*;
@@ -32,6 +33,7 @@ public abstract class LayoutFactory {
             outputDiagram.setDbId(pathway.getDBID());
             outputDiagram.setStableId(stId);
             outputDiagram.setDisplayName(pathway.getDisplayName());
+            outputDiagram.setSpeciesName(getSpeciesName(pathway));
 
             outputDiagram.setIsDisease(inputProcess.isIsDisease());
             outputDiagram.setForNormalDraw(inputProcess.isForNormalDraw());
@@ -290,5 +292,21 @@ public abstract class LayoutFactory {
             }//end if
         }
         return outputList;
+    }
+
+    private static String getSpeciesName(GKInstance pathway){
+        try {
+            if(pathway.getSchemClass().isValidAttribute(ReactomeJavaConstants.species)) {
+                List speciess = pathway.getAttributeValuesList(ReactomeJavaConstants.species);
+                if(speciess != null && !speciess.isEmpty()){
+                    GKInstance species = (GKInstance) speciess.get(0);
+                    return species.getDisplayName();
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            /*Nothing here*/
+        }
+        return null;
     }
 }

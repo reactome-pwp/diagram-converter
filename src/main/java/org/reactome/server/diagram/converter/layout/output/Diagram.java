@@ -26,6 +26,7 @@ public class Diagram {
     private Long dbId;
     private String stableId;
     private String displayName;
+    private String speciesName;
     private Boolean forNormalDraw = Boolean.TRUE;
     private Long lastId = 0L;
 
@@ -174,6 +175,14 @@ public class Diagram {
 
     public void setDisplayName(String displayName) {
         this.displayName = displayName;
+    }
+
+    public String getSpeciesName() {
+        return speciesName;
+    }
+
+    public void setSpeciesName(String speciesName) {
+        this.speciesName = speciesName;
     }
 
     public Boolean getForNormalDraw() {
