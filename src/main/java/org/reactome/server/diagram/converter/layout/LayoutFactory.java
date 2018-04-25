@@ -303,10 +303,7 @@ public abstract class LayoutFactory {
                     return species.getDisplayName();
                 }
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-            /*Nothing here*/
-        }
+        } catch (Exception e) { /*Nothing here*/ }
         return null;
     }
 }
