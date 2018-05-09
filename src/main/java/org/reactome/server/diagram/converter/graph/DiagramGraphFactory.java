@@ -45,6 +45,7 @@ public class DiagramGraphFactory {
     }
 
     private Set<EntityNode> getGraphNodes(Diagram diagram) {
+        entityNodeMap.clear();
         Set<EntityNode> rtn = new HashSet<>();
 
         Collection<Long> processNodes = getProcessNodes(diagram.getDbId());
@@ -98,7 +99,10 @@ public class DiagramGraphFactory {
         try {
             Collection<NodesQueryResult> nodesQueryResults = advancedDatabaseObjectService.getCustomQueryResults(NodesQueryResult.class, query, parametersMap);
             for (NodesQueryResult result : nodesQueryResults) {
-                rtn.add(new EntityNode(result, diagram.getDiagramIds(result.getDbId())));
+                EntityNode en = new EntityNode(result, diagram.getDiagramIds(result.getDbId()));
+                rtn.add(en);
+                // The following map is used to annotate the trivial molecules.
+                entityNodeMap.put(en.dbId, en);
             }
         } catch (CustomQueryException e) {
             e.printStackTrace();
