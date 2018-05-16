@@ -34,7 +34,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <reactome.graph.core>1.1.10-SNAPSHOT</reactome.graph.core>
-        <reactome.base>1.2.12</reactome.base>
+        <reactome.base>1.2.13</reactome.base>
         <jasp.version>2.1</jasp.version>
 
         <maven.compiler.version>3.5.1</maven.compiler.version>
