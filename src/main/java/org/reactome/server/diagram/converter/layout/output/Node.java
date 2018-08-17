@@ -32,6 +32,9 @@ public class Node extends NodeCommon {
     // This is used only in case of the Genes, to hold the arrow shape
     public Shape endShape;
 
+    // This is used only in case of ChemicalDrug to add the Rx in a box placed at the bottom right corner
+    public Shape shapeAttachment;
+
     public Node(Object obj) {
         super(obj);
         for (Method method : obj.getClass().getMethods()) {
@@ -55,6 +58,7 @@ public class Node extends NodeCommon {
         //Set the inner box
         this.setInnerBox();
 
+        //this.setChemicalDrugShapeAttachment();
         // Get rid of position as it simply points to the center of the node
         //position = null; //TODO Enable it
     }
@@ -188,6 +192,14 @@ public class Node extends NodeCommon {
     public void setSummaryItems() {
         if (this.renderableClass.equals("Protein") || this.renderableClass.equals("Chemical")) {
             this.interactorsSummary = new SummaryItem(SummaryItem.Type.TR, this);
+        }
+    }
+
+    private void setChemicalDrugShapeAttachment() {
+        if (this.renderableClass.equals("ChemicalDrug")) {
+            int offset = ShapeBuilder.EDGE_TYPE_WIDGET_WIDTH / 2;
+            Coordinate c = new Coordinate(prop.x + prop.width - offset, prop.y + prop.height - offset);
+            this.shapeAttachment = ShapeBuilder.createNodeAttachmentBox(c, "Rx");
         }
     }
 }
