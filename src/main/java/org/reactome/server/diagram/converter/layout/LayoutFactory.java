@@ -112,7 +112,7 @@ public abstract class LayoutFactory {
 
         Map<Long, String> participantsSchemaClass = TestReportsHelper.getParticipantsSchemaClass(outputDiagram.getDbId());
 
-        List<Object> inputNodesList = inputNodes.getOrgGkRenderProcessNodeOrOrgGkRenderRenderableChemicalOrOrgGkRenderRenderableCompartment();
+        List<Object> inputNodesList = inputNodes.getOrgGkRenderProcessNodeOrOrgGkRenderRenderableChemicalOrOrgGkRenderRenderableChemicalDrug();
         for (Object inputNode : inputNodesList) {
             if (inputNode != null) {
                 Class clazz = inputNode.getClass();
