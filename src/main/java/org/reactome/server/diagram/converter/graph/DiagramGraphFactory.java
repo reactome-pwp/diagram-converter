@@ -49,12 +49,19 @@ public class DiagramGraphFactory {
         Set<EntityNode> rtn = new HashSet<>();
 
         Collection<Long> processNodes = getProcessNodes(diagram.getDbId());
+        Collection<Long> entitySetDrug = getEntitySetDrug(diagram.getDbId());
         List<Long> greenboxes = new ArrayList<>();
         for (Node node : diagram.getNodes()) {
             if(node.renderableClass.equals("ProcessNode")){
                 greenboxes.add(node.reactomeId);
                 //Changing the renderableClass here won't alter the RenderableClassMismatch test result since it has already been executed at this point
                 if(!processNodes.contains(node.reactomeId)) node.renderableClass = "EncapsulatedNode";
+            }
+
+            if(node.renderableClass.equals("EntitySet") && entitySetDrug.contains(node.reactomeId)){
+                //Uncomment next line when there is a need to add it to the RenderableClassMismatch test result since it has already been executed at this point
+                //T105_RenderableClassMismatch.add(diagram.getStableId(), diagram.getDisplayName(), node.reactomeId, node.schemaClass, node.displayName, node.renderableClass,"EntitySetDrug");
+                node.renderableClass = "EntitySetDrug";
             }
         }
 
@@ -175,10 +182,27 @@ public class DiagramGraphFactory {
 
     private Collection<Long> getProcessNodes(Long dbId) {
         String query = "" +
-//                "MATCH path=(p:Pathway{dbId:{dbId}})-[:hasEvent*]->(sp:Pathway) " +
                 "MATCH path=(p:Pathway{dbId:{dbId}})-[:hasEvent*]->(sp:Pathway{hasDiagram:True}) " +
                 "WHERE SINGLE(x IN TAIL(NODES(path)) WHERE NOT x.hasDiagram IS NULL AND x.hasDiagram) " +
                 "RETURN DISTINCT sp.dbId";
+        Map<String, Object> params = new HashMap<>();
+        params.put("dbId", dbId);
+        try {
+            return advancedDatabaseObjectService.getCustomQueryResults(Long.class, query, params);
+        } catch (CustomQueryException e) {
+            return Collections.emptyList();
+        }
+    }
+
+    private Collection<Long> getEntitySetDrug(Long dbId) {
+        String query = "" +
+                "MATCH path=(p:Pathway{dbId:{dbId}})-[:hasEvent*]->(rle:ReactionLikeEvent) " +
+                "WHERE SINGLE(x IN NODES(path) WHERE NOT x.hasDiagram IS NULL AND x.hasDiagram) " +
+                "WITH DISTINCT rle " +
+                "MATCH (rle)-[:input|output|catalystActivity|physicalEntity|regulatedBy|regulator*]->(es:EntitySet)-[:hasMember|hasCandidate]->(p:PhysicalEntity) " +
+                "WITH es, COLLECT(p) AS ps " +
+                "WHERE ALL(p IN ps WHERE (p:Drug)) " +
+                "RETURN DISTINCT es.dbId";
         Map<String, Object> params = new HashMap<>();
         params.put("dbId", dbId);
         try {
