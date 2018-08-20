@@ -31,7 +31,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  *       &lt;attribute name="position" use="required" type="{http://www.w3.org/2001/XMLSchema}anySimpleType" />
  *       &lt;attribute name="reactomeId" use="required" type="{http://www.w3.org/2001/XMLSchema}integer" />
  *       &lt;attribute name="schemaClass" use="required" type="{http://www.w3.org/2001/XMLSchema}NCName" />
- *       &lt;attribute name="textPosition" use="required" type="{http://www.w3.org/2001/XMLSchema}anySimpleType" />
+ *       &lt;attribute name="textPosition" type="{http://www.w3.org/2001/XMLSchema}anySimpleType" />
  *       &lt;attribute name="bgColor" type="{http://www.w3.org/2001/XMLSchema}anySimpleType" />
  *       &lt;attribute name="fgColor" type="{http://www.w3.org/2001/XMLSchema}anySimpleType" />
  *       &lt;attribute name="lineWidth" type="{http://www.w3.org/2001/XMLSchema}decimal" />
@@ -47,8 +47,8 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 @XmlType(name = "", propOrder = {
     "properties"
 })
-@XmlRootElement(name = "org.gk.render.ProcessNode")
-public class OrgGkRenderProcessNode {
+@XmlRootElement(name = "org.gk.render.RenderableChemicalDrug")
+public class OrgGkRenderRenderableChemicalDrug {
 
     @XmlElement(name = "Properties", required = true)
     protected Properties properties;
@@ -66,7 +66,7 @@ public class OrgGkRenderProcessNode {
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     @XmlSchemaType(name = "NCName")
     protected String schemaClass;
-    @XmlAttribute(name = "textPosition", required = true)
+    @XmlAttribute(name = "textPosition")
     @XmlSchemaType(name = "anySimpleType")
     protected String textPosition;
     @XmlAttribute(name = "bgColor")

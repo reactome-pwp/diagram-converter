@@ -25,13 +25,16 @@
             <xs:choice maxOccurs="unbounded">
                 <xs:element ref="org.gk.render.ProcessNode" minOccurs="0"/>
                 <xs:element ref="org.gk.render.RenderableChemical" minOccurs="0"/>
+                <xs:element ref="org.gk.render.RenderableChemicalDrug" minOccurs="0"/>
                 <xs:element ref="org.gk.render.RenderableCompartment" minOccurs="0"/>
                 <xs:element ref="org.gk.render.RenderableComplex" minOccurs="0"/>
                 <xs:element ref="org.gk.render.RenderableEntity" minOccurs="0"/>
                 <xs:element ref="org.gk.render.RenderableGene" minOccurs="0"/>
                 <xs:element ref="org.gk.render.RenderableEntitySet" minOccurs="0"/>
                 <xs:element ref="org.gk.render.RenderableProtein" minOccurs="0"/>
+                <xs:element ref="org.gk.render.RenderableProteinDrug" minOccurs="0"/>
                 <xs:element ref="org.gk.render.RenderableRNA" minOccurs="0"/>
+                <xs:element ref="org.gk.render.RenderableRNADrug" minOccurs="0"/>
                 <xs:element ref="org.gk.render.Note" minOccurs="0"/>
             </xs:choice>
         </xs:complexType>
@@ -69,6 +72,23 @@
         </xs:complexType>
     </xs:element>
     <xs:element name="org.gk.render.RenderableChemical">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="Properties"/>
+            </xs:sequence>
+            <xs:attribute name="bounds" use="required"/>
+            <xs:attribute name="id" use="required" type="xs:integer"/>
+            <xs:attribute name="position" use="required"/>
+            <xs:attribute name="reactomeId" use="required" type="xs:integer"/>
+            <xs:attribute name="schemaClass" use="required" type="xs:NCName"/>
+            <xs:attribute name="textPosition" use="optional"/>
+            <xs:attribute name="bgColor" use="optional"/>
+            <xs:attribute name="fgColor" use="optional"/>
+            <xs:attribute name="lineWidth" use="optional" type="xs:decimal"/>
+            <xs:attribute name="lineColor" use="optional"/>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="org.gk.render.RenderableChemicalDrug">
         <xs:complexType>
             <xs:sequence>
                 <xs:element ref="Properties"/>
@@ -210,7 +230,43 @@
             <xs:attribute name="needDashedBorder" use="optional" type="xs:boolean"/>
         </xs:complexType>
     </xs:element>
+    <xs:element name="org.gk.render.RenderableRNADrug">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="Properties"/>
+            </xs:sequence>
+            <xs:attribute name="bgColor" use="optional"/>
+            <xs:attribute name="fgColor" use="optional"/>
+            <xs:attribute name="lineColor" use="optional"/>
+            <xs:attribute name="bounds" use="required"/>
+            <xs:attribute name="id" use="required" type="xs:integer"/>
+            <xs:attribute name="position" use="required"/>
+            <xs:attribute name="reactomeId" use="required" type="xs:integer"/>
+            <xs:attribute name="schemaClass" use="required" type="xs:NCName"/>
+            <xs:attribute name="textPosition" use="required"/>
+            <xs:attribute name="needDashedBorder" use="optional" type="xs:boolean"/>
+        </xs:complexType>
+    </xs:element>
     <xs:element name="org.gk.render.RenderableProtein">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="Properties"/>
+                <xs:element minOccurs="0" ref="NodeAttachments"/>
+            </xs:sequence>
+            <xs:attribute name="bounds" use="required"/>
+            <xs:attribute name="bgColor" use="optional"/>
+            <xs:attribute name="fgColor" use="optional"/>
+            <xs:attribute name="lineColor" use="optional"/>
+            <xs:attribute name="lineWidth" use="optional" type="xs:decimal"/>
+            <xs:attribute name="id" use="required" type="xs:integer"/>
+            <xs:attribute name="position" use="required"/>
+            <xs:attribute name="reactomeId" use="required" type="xs:integer"/>
+            <xs:attribute name="schemaClass" use="required" type="xs:NCName"/>
+            <xs:attribute name="textPosition" use="optional"/>
+            <xs:attribute name="needDashedBorder" use="optional" type="xs:boolean"/>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="org.gk.render.RenderableProteinDrug">
         <xs:complexType>
             <xs:sequence>
                 <xs:element ref="Properties"/>
