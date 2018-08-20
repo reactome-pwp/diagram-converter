@@ -5,14 +5,13 @@ import org.gk.model.ReactomeJavaConstants;
 import org.reactome.server.diagram.converter.layout.input.model.*;
 import org.reactome.server.diagram.converter.layout.input.model.Process;
 import org.reactome.server.diagram.converter.layout.output.*;
-import org.reactome.server.diagram.converter.qa.diagram.T102_MissingSchemaClass;
-import org.reactome.server.diagram.converter.qa.diagram.T104_DuplicatedReactionParticipants;
-import org.reactome.server.diagram.converter.qa.diagram.T105_RenderableClassMismatch;
-import org.reactome.server.diagram.converter.qa.diagram.T106_SchemaClassMismatch;
+import org.reactome.server.diagram.converter.qa.diagram.*;
 import org.reactome.server.diagram.converter.utils.TestReportsHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.InvocationTargetException;
+import java.math.BigInteger;
 import java.util.*;
 
 /**
@@ -116,27 +115,26 @@ public abstract class LayoutFactory {
         for (Object inputNode : inputNodesList) {
             if (inputNode != null) {
                 Class clazz = inputNode.getClass();
-                if (clazz.equals(OrgGkRenderRenderableComplex.class) ||
-                        clazz.equals(OrgGkRenderRenderableEntitySet.class) ||
-                        clazz.equals(OrgGkRenderRenderableChemical.class) ||
-                        clazz.equals(OrgGkRenderRenderableProtein.class) ||
-                        clazz.equals(OrgGkRenderRenderableRNA.class) ||
-                        clazz.equals(OrgGkRenderProcessNode.class) ||
-                        clazz.equals(OrgGkRenderRenderableEntity.class) ||
-                        clazz.equals(OrgGkRenderRenderableGene.class)) {
-                    Node node = new Node(inputNode);
-                    if (!fixSchemaClass(node, participantsSchemaClass)) continue;
-                    fixBrokenRenderableClass(node);
-                    rtn.add(node);
-                } else if (clazz.equals(OrgGkRenderNote.class)) {
+                if (clazz.equals(OrgGkRenderNote.class)) {
                     Note note = new Note(inputNode);
-                    if (!note.displayName.equals("Note")) {
-                        rtn.add(note);
-                    }
+                    if (!note.displayName.equals("Note")) rtn.add(note);
                 } else if (clazz.equals(OrgGkRenderRenderableCompartment.class)) {
                     rtn.add(new Compartment(inputNode));
                 } else {
-                    logger.warn(String.format("[%s ] contains a not recognised NODE type - '%s' [%s]", outputDiagram.getStableId(), clazz.getName(), clazz.getSimpleName()));
+                    try {
+                        Node node = new Node(inputNode);
+                        if (!fixSchemaClass(node, participantsSchemaClass)) continue;
+                        fixBrokenRenderableClass(node);
+                        rtn.add(node);
+                    } catch (RuntimeException e) {
+                        try {
+                            Long id = ((BigInteger) inputNode.getClass().getMethod("getReactomeId").invoke(inputNode)).longValue();
+                            T111_UnrecognisedRenderableClass.add(outputDiagram.getStableId(), outputDiagram.getDisplayName(), id, clazz.getSimpleName());
+                        } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e1) {
+                            logger.error(String.format("[%s ] contains a not recognised NODE type - '%s' [%s]", outputDiagram.getStableId(), clazz.getName(), clazz.getSimpleName()));
+                        }
+
+                    }
                 }
             }
         }
