@@ -125,10 +125,10 @@
     </xs:element>
     <xs:element name="org.gk.render.RenderableCompartment">
         <xs:complexType>
-            <xs:choice minOccurs="1" maxOccurs="unbounded">
+            <xs:sequence>
                 <xs:element ref="Properties"/>
                 <xs:element ref="Components" minOccurs="0"/>
-            </xs:choice>
+            </xs:sequence>
             <xs:attribute name="bgColor" use="optional"/>
             <xs:attribute name="fgColor" use="optional"/>
             <xs:attribute name="bounds" use="required"/>

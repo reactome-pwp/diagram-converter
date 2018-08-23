@@ -2,13 +2,10 @@
 package org.reactome.server.diagram.converter.layout.input.model;
 
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElements;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlType;
@@ -25,10 +22,10 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  * &lt;complexType>
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       &lt;choice maxOccurs="unbounded">
+ *       &lt;sequence>
  *         &lt;element ref="{}Properties"/>
  *         &lt;element ref="{}Components" minOccurs="0"/>
- *       &lt;/choice>
+ *       &lt;/sequence>
  *       &lt;attribute name="bgColor" type="{http://www.w3.org/2001/XMLSchema}anySimpleType" />
  *       &lt;attribute name="fgColor" type="{http://www.w3.org/2001/XMLSchema}anySimpleType" />
  *       &lt;attribute name="bounds" use="required" type="{http://www.w3.org/2001/XMLSchema}anySimpleType" />
@@ -48,16 +45,16 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
-    "propertiesOrComponents"
+    "properties",
+    "components"
 })
 @XmlRootElement(name = "org.gk.render.RenderableCompartment")
 public class OrgGkRenderRenderableCompartment {
 
-    @XmlElements({
-        @XmlElement(name = "Properties", type = Properties.class),
-        @XmlElement(name = "Components", type = Components.class)
-    })
-    protected List<Object> propertiesOrComponents;
+    @XmlElement(name = "Properties", required = true)
+    protected Properties properties;
+    @XmlElement(name = "Components")
+    protected Components components;
     @XmlAttribute(name = "bgColor")
     @XmlSchemaType(name = "anySimpleType")
     protected String bgColor;
@@ -89,33 +86,51 @@ public class OrgGkRenderRenderableCompartment {
     protected String textPosition;
 
     /**
-     * Gets the value of the propertiesOrComponents property.
+     * Gets the value of the properties property.
      * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the propertiesOrComponents property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getPropertiesOrComponents().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link Properties }
-     * {@link Components }
-     * 
-     * 
+     * @return
+     *     possible object is
+     *     {@link Properties }
+     *     
      */
-    public List<Object> getPropertiesOrComponents() {
-        if (propertiesOrComponents == null) {
-            propertiesOrComponents = new ArrayList<Object>();
-        }
-        return this.propertiesOrComponents;
+    public Properties getProperties() {
+        return properties;
+    }
+
+    /**
+     * Sets the value of the properties property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Properties }
+     *     
+     */
+    public void setProperties(Properties value) {
+        this.properties = value;
+    }
+
+    /**
+     * Gets the value of the components property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Components }
+     *     
+     */
+    public Components getComponents() {
+        return components;
+    }
+
+    /**
+     * Sets the value of the components property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Components }
+     *     
+     */
+    public void setComponents(Components value) {
+        this.components = value;
     }
 
     /**
