@@ -6,6 +6,7 @@ import org.reactome.server.diagram.converter.layout.shadows.ShadowsUtil;
 import org.reactome.server.diagram.converter.layout.util.Beautifier;
 import org.reactome.server.diagram.converter.layout.util.MapSet;
 import org.reactome.server.diagram.converter.layout.util.ShapeBuilder;
+import org.reactome.server.diagram.converter.qa.diagram.T112_UnidentifiedCompartments;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -306,6 +307,7 @@ public class Diagram {
         // If displayName is missing then set it to "Unidentified Compartment"
         if (compartment.displayName == null || compartment.displayName.isEmpty()) {
             compartment.displayName = "Unidentified Compartment";
+            T112_UnidentifiedCompartments.add(stableId, displayName, compartment.reactomeId);
         }
         this.compartments.add(compartment.reactomeId, compartment);
         this.objectMap.put(compartment.id, compartment);
