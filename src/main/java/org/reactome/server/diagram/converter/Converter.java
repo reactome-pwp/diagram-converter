@@ -71,7 +71,7 @@ class Converter {
             try {
                 if (!convert(pathway, output)) T001_FailedPathways.add(pathway);
             } catch (Exception e) {
-                logger.error("Failed to convert parthway " + pathway.getStId(), e);
+                logger.error("Failed to convert pathway " + pathway.getStId(), e);
                 T001_FailedPathways.add(pathway, e.getMessage());
             }
         }
