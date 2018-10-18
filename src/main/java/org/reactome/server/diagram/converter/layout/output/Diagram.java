@@ -391,14 +391,47 @@ public class Diagram {
             yy.add(compartment.minY);
             yy.add(compartment.maxY);
         }
+        for (Shadow shadow : shadows) {
+            xx.add(shadow.minX);
+            xx.add(shadow.maxX);
+            yy.add(shadow.minY);
+            yy.add(shadow.maxY);
+        }
+        for (Note note : notes.values()) {
+            xx.add(note.minX);
+            xx.add(note.maxX);
+            yy.add(note.minY);
+            yy.add(note.maxY);
+        }
+        for (Link link : links.values()) {
+            xx.add(link.minX);
+            xx.add(link.maxX);
+            yy.add(link.minY);
+            yy.add(link.maxY);
+        }
         this.minX = Collections.min(xx);
         this.maxX = Collections.max(xx);
         this.minY = Collections.min(yy);
         this.maxY = Collections.max(yy);
 
         // Detect negative coordinates and print a warning message
-        if (this.minX < 0 || this.minY < 0) {
-            logger.warn(String.format("[%s] has negative boundaries >> MinX: %d - MinY: %d", getStableId(), this.minX, this.minY));
+        if (this.minX != 0 || this.minY != 0) {
+            Coordinate panning = new Coordinate(-this.minX, -this.minY);
+            //objectMap.values().forEach(o -> o.translate(panning));
+
+            nodes.values().forEach(n -> n.translate(panning));
+            edges.values().forEach(e -> e.translate(panning));
+            compartments.values().forEach(c -> c.translate(panning));
+            shadows.forEach(s -> s.translate(panning));
+            notes.values().forEach(n -> n.translate(panning));
+            links.values().forEach(l -> l.translate(panning));
+
+            logger.warn(String.format("[%s] boundaries translated (%d, %d)", getStableId(), -this.minX, -this.minY));
+
+            this.maxX -= this.minX;
+            this.maxY -= this.minY;
+            this.minX = 0;
+            this.minY = 0;
         }
     }
 

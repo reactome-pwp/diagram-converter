@@ -39,4 +39,8 @@ public class SummaryItem {
         // Here we only create an empty place holder
         this.shape = ShapeBuilder.createNodeSummaryItem(boxCentre, null);
     }
+
+    public void translate(Coordinate panning){
+        if(shape!=null) shape.translate(panning);
+    }
 }

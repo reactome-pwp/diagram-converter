@@ -64,6 +64,14 @@ public abstract class DiagramObject {
         this.renderableClass = shortenRenderableClass(obj.getClass().getSimpleName());
     }
 
+    public void translate(Coordinate panning){
+        this.position.translate(panning);
+        this.minX += panning.x;
+        this.maxX += panning.x;
+        this.minY += panning.y;
+        this.maxY += panning.y;
+    }
+
     public static Boolean getBoolean(Method method, Object obj){
         try{
             return (Boolean) method.invoke(obj);

@@ -26,4 +26,9 @@ public class NodeProperties {
 
         return x >= minX && x <= maxX && y >= minY && y <= maxY;
     }
+
+    public void translate(Coordinate panning){
+        this.x += panning.x;
+        this.y += panning.y;
+    }
 }

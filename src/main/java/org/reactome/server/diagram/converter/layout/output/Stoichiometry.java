@@ -6,4 +6,8 @@ package org.reactome.server.diagram.converter.layout.output;
 public class Stoichiometry {
     public Integer value;
     public Shape shape;
+
+    public void translate(Coordinate panning){
+        if(shape!=null) shape.translate(panning);
+    }
 }

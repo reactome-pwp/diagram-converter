@@ -81,6 +81,15 @@ public abstract class NodeCommon extends DiagramObject {
         return prop.overlaps(o2.prop, offset);
     }
 
+    @Override
+    public void translate(Coordinate panning){
+        super.translate(panning);
+        if(prop!=null) prop.translate(panning);
+        if(innerProp!=null) innerProp.translate(panning);
+        if(textPosition!=null) textPosition.translate(panning);
+        if(insets!=null) insets.translate(panning);
+    }
+
     protected static List<Long> getComponents(Method method, Object object){
         List<Long> rtn = new LinkedList<>();
         try{

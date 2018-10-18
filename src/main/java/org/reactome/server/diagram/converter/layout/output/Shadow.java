@@ -36,6 +36,14 @@ public class Shadow extends DiagramObject {
         setProp(); //By default the node properties are set to show text centered in the box
     }
 
+    @Override
+    public void translate(Coordinate panning){
+        super.translate(panning);
+        if(prop!=null) prop.translate(panning);
+        if(points!=null) points.forEach(p->p.translate(panning));
+        setBoundaries();
+    }
+
     private void setPoints(List<DiagramObject> participants) {
         List<Integer> xx = new ArrayList<>();
         List<Integer> yy = new ArrayList<>();

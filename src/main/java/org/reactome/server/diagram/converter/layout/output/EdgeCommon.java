@@ -70,20 +70,36 @@ public class EdgeCommon extends DiagramObject {
         this.points = null;
     }
 
+    @Override
+    public void translate(Coordinate panning){
+        super.translate(panning);
+        if (points != null) points.forEach(p -> p.translate(panning));
+        if (segments != null) segments.forEach(s -> s.translate(panning));
+        if (endShape != null) endShape.translate(panning);
+        if (reactionShape != null) reactionShape.translate(panning);
+        if (inputs != null) inputs.forEach(i -> i.translate(panning));
+        if (outputs != null) outputs.forEach(o -> o.translate(panning));
+        if (catalysts != null) catalysts.forEach(c -> c.translate(panning));
+        if (inhibitors != null) inhibitors.forEach(i -> i.translate(panning));
+        if (activators != null) activators.forEach(a -> a.translate(panning));
+    }
+
     private void setBoundaries(){
         List<Integer> xx = new LinkedList<>();
         List<Integer> yy = new LinkedList<>();
-        for (Coordinate point : points) {
-            xx.add(point.x);
-            yy.add(point.y);
+        if (points != null) {
+            for (Coordinate point : points) {
+                xx.add(point.x);
+                yy.add(point.y);
+            }
         }
-        if(endShape!=null) {
+        if (endShape != null) {
             xx.add(endShape.minX);
             xx.add(endShape.maxX);
             yy.add(endShape.minY);
             yy.add(endShape.maxY);
         }
-        if(reactionShape!=null) {
+        if (reactionShape != null) {
             xx.add(reactionShape.minX);
             xx.add(reactionShape.maxX);
             yy.add(reactionShape.minY);
@@ -97,23 +113,23 @@ public class EdgeCommon extends DiagramObject {
     }
 
     private void setReactionShape() {
-        if(reactionType==null){
+        if (reactionType == null) {
             // If no type specified then
             // DRAW BOX
             this.reactionShape = ShapeBuilder.createReactionBox(position, null);
-        }else if(reactionType.equals("Transition")){
+        } else if (reactionType.equals("Transition")) {
             //DRAW BOX
             this.reactionShape = ShapeBuilder.createReactionBox(position, null);
-        }else if(reactionType.equals("Association")){
+        } else if (reactionType.equals("Association")) {
             //DRAW CIRCLE FILLED
             this.reactionShape = ShapeBuilder.createReactionCircle(position);
-        }else if(reactionType.equals("Dissociation")){
+        } else if (reactionType.equals("Dissociation")) {
             //DRAW DOUBLE CIRCLE
             this.reactionShape = ShapeBuilder.createReactionDoubleCircle(position);
-        }else if(reactionType.equals("Omitted Process")){
+        } else if (reactionType.equals("Omitted Process")) {
             //DRAW BOX WITH \\ as a symbol
             this.reactionShape = ShapeBuilder.createReactionBox(position, "\\\\");
-        }else if(reactionType.equals("Uncertain Process")) {
+        } else if (reactionType.equals("Uncertain Process")) {
             //DRAW BOX WITH ? as a symbols
             this.reactionShape = ShapeBuilder.createReactionBox(position, "?");
         }
@@ -123,10 +139,10 @@ public class EdgeCommon extends DiagramObject {
         try {
             List<ReactionPart> rtn = new LinkedList<>();
             Object type = method.invoke(object);
-            if(type==null) return null;
+            if (type == null) return null;
             for (Method parts : type.getClass().getMethods()) {
-                if(parts!=null){
-                    if(parts.getName().equals(partMethod)) {
+                if (parts != null) {
+                    if (parts.getName().equals(partMethod)) {
                         List partList = (List) parts.invoke(type);
                         if (partList != null) {
                             for (Object part : partList) {

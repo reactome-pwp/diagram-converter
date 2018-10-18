@@ -17,4 +17,9 @@ public class Bound {
         this.width = points.get(2);
         this.height = points.get(3);
     }
+
+    public void translate(Coordinate panning){
+        this.x += panning.x;
+        this.y += panning.y;
+    }
 }

@@ -45,4 +45,8 @@ public class NodeAttachment {
         );
         this.shape = ShapeBuilder.createNodeAttachmentBox(boxCentre, label);
     }
+
+    public void translate(Coordinate panning){
+        if(shape!=null) shape.translate(panning);
+    }
 }

@@ -11,8 +11,8 @@ public class Segment {
     public Coordinate to;
 
     public Segment(Coordinate from, Coordinate to) {
-        this.from = from;
-        this.to = to;
+        this.from = new Coordinate(from);
+        this.to = new Coordinate(to);
     }
 
     public double length(){
@@ -23,5 +23,10 @@ public class Segment {
     @JsonIgnore
     public boolean isPoint(){
         return this.from.equals(this.to);
+    }
+
+    public void translate(Coordinate panning){
+        from.translate(panning);
+        to.translate(panning);
     }
 }

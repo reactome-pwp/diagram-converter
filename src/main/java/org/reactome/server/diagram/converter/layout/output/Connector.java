@@ -20,8 +20,8 @@ import java.util.List;
  * Connector also includes the shape (arrow, circle, etc.). The points of the shapes are
  * calculated server-side to avoid the cost of processing at the client
  *
- * @author Antonio Fabregat <fabregat@ebi.ac.uk>
- * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
+ * @author Antonio Fabregat (fabregat@ebi.ac.uk)
+ * @author Kostas Sidiropoulos (ksidiro@ebi.ac.uk)
  */
 public class Connector {
 
@@ -38,7 +38,7 @@ public class Connector {
     public Boolean isDisease;
 
     public Connector(Edge edge, ReactionPart part, Type type) {
-        this.stoichiometry.value = part.stoichiometry!=null ? part.stoichiometry : 1;
+        this.stoichiometry.value = part.stoichiometry != null ? part.stoichiometry : 1;
         this.edge = edge;
         this.edgeId = edge.id;
         this.type = type;
@@ -46,6 +46,12 @@ public class Connector {
         setSegments(part.points);
         setStoichiometryPosition();
         setPointer(segments, type);
+    }
+
+    public void translate(Coordinate panning){
+        if (segments != null) segments.forEach(s -> s.translate(panning));
+        if (stoichiometry != null) stoichiometry.translate(panning);
+        if (endShape != null) endShape.translate(panning);
     }
 
     private void setSegments(List<Coordinate> coordinates){

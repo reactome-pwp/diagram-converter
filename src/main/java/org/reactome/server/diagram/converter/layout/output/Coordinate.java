@@ -1,6 +1,7 @@
 package org.reactome.server.diagram.converter.layout.output;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
@@ -8,10 +9,15 @@ import java.util.List;
 @SuppressWarnings("WeakerAccess")
 public class Coordinate {
 
-    public Integer x;
-    public Integer y;
+    public int x;
+    public int y;
 
-    public Coordinate(Integer x, Integer y) {
+    public Coordinate(Coordinate c) {
+        this.x = c.x;
+        this.y = c.y;
+    }
+
+    public Coordinate(int x, int y) {
         this.x = x;
         this.y = y;
     }
@@ -29,23 +35,22 @@ public class Coordinate {
         return new Coordinate(x-value.x, y-value.y);
     }
 
+    public void translate(Coordinate panning){
+        this.x += panning.x;
+        this.y += panning.y;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-
-        Coordinate coordinate = (Coordinate) o;
-
-        //noinspection SimplifiableIfStatement
-        if (x != null ? !x.equals(coordinate.x) : coordinate.x != null) return false;
-        return !(y != null ? !y.equals(coordinate.y) : coordinate.y != null);
-
+        Coordinate that = (Coordinate) o;
+        return x == that.x &&
+                y == that.y;
     }
 
     @Override
     public int hashCode() {
-        int result = x != null ? x.hashCode() : 0;
-        result = 31 * result + (y != null ? y.hashCode() : 0);
-        return result;
+        return Objects.hash(x, y);
     }
 }

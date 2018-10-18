@@ -28,4 +28,8 @@ public class ReactionPart {
             }
         }
     }
+
+    public void translate(Coordinate panning){
+        if (points != null) points.forEach(p -> p.translate(panning));
+    }
 }

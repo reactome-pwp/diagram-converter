@@ -63,6 +63,16 @@ public class Node extends NodeCommon {
         //position = null; //TODO Enable it
     }
 
+    @Override
+    public void translate(Coordinate panning){
+        super.translate(panning);
+        if (nodeAttachments != null) nodeAttachments.forEach(a -> a.translate(panning));
+        if (interactorsSummary != null) interactorsSummary.translate(panning);
+        if (connectors != null) connectors.forEach(c -> c.translate(panning));
+        if (endShape != null) endShape.translate(panning);
+        if (shapeAttachment != null) shapeAttachment.translate(panning);
+    }
+
     private List<NodeAttachment> getNodeAttachments(Method method, Object object) {
         List<NodeAttachment> rtn = new LinkedList<>();
         try {

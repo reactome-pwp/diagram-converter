@@ -25,8 +25,8 @@ public class Shape {
         if(!type.equals(Type.BOX)){
             throw new RuntimeException("This constructor can only be used for box");
         }
-        this.a = a;
-        this.b = b;
+        this.a = new Coordinate(a);
+        this.b = new Coordinate(b);
         if(empty){
             this.empty = true;
         }
@@ -38,9 +38,9 @@ public class Shape {
         if(!type.equals(Type.ARROW) && !type.equals(Type.STOP)){
             throw new RuntimeException("This constructor can only be used for arrow or stop");
         }
-        this.a = a;
-        this.b = b;
-        this.c = c;
+        this.a = new Coordinate(a);
+        this.b = new Coordinate(b);
+        this.c = new Coordinate(c);
         if(empty){
             this.empty = true;
         }
@@ -52,7 +52,7 @@ public class Shape {
         if(!type.equals(Type.CIRCLE) && !type.equals(Type.DOUBLE_CIRCLE)){
             throw new RuntimeException("This constructor can only be used for circles");
         }
-        this.c = c;
+        this.c = new Coordinate(c);
         this.r = r;
         if(empty){ //Otherwise is left 'null' so it does NOT appear in the serialisation
             this.empty = true;
@@ -63,6 +63,22 @@ public class Shape {
 
     transient Integer minX; transient Integer maxX;
     transient Integer minY; transient Integer maxY;
+
+    public Coordinate getCentre(){
+        if(c!=null) return new Coordinate(c);
+        Coordinate d = b.minus(a);
+        return new Coordinate(a.x + d.x / 2, a.y + d.y / 2);
+    }
+
+    public void translate(Coordinate panning){
+        if (a != null) a.translate(panning);
+        if (b != null) b.translate(panning);
+        if (c != null) c.translate(panning);
+        this.minX += panning.x;
+        this.maxX += panning.x;
+        this.minY += panning.y;
+        this.maxY += panning.y;
+    }
 
     protected void setBoundaries() {
         List<Integer> xx = new ArrayList<>();
@@ -86,11 +102,15 @@ public class Shape {
         this.maxY = Collections.max(yy);
     }
 
-    public boolean overlaps(Shape o2){
+    public boolean overlaps(Shape o2) {
         return pointInRectangle(o2.minX, o2.minY) ||
                pointInRectangle(o2.minX, o2.maxY) ||
                pointInRectangle(o2.maxX, o2.minY) ||
                pointInRectangle(o2.maxX, o2.maxY);
+    }
+
+    public boolean touches(Segment s) {
+        return pointInRectangle(s.from.x, s.from.y) || pointInRectangle(s.to.x, s.to.y);
     }
 
     private boolean pointInRectangle(int x, int y) {
