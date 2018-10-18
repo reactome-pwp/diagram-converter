@@ -24,15 +24,18 @@ import java.nio.file.Paths;
  */
 public abstract class JsonWriter {
 
-    private static ObjectMapper mapper = null;
+    @SuppressWarnings("FieldCanBeLocal")
+    private static Boolean ENABLE_INDENT = true;
+
+    private static ObjectMapper mapper;
     static {
         mapper = new ObjectMapper();
         mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-        enableIntent(true);
+        enableIndent(ENABLE_INDENT);
     }
 
-    public static void enableIntent(boolean enableIntent) {
-        if (enableIntent) {
+    private static void enableIndent(boolean enableIndent) {
+        if (enableIndent) {
             mapper.enable(SerializationFeature.INDENT_OUTPUT);
         } else {
             mapper.disable(SerializationFeature.INDENT_OUTPUT);
@@ -40,8 +43,8 @@ public abstract class JsonWriter {
     }
 
     public static void serialiseDiagram(Diagram diagram, String outputDirectory){
-        File outJSONFile = new File(outputDirectory + File.separator + diagram.getDbId() + ".json");
-        File outLinkedFile = new File(outputDirectory + File.separator + diagram.getStableId() + ".json");
+        File outJSONFile = new File(outputDirectory + File.separator + diagram.getStableId() + ".json");
+        File outLinkedFile = new File(outputDirectory + File.separator + diagram.getDbId() + ".json");
         try {
             serialise(diagram, outJSONFile, outLinkedFile);
         } catch (IOException e) {
@@ -50,8 +53,8 @@ public abstract class JsonWriter {
     }
 
     public static void serialiseGraph(Graph graph, String outputDirectory){
-        File outGraphFile = new File(outputDirectory + File.separator + graph.getDbId() + ".graph.json");
-        File outLinkedFile = new File(outputDirectory + File.separator + graph.getStId() + ".graph.json");
+        File outGraphFile = new File(outputDirectory + File.separator + graph.getStId() + ".graph.json");
+        File outLinkedFile = new File(outputDirectory + File.separator + graph.getDbId() + ".graph.json");
         try {
             serialise(graph, outGraphFile, outLinkedFile);
         } catch (IOException e) {
