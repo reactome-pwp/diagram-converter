@@ -6,21 +6,27 @@ import org.reactome.server.diagram.converter.graph.DiagramGraphFactory;
 import org.reactome.server.diagram.converter.graph.output.Graph;
 import org.reactome.server.diagram.converter.layout.DiagramFetcher;
 import org.reactome.server.diagram.converter.layout.LayoutFactory;
+import org.reactome.server.diagram.converter.layout.exceptions.DiagramNotFoundException;
 import org.reactome.server.diagram.converter.layout.input.ProcessFactory;
 import org.reactome.server.diagram.converter.layout.input.model.Process;
 import org.reactome.server.diagram.converter.layout.output.Diagram;
 import org.reactome.server.diagram.converter.layout.util.FileUtil;
 import org.reactome.server.diagram.converter.layout.util.JsonWriter;
+import org.reactome.server.diagram.converter.layout.util.SbgnWriter;
 import org.reactome.server.diagram.converter.layout.util.TrivialChemicals;
 import org.reactome.server.diagram.converter.qa.QATests;
 import org.reactome.server.diagram.converter.qa.conversion.T001_FailedPathways;
+import org.reactome.server.diagram.converter.qa.conversion.T002_SbgnConversion;
+import org.reactome.server.diagram.converter.sbgn.SbgnConverter;
 import org.reactome.server.diagram.converter.utils.ProgressBar;
 import org.reactome.server.graph.domain.model.Pathway;
 import org.reactome.server.graph.service.GeneralService;
 import org.reactome.server.graph.utils.ReactomeGraphCore;
+import org.sbgn.bindings.Sbgn;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.text.NumberFormat;
 import java.util.Collection;
 import java.util.Locale;
@@ -43,6 +49,7 @@ class Converter {
     private static TrivialChemicals trivialChemicals;
 
     static void run(Collection<Pathway> pathways, MySQLAdaptor dba, String output, String trivialChemicalsFile) {
+        outputCheck(output);
         diagramFetcher = new DiagramFetcher(dba);
         graphFactory = new DiagramGraphFactory();
         processFactory = new ProcessFactory("/process_schema.xsd");
@@ -55,16 +62,16 @@ class Converter {
         }
 
         int i = 0; int tot = pathways.size();
-        int version = ReactomeGraphCore.getService(GeneralService.class).getDBVersion();
+        int version = ReactomeGraphCore.getService(GeneralService.class).getDBInfo().getVersion();
 
         System.out.println(String.format("\r· Diagram converter for version %d started:\n\t> Targeting %s pathways.\n", version, numberFormat.format(tot)));
         Long start = System.currentTimeMillis();
         for (Pathway pathway : pathways) {
             ProgressBar.updateProgressBar(pathway.getStId(), i++, tot);
             try {
-                GKInstance p = diagramFetcher.getInstance(pathway.getDbId() + "");
-                if (!convert(p, output)) T001_FailedPathways.add(pathway);
+                if (!convert(pathway, output)) T001_FailedPathways.add(pathway);
             } catch (Exception e) {
+                logger.error("Failed to convert parthway " + pathway.getStId(), e);
                 T001_FailedPathways.add(pathway, e.getMessage());
             }
         }
@@ -77,8 +84,8 @@ class Converter {
         System.out.println();
     }
 
-    private static boolean convert(GKInstance pathway, String outputDir) {
-        Diagram diagram = getDiagram(pathway);
+    private static boolean convert(Pathway pathway, String outputDir) throws DiagramNotFoundException {
+        Diagram diagram = getDiagram(diagramFetcher.getInstance(pathway.getDbId() + ""));
         if (diagram != null) {
             QATests.performDiagramTests(diagram);
 
@@ -94,6 +101,16 @@ class Converter {
 
             JsonWriter.serialiseGraph(graph, outputDir);
             JsonWriter.serialiseDiagram(diagram, outputDir);
+
+            try {
+                SbgnConverter sbgnConverter = new SbgnConverter(diagram);
+                Sbgn sbgn = sbgnConverter.getSbgn();
+                SbgnWriter.writeToFile(pathway, sbgn, outputDir + File.separator + "sbgn");
+            } catch (Exception e) {
+                T002_SbgnConversion.add(pathway, e.getMessage());
+                logger.error(e.getMessage(), e);
+            }
+
             return true;
         }
         return false;
@@ -112,6 +129,20 @@ class Converter {
             logger.error("[" + stId + "] conversion failed. The following error occurred while converting pathway diagram:", e);
         }
         return null;
+    }
+
+    private static void outputCheck(String output) {
+        File folder = new File(output);
+        if (!folder.exists() && !folder.mkdir()) {
+            System.err.println(folder.getAbsolutePath() + " does not exist and cannot be created. Please check the path and try again");
+            System.exit(1);
+        }
+
+        folder = new File(output + File.separator + "sbgn");
+        if (!folder.exists() && !folder.mkdir()) {
+            System.err.println(folder.getAbsolutePath() + " does not exist and cannot be created. Please check the path and try again");
+            System.exit(1);
+        }
     }
 
     private static String getTimeFormatted(Long millis) {
