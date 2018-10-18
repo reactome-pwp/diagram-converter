@@ -91,7 +91,7 @@ public abstract class ShapeBuilder {
                 Math.round( (float) (topLeft.y + EDGE_TYPE_WIDGET_WIDTH))
         );
         Shape rtn = new Shape(topLeft, bottomRight, Boolean.TRUE, Shape.Type.BOX);
-        if(symbol!=null) { rtn.s = symbol;}
+        if (symbol != null) rtn.s = symbol;
         return rtn;
     }
 
