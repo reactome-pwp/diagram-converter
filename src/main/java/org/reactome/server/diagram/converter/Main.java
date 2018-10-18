@@ -56,7 +56,7 @@ public class Main {
                 config.getString("graph_password"),
                 ReactomeNeo4jConfig.class
         );
-        Integer version = ReactomeGraphCore.getService(GeneralService.class).getDBVersion();
+        Integer version = ReactomeGraphCore.getService(GeneralService.class).getDBInfo().getVersion();
 
         MySQLAdaptor dba = new MySQLAdaptor(
                 config.getString("rel_host"),
@@ -69,7 +69,7 @@ public class Main {
         //Checking whether the relational and the graph database are using the same released data
         try {
             Integer relDB = dba.getReleaseNumber();
-            if (!Objects.equals(relDB, version)){
+            if (!Objects.equals(relDB, version)) {
                 System.err.println(
                         String.format("The databases are from different versions.\n\t Relational db contains version %d (%s)\n\tGraph database contains version %d (%s)",
                                 relDB, config.getString("rel_database"),
@@ -102,7 +102,7 @@ public class Main {
         }
     }
 
-    private static Collection<Pathway> getTargets(String[] target){
+    private static Collection<Pathway> getTargets(String[] target) {
         AdvancedDatabaseObjectService advancedDatabaseObjectService = ReactomeGraphCore.getService(AdvancedDatabaseObjectService.class);
         String query;
         Map<String, Object> parametersMap = new HashMap<>();
@@ -126,15 +126,15 @@ public class Main {
             parametersMap.put("stIds", stIds);
         } else {
             String aux = target[0];
-            if(aux.toLowerCase().equals("all")){
+            if (aux.toLowerCase().equals("all")) {
                 query = "MATCH (p:Pathway{hasDiagram:True})-[:species]->(s:Species) " +
                         "WITH DISTINCT p, s " +
                         "RETURN p " +
                         "ORDER BY s.dbId, p.dbId";
-            }else if(DatabaseObjectUtils.isStId(aux)){
+            } else if (DatabaseObjectUtils.isStId(aux)) {
                 query = "MATCH (p:Pathway{hasDiagram:True, stId:{stId}}) RETURN DISTINCT p";
                 parametersMap.put("stId", DatabaseObjectUtils.getIdentifier(aux));
-            }else if(DatabaseObjectUtils.isDbId(aux)){
+            } else if (DatabaseObjectUtils.isDbId(aux)) {
                 query = "MATCH (p:Pathway{hasDiagram:True, dbId:{dbId}}) RETURN DISTINCT p";
                 parametersMap.put("dbId", DatabaseObjectUtils.getIdentifier(aux));
             } else {
