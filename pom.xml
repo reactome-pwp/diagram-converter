@@ -33,9 +33,10 @@
         <jdk.version>1.8</jdk.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <reactome.graph.core>1.1.11</reactome.graph.core>
+        <reactome.graph.core>1.1.14-SNAPSHOT</reactome.graph.core>
         <reactome.base>1.2.15</reactome.base>
         <jasp.version>2.1</jasp.version>
+        <sbgn.version>0.2</sbgn.version>
 
         <maven.compiler.version>3.5.1</maven.compiler.version>
         <maven.jar.version>2.6</maven.jar.version>
@@ -63,6 +64,12 @@
             <groupId>com.martiansoftware</groupId>
             <artifactId>jsap</artifactId>
             <version>${jasp.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.sbgn</groupId>
+            <artifactId>libsbgn</artifactId>
+            <version>${sbgn.version}</version>
         </dependency>
 
         <!-- JUnit -->
@@ -173,6 +180,13 @@
             <snapshots>
             </snapshots>
         </repository>
+        <!-- BIOPAX repo -->
+        <repository>
+            <id>biopax-repo</id>
+            <name>BioPAX repository</name>
+            <url>http://www.biopax.org/m2repo/releases</url>
+        </repository>
     </repositories>
+
 
 </project>
