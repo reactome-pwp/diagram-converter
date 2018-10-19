@@ -86,34 +86,33 @@ class Converter {
 
     private static boolean convert(Pathway pathway, String outputDir) throws DiagramNotFoundException {
         Diagram diagram = getDiagram(diagramFetcher.getInstance(pathway.getDbId() + ""));
-        if (diagram != null) {
-            QATests.performDiagramTests(diagram);
+        if (diagram == null) return false;
 
-            Graph graph = graphFactory.getGraph(diagram);
-            QATests.performGraphTests(graph);
+        QATests.performDiagramTests(diagram);
 
-            diagram.createShadows(graph.getSubpathways());
-            if (trivialChemicals != null) {
-                diagram = trivialChemicals.annotateTrivialChemicals(diagram, graphFactory.getEntityNodeMap());
-            }
+        Graph graph = graphFactory.getGraph(diagram);
+        QATests.performGraphTests(graph);
 
-            QATests.performFinalTests(diagram, graph);
-
-            JsonWriter.serialiseGraph(graph, outputDir);
-            JsonWriter.serialiseDiagram(diagram, outputDir);
-
-            try {
-                SbgnConverter sbgnConverter = new SbgnConverter(diagram);
-                Sbgn sbgn = sbgnConverter.getSbgn();
-                SbgnWriter.writeToFile(pathway, sbgn, outputDir + File.separator + "sbgn");
-            } catch (Exception e) {
-                T002_SbgnConversion.add(pathway, e.getMessage());
-                logger.error(e.getMessage(), e);
-            }
-
-            return true;
+        diagram.createShadows(graph.getSubpathways());
+        if (trivialChemicals != null) {
+            diagram = trivialChemicals.annotateTrivialChemicals(diagram, graphFactory.getEntityNodeMap());
         }
-        return false;
+
+        QATests.performFinalTests(diagram, graph);
+
+        JsonWriter.serialiseGraph(graph, outputDir);
+        JsonWriter.serialiseDiagram(diagram, outputDir);
+
+        try {
+            SbgnConverter sbgnConverter = new SbgnConverter(diagram);
+            Sbgn sbgn = sbgnConverter.getSbgn();
+            SbgnWriter.writeToFile(pathway, sbgn, outputDir + File.separator + "sbgn");
+        } catch (Exception e) {
+            T002_SbgnConversion.add(pathway, e.getMessage());
+            logger.error(e.getMessage(), e);
+        }
+
+        return true;
     }
 
     private static Diagram getDiagram(GKInstance pathway) {
