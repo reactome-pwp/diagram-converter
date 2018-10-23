@@ -6,6 +6,7 @@ import org.gk.persistence.MySQLAdaptor;
 import org.reactome.server.diagram.converter.config.ReactomeNeo4jConfig;
 import org.reactome.server.diagram.converter.layout.util.FileUtil;
 import org.reactome.server.diagram.converter.qa.QATests;
+import org.reactome.server.diagram.converter.tasks.ConverterTasks;
 import org.reactome.server.graph.domain.model.Pathway;
 import org.reactome.server.graph.exception.CustomQueryException;
 import org.reactome.server.graph.service.AdvancedDatabaseObjectService;
@@ -17,8 +18,8 @@ import java.sql.SQLException;
 import java.util.*;
 
 /**
- * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
- * @author Antonio Fabregat <fabregat@ebi.ac.uk>
+ * @author Kostas Sidiropoulos (ksidiro@ebi.ac.uk)
+ * @author Antonio Fabregat (fabregat@ebi.ac.uk)
  */
 public class Main {
 
@@ -88,13 +89,17 @@ public class Main {
         //Initialise TrivialChemicals Map
         String trivialChemicalsFile = config.getString("trivial");
 
+        //Check if target pathways are specified
+        String[] target = config.getStringArray("target");
+
+        //Converter tasks initialisation
+        boolean runTasks = target.length == 1 && target[0].toLowerCase().equals("all");
+        if(runTasks) ConverterTasks.initialise();
+
         //Tests initialisation
         QATests.initialise(version);
 
-        //Check if target pathways are specified
-        String[] target = config.getStringArray("target");
         Collection<Pathway> pathways = getTargets(target);
-
         if (pathways != null && !pathways.isEmpty()) {
             Converter.run(pathways, dba, output, trivialChemicalsFile);
         } else {
@@ -146,7 +151,7 @@ public class Main {
             }
         }
 
-        System.out.print("\n· Retrieving target pathways...");
+        System.out.print("· Retrieving target pathways...");
         Collection<Pathway> pathways = null;
         try {
             pathways = advancedDatabaseObjectService.getCustomQueryResults(Pathway.class, query, parametersMap);
