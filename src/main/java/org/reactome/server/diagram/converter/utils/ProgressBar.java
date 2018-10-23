@@ -1,8 +1,9 @@
 package org.reactome.server.diagram.converter.utils;
 
-
+/**
+ * Custom progress bar for the diagram converter project
+ */
 public class ProgressBar {
-
 
     private static final int width = 70;
 
@@ -28,6 +29,7 @@ public class ProgressBar {
 
     public static void done(int total) {
         updateProgressBar("", total, total);
+        System.out.println("\n"); //Yes, two new lines :-)
     }
 
 }

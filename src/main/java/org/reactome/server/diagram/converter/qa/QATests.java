@@ -42,7 +42,7 @@ public class QATests {
     public static void initialise(Integer version) {
         QATests.version = version;
 
-        System.out.println("· Diagram converter initialisation:");
+        System.out.println("· Diagram converter QA test initialisation:");
         System.out.print("\t>Initialising tests infrastructure...");
         Reflections reflections = new Reflections(QATests.class.getPackage().getName());
 
@@ -77,13 +77,13 @@ public class QATests {
         } catch (Exception e) {
             System.out.println("\t> No reports folder found -> it will be created.");
         }
+        System.out.println();
     }
 
     public static void performDiagramTests(Diagram diagram) {
         for (Class test : diagramQATests) {
             try {
-                Object object = test.newInstance();
-                DiagramQA qualityAssessment = (DiagramQA) object;
+                DiagramQA qualityAssessment = (DiagramQA) test.newInstance();
                 qualityAssessment.run(diagram);
             } catch (InstantiationException | IllegalAccessException e) {
                 e.printStackTrace();
@@ -94,8 +94,7 @@ public class QATests {
     public static void performGraphTests(Graph graph) {
         for (Class test : graphQATests) {
             try {
-                Object object = test.newInstance();
-                GraphQA qualityAssessment = (GraphQA) object;
+                GraphQA qualityAssessment = (GraphQA) test.newInstance();
                 qualityAssessment.run(graph);
             } catch (InstantiationException | IllegalAccessException e) {
                 e.printStackTrace();
@@ -106,8 +105,7 @@ public class QATests {
     public static void performFinalTests(Diagram diagram, Graph graph) {
         for (Class test : finalQATests) {
             try {
-                Object object = test.newInstance();
-                PostQA qualityAssessment = (PostQA) object;
+                PostQA qualityAssessment = (PostQA) test.newInstance();
                 qualityAssessment.run(diagram, graph);
             } catch (InstantiationException | IllegalAccessException e) {
                 e.printStackTrace();
@@ -122,21 +120,19 @@ public class QATests {
         List<Report> reports = new ArrayList<>();
         for (Class<?> test : tests) {
             try {
-                Object object = test.newInstance();
-                ConverterQA qa = (ConverterQA) object;
+                ConverterQA qa = (ConverterQA) test.newInstance();
                 storeCSV(qa.getNumeratedName(), qa.getReport());
                 reports.add( new Report(qa.getPriority(), qa.getNumeratedName(), qa.getDescription(), qa.getReport()));
             } catch (InstantiationException | IllegalAccessException e) { /*Nothing here*/}
         }
 
         //Printing the reports sorted by name
-        System.out.println("\n\n· Reports:");
+        System.out.println("· Reports:");
         reports.stream().sorted().forEach(Report::printColoured);
         System.out.println("\n· Priorities meaning:");
         QAPriority.list().forEach(QAPriority::printColoured);
         long c = reports.stream().filter(Report::hasEntries).count();
-        System.out.println(String.format("\nConversion finished. %d QA test%s generated reports.", c, c == 1 ? "" : "s"));
-
+        System.out.println(String.format("\n· Reports summary: %d QA test%s generated reports.\n", c, c == 1 ? "" : "s"));
         //Storing the report in a CSV file
         storeReport(reports);
     }
