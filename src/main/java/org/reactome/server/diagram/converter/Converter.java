@@ -18,6 +18,7 @@ import org.reactome.server.diagram.converter.qa.QATests;
 import org.reactome.server.diagram.converter.qa.conversion.T001_FailedPathways;
 import org.reactome.server.diagram.converter.qa.conversion.T002_SbgnConversion;
 import org.reactome.server.diagram.converter.sbgn.SbgnConverter;
+import org.reactome.server.diagram.converter.tasks.ConverterTasks;
 import org.reactome.server.diagram.converter.utils.ProgressBar;
 import org.reactome.server.graph.domain.model.Pathway;
 import org.reactome.server.graph.service.GeneralService;
@@ -33,8 +34,8 @@ import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 /**
- * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
- * @author Antonio Fabregat <fabregat@ebi.ac.uk>
+ * @author Kostas Sidiropoulos (ksidiro@ebi.ac.uk)
+ * @author Antonio Fabregat (fabregat@ebi.ac.uk)
  */
 class Converter {
 
@@ -61,11 +62,12 @@ class Converter {
             logger.warn("Trivial chemicals file was not found at [" + trivialChemicalsFile + "]. Skipping annotation...");
         }
 
+        Long start = System.currentTimeMillis();
+        ConverterTasks.runInitialTasks();
         int i = 0; int tot = pathways.size();
         int version = ReactomeGraphCore.getService(GeneralService.class).getDBInfo().getVersion();
 
         System.out.println(String.format("\r· Diagram converter for version %d started:\n\t> Targeting %s pathways.\n", version, numberFormat.format(tot)));
-        Long start = System.currentTimeMillis();
         for (Pathway pathway : pathways) {
             ProgressBar.updateProgressBar(pathway.getStId(), i++, tot);
             try {
@@ -76,12 +78,12 @@ class Converter {
             }
         }
         ProgressBar.done(tot);
-        QATests.writeReports();
+        ConverterTasks.runFinalTasks();
         Long time = System.currentTimeMillis() - start;
 
+        QATests.writeReports();
         String conv = numberFormat.format(tot - T001_FailedPathways.size());
-        System.out.println(String.format("\n· Task finished: %s pathway diagrams have been successfully converted (%s)", conv, getTimeFormatted(time)));
-        System.out.println();
+        System.out.println(String.format("· Conversion finished: %s pathway diagrams have been successfully converted (%s)\n", conv, getTimeFormatted(time)));
     }
 
     private static boolean convert(Pathway pathway, String outputDir) throws DiagramNotFoundException {
