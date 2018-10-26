@@ -93,8 +93,8 @@ public class Main {
         String[] target = config.getStringArray("target");
 
         //Converter tasks initialisation
-        boolean runTasks = target.length == 1 && target[0].toLowerCase().equals("all");
-        if(runTasks) ConverterTasks.initialise();
+        boolean all = target.length == 1 && target[0].toLowerCase().equals("all");
+        ConverterTasks.initialise(all);
 
         //Tests initialisation
         QATests.initialise(version);
