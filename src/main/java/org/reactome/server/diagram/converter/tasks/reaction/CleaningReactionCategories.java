@@ -1,7 +1,7 @@
 package org.reactome.server.diagram.converter.tasks.reaction;
 
 import org.reactome.server.diagram.converter.tasks.common.ConverterTask;
-import org.reactome.server.diagram.converter.tasks.common.annotation.FinalTask;
+import org.reactome.server.diagram.converter.tasks.common.annotation.InitialTask;
 import org.reactome.server.graph.domain.model.ReactionLikeEvent;
 import org.reactome.server.graph.exception.CustomQueryException;
 import org.reactome.server.graph.service.AdvancedDatabaseObjectService;
@@ -16,7 +16,7 @@ import org.slf4j.LoggerFactory;
  * @author Antonio Fabregat (fabregat@ebi.ac.uk)
  */
 @SuppressWarnings("unused")
-@FinalTask
+@InitialTask
 public class CleaningReactionCategories implements ConverterTask {
 
     private static final Logger logger = LoggerFactory.getLogger("converter");

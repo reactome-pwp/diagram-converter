@@ -28,7 +28,7 @@ public abstract class ConverterTasks {
     private static final List<Class<?>> initialTasks = new ArrayList<>();
     private static final List<Class<?>> finalTasks = new ArrayList<>();
 
-    public static void initialise(){
+    public static void initialise(boolean all) {
         System.out.println("· Diagram converter tasks initialisation:");
         System.out.print("\t>Initialising converter tasks infrastructure...");
 
@@ -36,18 +36,31 @@ public abstract class ConverterTasks {
 
         int d = 0;
         Set<Class<? extends ConverterTask>> tasks = reflections.getSubTypesOf(ConverterTask.class);
-        for (Class<?> task : tasks) {
+        for (Class<?> task : tasks)
             if (task.getAnnotation(Deprecated.class) != null) d++;
             else {
-                for (Annotation annotation : task.getAnnotations()) {
-                    if (annotation instanceof FinalTask) {
-                        initialTasks.add(task);
-                    } else if (annotation instanceof InitialTask) {
-                        finalTasks.add(task);
+                for (Annotation annotation : task.getAnnotations())
+                    if (annotation instanceof InitialTask) {
+                        if (all) {
+                            initialTasks.add(task);
+                        } else {
+                            InitialTask initialTask = (InitialTask) annotation;
+                            if (initialTask.mandatory()) {
+                                initialTasks.add(task);
+                            }
+                        }
+
+                    } else if (annotation instanceof FinalTask) {
+                        if (all) {
+                            finalTasks.add(task);
+                        } else {
+                            FinalTask initialTask = (FinalTask) annotation;
+                            if (initialTask.mandatory()) {
+                                finalTasks.add(task);
+                            }
+                        }
                     }
-                }
             }
-        }
         int a = initialTasks.size() + finalTasks.size();
         int t = a + d;
         System.out.println(String.format("\r\t>%3d task%s found:", t, t == 1 ? "" : "s"));
