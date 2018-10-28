@@ -12,18 +12,14 @@ import org.reactome.server.diagram.converter.layout.input.model.Process;
 import org.reactome.server.diagram.converter.layout.output.Diagram;
 import org.reactome.server.diagram.converter.layout.util.FileUtil;
 import org.reactome.server.diagram.converter.layout.util.JsonWriter;
-import org.reactome.server.diagram.converter.layout.util.SbgnWriter;
 import org.reactome.server.diagram.converter.layout.util.TrivialChemicals;
 import org.reactome.server.diagram.converter.qa.QATests;
 import org.reactome.server.diagram.converter.qa.conversion.T001_FailedPathways;
-import org.reactome.server.diagram.converter.qa.conversion.T002_SbgnConversion;
-import org.reactome.server.diagram.converter.sbgn.SbgnConverter;
 import org.reactome.server.diagram.converter.tasks.ConverterTasks;
 import org.reactome.server.diagram.converter.utils.ProgressBar;
 import org.reactome.server.graph.domain.model.Pathway;
 import org.reactome.server.graph.service.GeneralService;
 import org.reactome.server.graph.utils.ReactomeGraphCore;
-import org.sbgn.bindings.Sbgn;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -105,15 +101,6 @@ class Converter {
         JsonWriter.serialiseGraph(graph, outputDir);
         JsonWriter.serialiseDiagram(diagram, outputDir);
 
-        try {
-            SbgnConverter sbgnConverter = new SbgnConverter(diagram);
-            Sbgn sbgn = sbgnConverter.getSbgn();
-            SbgnWriter.writeToFile(pathway, sbgn, outputDir + File.separator + "sbgn");
-        } catch (Exception e) {
-            T002_SbgnConversion.add(pathway, e.getMessage());
-            logger.error(e.getMessage(), e);
-        }
-
         return true;
     }
 
@@ -134,12 +121,6 @@ class Converter {
 
     private static void outputCheck(String output) {
         File folder = new File(output);
-        if (!folder.exists() && !folder.mkdir()) {
-            System.err.println(folder.getAbsolutePath() + " does not exist and cannot be created. Please check the path and try again");
-            System.exit(1);
-        }
-
-        folder = new File(output + File.separator + "sbgn");
         if (!folder.exists() && !folder.mkdir()) {
             System.err.println(folder.getAbsolutePath() + " does not exist and cannot be created. Please check the path and try again");
             System.exit(1);
