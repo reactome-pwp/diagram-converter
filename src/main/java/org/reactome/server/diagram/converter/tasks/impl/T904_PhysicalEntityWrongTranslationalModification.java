@@ -95,7 +95,7 @@ public class T904_PhysicalEntityWrongTranslationalModification extends AbstractC
             Collection<String> res = ads.getCustomQueryResults(String.class, query, params);
             if (res.size() > 0) {
                 lines = new ArrayList<>(res);
-                report = String.format("%,d physical entities found with a wrong AbstractModification annotated", res.size());
+                report = String.format("%,d physical entities with a potentially wrongly annotated translational modification", res.size());
             } else {
                 report = "No physical entities found with wrong AbstractModification annotated";
             }

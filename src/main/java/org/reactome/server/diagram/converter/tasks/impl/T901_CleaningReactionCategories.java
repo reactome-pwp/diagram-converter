@@ -62,7 +62,7 @@ public class T901_CleaningReactionCategories extends AbstractConverterTask {
                 "RETURN COUNT(DISTINCT rle) AS rles";
         try {
             Integer c = ads.getCustomQueryResult(Integer.class, query, params);
-            report = String.format("Reaction 'category' has been cleaned up for all reactions (%,d)", c);
+            report = String.format("The 'category' field has been cleaned up for %,d reactions", c);
         } catch (CustomQueryException e) {
             String msg = String.format("Error while executing '%s': '%s'", this.getClass().getSimpleName(), e.getMessage());
             logger.error(msg, e);

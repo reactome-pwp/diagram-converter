@@ -73,7 +73,7 @@ public class T903_NodeAttachmentsLabelInitialisation extends AbstractConverterTa
         try {
             params.put("glycans", glycans);
             Integer c = ads.getCustomQueryResult(Integer.class, query, params);
-            report = String.format("Node attachment 'label' has been set for (%,d) TranslationalModification instances", c);
+            report = String.format("Node attachment 'label' has been set for %,d TranslationalModification instances", c);
         } catch (CustomQueryException e) {
             String msg = String.format("Error while executing '%s': '%s'", this.getClass().getSimpleName(), e.getMessage());
             logger.error(msg, e);
