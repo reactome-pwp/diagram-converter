@@ -5,22 +5,24 @@ import org.reactome.server.diagram.converter.tasks.common.AbstractConverterTask;
 import org.reactome.server.diagram.converter.tasks.common.annotation.FinalTask;
 import org.reactome.server.graph.domain.model.Pathway;
 import org.reactome.server.graph.domain.model.ReactionLikeEvent;
+import org.reactome.server.graph.domain.model.Species;
 import org.reactome.server.graph.exception.CustomQueryException;
 import org.reactome.server.graph.service.AdvancedDatabaseObjectService;
 import org.reactome.server.graph.utils.ReactomeGraphCore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
  * Finds all {@link ReactionLikeEvent} instances where the category field does not exist and infers which category
  * should be assign in each case.
- *
+ * <p>
  * The reason why these instances do not have a category at this point is because they have not been found in any
  * diagram, meaning that these are orphan reactions (not present in the 'hasEvent' list of any {@link Pathway}.
- *
+ * <p>
  * Note: An orphan reaction instance is normally used to manually infer another reaction that will actually be
  * present in a diagram (and therefore will be found in the 'hasEvent' list of a {@link Pathway} instance).
  *
@@ -42,10 +44,30 @@ public class T902_RemainingReactionCategories extends AbstractConverterTask {
     }
 
     @Override
-    public void run() {
-        String query = "" +
-                "MATCH (rle:ReactionLikeEvent) " +
-                "WHERE rle.category IS NULL " +
+    public void run(Object target) {
+        String query;
+        Map<String, Object> params = new HashMap<>();
+        if (target instanceof String && target.equals("all")) {
+            query = "MATCH (rle:ReactionLikeEvent) " +
+                    "WHERE rle.category IS NULL ";
+        } else if (target instanceof Species) {
+            query = "MATCH (rle:ReactionLikeEvent)-[:species]->(:Species{speciesName:{speciesName}}) " +
+                    "WHERE rle.category IS NULL ";
+            params.put("speciesName", ((Species) target).getDisplayName());
+        } else if (target instanceof Collection) {
+            query = "MATCH path=(p:Pathway{hasDiagram:true})-[:hasEvent*]->(rle:ReactionLikeEvent) " +
+                    "WHERE p.stId IN {stIds} AND rle.category IS NULL AND SINGLE(x IN NODES(path) WHERE (x:Pathway) AND x.hasDiagram) " +
+                    "WITH DISTINCT rle ";
+            params.put("stIds", target);
+        } else {
+            report = "No query could be created for the target";
+            logger.error(report);
+            return;
+        }
+
+        query += "" +
+//              "MATCH (rle:ReactionLikeEvent) " +
+//              "WHERE rle.category IS NULL " +
                 "OPTIONAL MATCH (rle)-[i:input]->(:PhysicalEntity) " +
                 "WITH DISTINCT rle, COLLECT(DISTINCT i) AS ii " +
                 "OPTIONAL MATCH (rle)-[o:output]->(:PhysicalEntity) " +
@@ -68,7 +90,6 @@ public class T902_RemainingReactionCategories extends AbstractConverterTask {
                 "         ELSE {transition} " +
                 "       END " +
                 "RETURN COUNT(DISTINCT rle) AS updated";
-        final Map<String, Object> params = new HashMap<>();
         params.put("transition", ShapeType.TRANSITION.getName());
         params.put("binding", ShapeType.BINDING.getName());
         params.put("dissociation", ShapeType.DISSOCIATION.getName());

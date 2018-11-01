@@ -5,6 +5,7 @@ import org.reactome.server.diagram.converter.qa.common.QAPriority;
 import org.reactome.server.diagram.converter.qa.common.annotation.ConverterReport;
 import org.reactome.server.diagram.converter.tasks.common.ConverterTask;
 import org.reactome.server.diagram.converter.tasks.common.annotation.FinalTask;
+import org.reactome.server.graph.domain.model.Species;
 import org.reactome.server.graph.exception.CustomQueryException;
 import org.reactome.server.graph.service.AdvancedDatabaseObjectService;
 import org.reactome.server.graph.utils.ReactomeGraphCore;
@@ -21,7 +22,7 @@ import java.util.*;
  */
 @SuppressWarnings("unused")
 @ConverterReport
-@FinalTask(mandatory = true)
+@FinalTask
 public class T904_PhysicalEntityWrongTranslationalModification extends AbstractConverterQA implements ConverterTask {
 
     private static final Logger logger = LoggerFactory.getLogger("converter");
@@ -59,9 +60,31 @@ public class T904_PhysicalEntityWrongTranslationalModification extends AbstractC
     }
 
     @Override
-    public void run() {
-        String query = "" +
-                "MATCH (psi:PsiMod)<-[:psiMod]-(tm:TranslationalModification)<-[:hasModifiedResidue]-(pe:PhysicalEntity{speciesName:{speciesName}}) " +
+    public void run(Object target) {
+        String query;
+        Map<String, Object> params = new HashMap<>();
+        if (target instanceof String && target.equals("all")) {
+            query = "MATCH (psi:PsiMod)<-[:psiMod]-(tm:TranslationalModification)<-[:hasModifiedResidue]-(pe:PhysicalEntity) " +
+                    "WITH DISTINCT pe, tm, psi ";
+        } else if (target instanceof Species) {
+            query = "MATCH (psi:PsiMod)<-[:psiMod]-(tm:TranslationalModification)<-[:hasModifiedResidue]-(pe:PhysicalEntity)-[:species]->(:Species{speciesName:{speciesName}}) " +
+                    "WITH DISTINCT pe, tm, psi ";
+            params.put("speciesName", ((Species) target).getDisplayName());
+        } else if (target instanceof Collection) {
+            query = "MATCH path=(p:Pathway{hasDiagram:true})-[:hasEvent*]->(rle:ReactionLikeEvent) " +
+                    "WHERE p.stId IN {stIds} AND SINGLE(x IN NODES(path) WHERE (x:Pathway) AND x.hasDiagram) " +
+                    "WITH DISTINCT rle " +
+                    "MATCH (rle)-[:input|output|catalystActivity|physicalEntity|regulatedBy|regulator|hasComponent|hasMember|hasCandidate|repeatedUnit*]->(pe:PhysicalEntity)-[:hasModifiedResidue]->(tm:TranslationalModification)-[:psiMod]->(psi:PsiMod) " +
+                    "WITH DISTINCT pe, tm, psi ";
+            params.put("stIds", target);
+        } else {
+            report = "No query could be created for the target";
+            logger.error(report);
+            return;
+        }
+
+        query += "" +
+//              "MATCH (psi:PsiMod)<-[:psiMod]-(tm:TranslationalModification)<-[:hasModifiedResidue]-(pe:PhysicalEntity{speciesName:{speciesName}}) " +
                 "WHERE psi.abbreviation IS NULL " +
                 "OPTIONAL MATCH (a)-[:created]->(pe) " +
                 "OPTIONAL MATCH (m)-[:modified]->(pe) " +
@@ -69,8 +92,6 @@ public class T904_PhysicalEntityWrongTranslationalModification extends AbstractC
                 "ORDER BY m.displayName, a.displayName " +
                 "RETURN DISTINCT pe.stId + ',\"' + pe.displayName + '\",\"' + tm.displayName + '\",' + tm.schemaClass + ',\"' + psi.displayName + '\",\"' + a.displayName + '\",\"' + m.displayName + '\"' AS line";
         try {
-            Map<String, Object> params = new HashMap<>();
-            params.put("speciesName", "Homo sapiens");
             Collection<String> res = ads.getCustomQueryResults(String.class, query, params);
             if (res.size() > 0) {
                 lines = new ArrayList<>(res);

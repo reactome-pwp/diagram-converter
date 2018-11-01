@@ -88,15 +88,13 @@ public class Main {
         //Check if target pathways are specified
         String[] target = config.getStringArray("target");
 
-        //Converter tasks initialisation
-        boolean all = target.length == 1 && target[0].toLowerCase().equals("all");
-        ConverterTasks.initialise(all);
-
-        //Tests initialisation
-        QATests.initialise(version);
-
         Collection<Pathway> pathways = getTargets(target);
         if (pathways != null && !pathways.isEmpty()) {
+            //Converter tasks initialisation
+            ConverterTasks.initialise(target, pathways);
+            //Tests initialisation
+            QATests.initialise(version);
+            //Conversion
             Converter.run(pathways, dba, output);
         } else {
             System.err.println("No targets found. Please check the parameters.");

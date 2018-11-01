@@ -3,16 +3,14 @@ package org.reactome.server.diagram.converter.tasks.impl;
 import org.reactome.server.diagram.converter.tasks.common.AbstractConverterTask;
 import org.reactome.server.diagram.converter.tasks.common.annotation.InitialTask;
 import org.reactome.server.graph.domain.model.AbstractModifiedResidue;
+import org.reactome.server.graph.domain.model.Species;
 import org.reactome.server.graph.exception.CustomQueryException;
 import org.reactome.server.graph.service.AdvancedDatabaseObjectService;
 import org.reactome.server.graph.utils.ReactomeGraphCore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Sets label fields for all {@link AbstractModifiedResidue} instances based on the PSI-MOD abbreviation.
@@ -20,7 +18,7 @@ import java.util.Map;
  * @author Antonio Fabregat (fabregat@ebi.ac.uk)
  */
 @SuppressWarnings("unused")
-@InitialTask(mandatory = true)
+@InitialTask
 public class T903_NodeAttachmentsLabelInitialisation extends AbstractConverterTask {
 
     // List of psiMod dbIds that correspond to glycans when GroupModifiedResidue instances have a modification
@@ -39,9 +37,30 @@ public class T903_NodeAttachmentsLabelInitialisation extends AbstractConverterTa
     }
 
     @Override
-    public void run() {
-        String query = "" +
-                "MATCH (tm:TranslationalModification) " +
+    public void run(Object target) {
+        String query;
+        Map<String, Object> params = new HashMap<>();
+        if (target instanceof String && target.equals("all")) {
+            query = "MATCH (tm:TranslationalModification) ";
+        } else if (target instanceof Species) {
+            query = "MATCH (tm:TranslationalModification)<-[:hasModifiedResidue]-(:PhysicalEntity)-[:species]->(:Species{speciesName:{speciesName}}) " +
+                    "WITH DISTINCT tm ";
+            params.put("speciesName", ((Species) target).getDisplayName());
+        } else if (target instanceof Collection) {
+            query = "MATCH path=(p:Pathway{hasDiagram:true})-[:hasEvent*]->(rle:ReactionLikeEvent) " +
+                    "WHERE p.stId IN {stIds} AND SINGLE(x IN NODES(path) WHERE (x:Pathway) AND x.hasDiagram) " +
+                    "WITH DISTINCT rle " +
+                    "MATCH (rle)-[:input|output|catalystActivity|physicalEntity|regulatedBy|regulator|hasComponent|hasMember|hasCandidate|repeatedUnit*]->(:PhysicalEntity)-[:hasModifiedResidue]->(tm:TranslationalModification) " +
+                    "WITH DISTINCT tm ";
+                    params.put("stIds", target);
+        } else {
+            report = "No query could be created for the target";
+            logger.error(report);
+            return;
+        }
+
+        query += "" +
+//              "MATCH (tm:TranslationalModification) " +
                 "OPTIONAL MATCH (tm)-[:psiMod]->(psi) " +
                 "OPTIONAL MATCH (tm)-[:modification]->(m) " +
                 "WITH DISTINCT tm, " +
@@ -52,7 +71,6 @@ public class T903_NodeAttachmentsLabelInitialisation extends AbstractConverterTa
                 "SET tm.label = label " +
                 "RETURN COUNT(DISTINCT tm) AS tms";
         try {
-            Map<String, Object> params = new HashMap<>();
             params.put("glycans", glycans);
             Integer c = ads.getCustomQueryResult(Integer.class, query, params);
             report = String.format("Node attachment 'label' has been set for (%,d) TranslationalModification instances", c);
