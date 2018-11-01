@@ -10,7 +10,6 @@ import org.reactome.server.diagram.converter.layout.exceptions.DiagramNotFoundEx
 import org.reactome.server.diagram.converter.layout.input.ProcessFactory;
 import org.reactome.server.diagram.converter.layout.input.model.Process;
 import org.reactome.server.diagram.converter.layout.output.Diagram;
-import org.reactome.server.diagram.converter.layout.util.FileUtil;
 import org.reactome.server.diagram.converter.layout.util.JsonWriter;
 import org.reactome.server.diagram.converter.layout.util.TrivialChemicals;
 import org.reactome.server.diagram.converter.qa.QATests;
@@ -45,18 +44,12 @@ class Converter {
 
     private static TrivialChemicals trivialChemicals;
 
-    static void run(Collection<Pathway> pathways, MySQLAdaptor dba, String output, String trivialChemicalsFile) {
+    static void run(Collection<Pathway> pathways, MySQLAdaptor dba, String output) {
         outputCheck(output);
         diagramFetcher = new DiagramFetcher(dba);
         graphFactory = new DiagramGraphFactory();
         processFactory = new ProcessFactory("/process_schema.xsd");
-
-        if (FileUtil.fileExists(trivialChemicalsFile)) {
-            logger.info("Using [" + trivialChemicalsFile + "] to annotate trivial chemicals...");
-            trivialChemicals = new TrivialChemicals(trivialChemicalsFile);
-        } else {
-            logger.warn("Trivial chemicals file was not found at [" + trivialChemicalsFile + "]. Skipping annotation...");
-        }
+        trivialChemicals = new TrivialChemicals();
 
         Long start = System.currentTimeMillis();
         ConverterTasks.runInitialTasks();

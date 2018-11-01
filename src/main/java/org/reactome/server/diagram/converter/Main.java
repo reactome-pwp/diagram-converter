@@ -39,7 +39,6 @@ public class Main {
                         , new FlaggedOption("rel_password", JSAP.STRING_PARSER, "reactome", JSAP.REQUIRED, 'h', "rel_password", "The password to connect to the database")
 
                         , new FlaggedOption("output", JSAP.STRING_PARSER, JSAP.NO_DEFAULT, JSAP.REQUIRED, 'o', "output", "The directory where the converted files are written to.")
-                        , new FlaggedOption("trivial", JSAP.STRING_PARSER, "trivialchemicals.txt", JSAP.NOT_REQUIRED, 'r', "trivial", "A file containing the ids and the names of the trivial molecules.")
                         , new QualifiedSwitch("target", JSAP.STRING_PARSER, "ALL", JSAP.NOT_REQUIRED, 't', "target", "Target pathways to convert. Use either comma separated IDs, pathways for a given species (e.g. 'Homo sapiens') or 'all' for every pathway").setList(true).setListSeparator(',')
 
                         , new QualifiedSwitch("verbose", JSAP.BOOLEAN_PARSER, null, JSAP.NOT_REQUIRED, 'v', "verbose", "Requests verbose output.")
@@ -86,9 +85,6 @@ public class Main {
         //Check if output directory exists
         final String output = FileUtil.checkFolderName(config.getString("output"));
 
-        //Initialise TrivialChemicals Map
-        String trivialChemicalsFile = config.getString("trivial");
-
         //Check if target pathways are specified
         String[] target = config.getStringArray("target");
 
@@ -101,7 +97,7 @@ public class Main {
 
         Collection<Pathway> pathways = getTargets(target);
         if (pathways != null && !pathways.isEmpty()) {
-            Converter.run(pathways, dba, output, trivialChemicalsFile);
+            Converter.run(pathways, dba, output);
         } else {
             System.err.println("No targets found. Please check the parameters.");
         }

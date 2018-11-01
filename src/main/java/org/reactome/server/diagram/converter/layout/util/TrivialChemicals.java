@@ -2,10 +2,12 @@ package org.reactome.server.diagram.converter.layout.util;
 
 import org.reactome.server.diagram.converter.graph.output.EntityNode;
 import org.reactome.server.diagram.converter.layout.output.*;
+import org.reactome.server.graph.exception.CustomQueryException;
+import org.reactome.server.graph.service.AdvancedDatabaseObjectService;
+import org.reactome.server.graph.utils.ReactomeGraphCore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.util.*;
 
 /**
@@ -13,35 +15,43 @@ import java.util.*;
  * The list of trivial molecules is specified in a tsv file (trivialChemicals.txt)
  * with 2 columns. The first column is mandatory and has the identifier of the molecule
  * (e.g. chEBI Id) while the second column is optional and contains the name of the molecule.
- *
+ * <p>
  * For example:
- *      15377	H2O
- *      16761	ADP
- *      15422	ATP
- *
+ * 15377	H2O
+ * 16761	ADP
+ * 15422	ATP
+ * <p>
  * NOTE: To function properly, the class requires a map of physical entities produced by the
  * {@link org.reactome.server.diagram.converter.graph.DiagramGraphFactory DiagramGraphFactory}
  *
- * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
+ * @author Kostas Sidiropoulos (ksidiro@ebi.ac.uk)
+ * @author Antonio Fabregat (fabregat@ebi.ac.uk)
  */
 public class TrivialChemicals {
 
     private static final Logger logger = LoggerFactory.getLogger("converter");
 
-    private Map<String, String> trivialMap = new HashMap<>();
+    private Set<String> trivialMolecules = new HashSet<>();
 
-    public TrivialChemicals(String trivialMoleculesFile) {
-        initialise(trivialMoleculesFile);
+    public TrivialChemicals() {
+        try {
+            AdvancedDatabaseObjectService ados = ReactomeGraphCore.getService(AdvancedDatabaseObjectService.class);
+            String query = "MATCH (r:ReferenceMolecule) WHERE r.trivial RETURN r.identifier";
+            trivialMolecules.addAll(ados.getCustomQueryResults(String.class, query));
+        } catch (CustomQueryException e) {
+            System.err.println("Error retrieving house keeping molecules. Please check log file for more details.");
+            logger.error("Error retrieving house keeping molecules", e);
+        }
     }
 
-    public Diagram annotateTrivialChemicals(Diagram diagram, Map<Long, EntityNode> entityNodeMap){
-        if(diagram.getNodes() == null || diagram.getNodes().isEmpty())  return diagram;
+    public Diagram annotateTrivialChemicals(Diagram diagram, Map<Long, EntityNode> entityNodeMap) {
+        if (diagram.getNodes() == null || diagram.getNodes().isEmpty()) return diagram;
 
         Map<Long, Node> trivialMolecules = new HashMap<>();
         for (Node node : diagram.getNodes()) {
-            if(node.reactomeId!=null){
-                EntityNode pe  = entityNodeMap.get(node.reactomeId);
-                if(pe!=null) {
+            if (node.reactomeId != null) {
+                EntityNode pe = entityNodeMap.get(node.reactomeId);
+                if (pe != null) {
                     if (pe.schemaClass != null && pe.schemaClass.equals("SimpleEntity")) {  // Check only chemicals
                         if (isTrivial(pe.identifier)) {
                             node.trivial = true;
@@ -80,9 +90,9 @@ public class TrivialChemicals {
      * play an important role in the reaction.
      *
      * @param trivialMolecules map of the glyphs id to molecules nodes
-     * @param parts the target parts of a reaction
+     * @param parts            the target parts of a reaction
      */
-    private Set<Node> getNotTrivialMolecules(Map<Long, Node> trivialMolecules, List<ReactionPart> parts){
+    private Set<Node> getNotTrivialMolecules(Map<Long, Node> trivialMolecules, List<ReactionPart> parts) {
         Set<Node> rtn = new HashSet<>();
         if (parts != null) {
             boolean allTrivial = true;
@@ -100,24 +110,7 @@ public class TrivialChemicals {
         return rtn;
     }
 
-    private void initialise(String fileLocation){
-        try {
-            List<String>  lines = FileUtil.readTextFile(fileLocation);
-            for (String line : lines) {
-                if(line==null || line.isEmpty()) { continue; }
-                String[] aux = line.split("\\t");
-                if(aux.length >= 2){
-                    trivialMap.put(aux[0].trim(), aux[1].trim());
-                }
-            }
-        } catch (IOException e) {
-            logger.error("Error reading trivial chemicals' file: " + fileLocation);
-            System.err.println("Error reading trivial chemicals' file: " + fileLocation);
-            e.printStackTrace();
-        }
-    }
-
-    private boolean isTrivial(String identifier){
-        return trivialMap.containsKey(identifier);
+    private boolean isTrivial(String identifier) {
+        return trivialMolecules.contains(identifier);
     }
 }
