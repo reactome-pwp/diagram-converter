@@ -67,7 +67,7 @@ public class T904_PhysicalEntityWrongTranslationalModification extends AbstractC
             query = "MATCH (psi:PsiMod)<-[:psiMod]-(tm:TranslationalModification)<-[:hasModifiedResidue]-(pe:PhysicalEntity) " +
                     "WITH DISTINCT pe, tm, psi ";
         } else if (target instanceof Species) {
-            query = "MATCH (psi:PsiMod)<-[:psiMod]-(tm:TranslationalModification)<-[:hasModifiedResidue]-(pe:PhysicalEntity)-[:species]->(:Species{speciesName:{speciesName}}) " +
+            query = "MATCH (psi:PsiMod)<-[:psiMod]-(tm:TranslationalModification)<-[:hasModifiedResidue]-(pe:PhysicalEntity)-[:species]->(:Species{displayName:{speciesName}}) " +
                     "WITH DISTINCT pe, tm, psi ";
             params.put("speciesName", ((Species) target).getDisplayName());
         } else if (target instanceof Collection) {

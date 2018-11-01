@@ -43,7 +43,7 @@ public class T903_NodeAttachmentsLabelInitialisation extends AbstractConverterTa
         if (target instanceof String && target.equals("all")) {
             query = "MATCH (tm:TranslationalModification) ";
         } else if (target instanceof Species) {
-            query = "MATCH (tm:TranslationalModification)<-[:hasModifiedResidue]-(:PhysicalEntity)-[:species]->(:Species{speciesName:{speciesName}}) " +
+            query = "MATCH (tm:TranslationalModification)<-[:hasModifiedResidue]-(:PhysicalEntity)-[:species]->(:Species{displayName:{speciesName}}) " +
                     "WITH DISTINCT tm ";
             params.put("speciesName", ((Species) target).getDisplayName());
         } else if (target instanceof Collection) {

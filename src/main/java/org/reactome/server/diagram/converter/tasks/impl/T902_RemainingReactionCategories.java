@@ -51,7 +51,7 @@ public class T902_RemainingReactionCategories extends AbstractConverterTask {
             query = "MATCH (rle:ReactionLikeEvent) " +
                     "WHERE rle.category IS NULL ";
         } else if (target instanceof Species) {
-            query = "MATCH (rle:ReactionLikeEvent)-[:species]->(:Species{speciesName:{speciesName}}) " +
+            query = "MATCH (rle:ReactionLikeEvent)-[:species]->(:Species{displayName:{speciesName}}) " +
                     "WHERE rle.category IS NULL ";
             params.put("speciesName", ((Species) target).getDisplayName());
         } else if (target instanceof Collection) {

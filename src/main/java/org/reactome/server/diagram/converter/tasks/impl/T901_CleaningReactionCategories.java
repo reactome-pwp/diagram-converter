@@ -43,7 +43,7 @@ public class T901_CleaningReactionCategories extends AbstractConverterTask {
         if (target instanceof String && target.equals("all")) {
             query = "MATCH (rle:ReactionLikeEvent) ";
         } else if (target instanceof Species) {
-            query = "MATCH (rle:ReactionLikeEvent)-[:species]->(:Species{speciesName:{speciesName}}) ";
+            query = "MATCH (rle:ReactionLikeEvent)-[:species]->(:Species{displayName:{speciesName}}) ";
             params.put("speciesName", ((Species) target).getDisplayName());
         } else if (target instanceof Collection){
             query = "MATCH path=(p:Pathway{hasDiagram:true})-[:hasEvent*]->(rle:ReactionLikeEvent) " +
