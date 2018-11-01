@@ -9,6 +9,6 @@ public interface ConverterTask {
 
     String getReportSummary();
 
-    void run();
+    void run(Object target);
 
 }

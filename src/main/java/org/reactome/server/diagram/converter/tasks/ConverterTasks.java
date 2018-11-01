@@ -5,12 +5,18 @@ import org.reactome.server.diagram.converter.layout.output.Diagram;
 import org.reactome.server.diagram.converter.tasks.common.ConverterTask;
 import org.reactome.server.diagram.converter.tasks.common.annotation.FinalTask;
 import org.reactome.server.diagram.converter.tasks.common.annotation.InitialTask;
+import org.reactome.server.graph.domain.model.DatabaseObject;
+import org.reactome.server.graph.domain.model.Pathway;
+import org.reactome.server.graph.domain.model.Species;
+import org.reactome.server.graph.service.DatabaseObjectService;
+import org.reactome.server.graph.utils.ReactomeGraphCore;
 import org.reflections.Reflections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -27,13 +33,15 @@ public abstract class ConverterTasks {
 
     private static final List<Class<?>> initialTasks = new ArrayList<>();
     private static final List<Class<?>> finalTasks = new ArrayList<>();
+    private static Object target;
 
-    public static void initialise(boolean all) {
+    public static void initialise(String[] target, Collection<Pathway> pathways) {
         System.out.println("· Diagram converter tasks initialisation:");
         System.out.print("\t>Initialising converter tasks infrastructure...");
 
-        Reflections reflections = new Reflections(ConverterTasks.class.getPackage().getName());
+        setTarget(target, pathways);
 
+        Reflections reflections = new Reflections(ConverterTasks.class.getPackage().getName());
         int d = 0;
         Set<Class<? extends ConverterTask>> tasks = reflections.getSubTypesOf(ConverterTask.class);
         for (Class<?> task : tasks) {
@@ -41,17 +49,9 @@ public abstract class ConverterTasks {
             else {
                 for (Annotation annotation : task.getAnnotations()) {
                     if (annotation instanceof InitialTask) {
-                        if (all) {
-                            initialTasks.add(task);
-                        } else if (((InitialTask) annotation).mandatory()) {
-                            initialTasks.add(task);
-                        }
+                        initialTasks.add(task);
                     } else if (annotation instanceof FinalTask) {
-                        if (all) {
-                            finalTasks.add(task);
-                        } else if (((FinalTask) annotation).mandatory()) {
-                            finalTasks.add(task);
-                        }
+                        finalTasks.add(task);
                     }
                 }
             }
@@ -83,12 +83,31 @@ public abstract class ConverterTasks {
         try {
             ConverterTask cTask = (ConverterTask) task.newInstance();
             System.out.print("\t> Running '" + cTask.getName() + "'...");
-            cTask.run();
+            cTask.run(target);
             System.out.println("\r\t> " + cTask.getReportSummary());
         } catch (InstantiationException | IllegalAccessException e) {
             String msg = "There was an error while executing the '" + task.getSimpleName() + "' task";
             System.err.println(msg + ". Please see logs for more details.");
             logger.error(msg, e);
         }
+    }
+
+    private static void setTarget(String[] target, Collection<Pathway> pathways){
+        if(target.length == 1){
+            String t = target[0];
+            if(t.toLowerCase().equals("all")) {
+                ConverterTasks.target = "all";
+                return;
+            }
+            DatabaseObjectService dos = ReactomeGraphCore.getService(DatabaseObjectService.class);
+            DatabaseObject obj = dos.findById(t);
+            if(obj instanceof Species){
+                ConverterTasks.target = obj;
+                return;
+            }
+        }
+        List<String> rtn = new ArrayList<>();
+        for (Pathway pathway : pathways) rtn.add(pathway.getStId());
+        ConverterTasks.target = rtn;
     }
 }
