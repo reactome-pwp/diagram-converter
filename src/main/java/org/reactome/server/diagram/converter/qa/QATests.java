@@ -1,6 +1,7 @@
 package org.reactome.server.diagram.converter.qa;
 
 import org.apache.commons.io.FileUtils;
+import org.reactome.server.diagram.converter.Main;
 import org.reactome.server.diagram.converter.graph.output.Graph;
 import org.reactome.server.diagram.converter.layout.output.Diagram;
 import org.reactome.server.diagram.converter.qa.common.ConverterQA;
@@ -44,7 +45,7 @@ public class QATests {
 
         System.out.println("· Diagram converter QA test initialisation:");
         System.out.print("\t>Initialising tests infrastructure...");
-        Reflections reflections = new Reflections(QATests.class.getPackage().getName());
+        Reflections reflections = new Reflections(Main.class.getPackage().getName());
 
         int d = 0, converterReports = 0;
         Set<Class<? extends ConverterQA>> tests = reflections.getSubTypesOf(ConverterQA.class);
@@ -114,7 +115,7 @@ public class QATests {
     }
 
     public static void writeReports() {
-        Reflections reflections = new Reflections(QATests.class.getPackage().getName());
+        Reflections reflections = new Reflections(Main.class.getPackage().getName());
         Set<Class<? extends ConverterQA>> tests = reflections.getSubTypesOf(ConverterQA.class);
 
         List<Report> reports = new ArrayList<>();
