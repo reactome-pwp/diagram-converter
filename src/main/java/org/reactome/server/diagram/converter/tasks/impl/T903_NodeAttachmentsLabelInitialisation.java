@@ -1,6 +1,6 @@
-package org.reactome.server.diagram.converter.tasks.nodeattachment;
+package org.reactome.server.diagram.converter.tasks.impl;
 
-import org.reactome.server.diagram.converter.tasks.common.ConverterTask;
+import org.reactome.server.diagram.converter.tasks.common.AbstractConverterTask;
 import org.reactome.server.diagram.converter.tasks.common.annotation.InitialTask;
 import org.reactome.server.graph.domain.model.AbstractModifiedResidue;
 import org.reactome.server.graph.exception.CustomQueryException;
@@ -15,13 +15,13 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Removes the labels field from all {@link AbstractModifiedResidue} instances in the graph database.
+ * Sets label fields for all {@link AbstractModifiedResidue} instances based on the PSI-MOD abbreviation.
  *
  * @author Antonio Fabregat (fabregat@ebi.ac.uk)
  */
 @SuppressWarnings("unused")
 @InitialTask(mandatory = true)
-public class NodeAttachmentsLabelInitialisation implements ConverterTask {
+public class T903_NodeAttachmentsLabelInitialisation extends AbstractConverterTask {
 
     // List of psiMod dbIds that correspond to glycans when GroupModifiedResidue instances have a modification
     // Provided by Bijay Jassal
@@ -34,12 +34,7 @@ public class NodeAttachmentsLabelInitialisation implements ConverterTask {
     private String report = "Not executed";
 
     @Override
-    public String getName() {
-        return "Node attachments label initialisation";
-    }
-
-    @Override
-    public String getReport() {
+    public String getReportSummary() {
         return report;
     }
 
@@ -53,6 +48,7 @@ public class NodeAttachmentsLabelInitialisation implements ConverterTask {
                 "     CASE WHEN (tm:GroupModifiedResidue) AND NOT m IS NULL AND psi.dbId IN {glycans} THEN 'G' " +
                 "          WHEN (tm:CrosslinkedResidue) AND NOT m IS NULL THEN 'CL' " +
                 "          ELSE psi.abbreviation END AS label " +
+                "WHERE NOT label IS NULL " +
                 "SET tm.label = label " +
                 "RETURN COUNT(DISTINCT tm) AS tms";
         try {

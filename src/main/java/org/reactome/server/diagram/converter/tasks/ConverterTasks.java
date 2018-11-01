@@ -89,7 +89,7 @@ public abstract class ConverterTasks {
             ConverterTask cTask = (ConverterTask) task.newInstance();
             System.out.print("\t> Running '" + cTask.getName() + "'...");
             cTask.run();
-            System.out.println("\r\t> " + cTask.getReport());
+            System.out.println("\r\t> " + cTask.getReportSummary());
         } catch (InstantiationException | IllegalAccessException e) {
             String msg = "There was an error while executing the '" + task.getSimpleName() + "' task";
             System.err.println(msg + ". Please see logs for more details.");

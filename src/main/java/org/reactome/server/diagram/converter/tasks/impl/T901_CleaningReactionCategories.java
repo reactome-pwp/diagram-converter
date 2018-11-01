@@ -1,6 +1,6 @@
-package org.reactome.server.diagram.converter.tasks.reaction;
+package org.reactome.server.diagram.converter.tasks.impl;
 
-import org.reactome.server.diagram.converter.tasks.common.ConverterTask;
+import org.reactome.server.diagram.converter.tasks.common.AbstractConverterTask;
 import org.reactome.server.diagram.converter.tasks.common.annotation.InitialTask;
 import org.reactome.server.graph.domain.model.ReactionLikeEvent;
 import org.reactome.server.graph.exception.CustomQueryException;
@@ -11,13 +11,13 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Removes the category field from all {@link ReactionLikeEvent} instances in the graph database. This field will be
- * populated again during the conversion process and by the {@link RemainingReactionCategories} task.
+ * populated again during the conversion process and by the {@link T902_RemainingReactionCategories} task.
  *
  * @author Antonio Fabregat (fabregat@ebi.ac.uk)
  */
 @SuppressWarnings("unused")
 @InitialTask
-public class CleaningReactionCategories implements ConverterTask {
+public class T901_CleaningReactionCategories extends AbstractConverterTask {
 
     private static final Logger logger = LoggerFactory.getLogger("converter");
 
@@ -26,12 +26,7 @@ public class CleaningReactionCategories implements ConverterTask {
     private String report = "Not executed";
 
     @Override
-    public String getName() {
-        return "Reactions category cleanup";
-    }
-
-    @Override
-    public String getReport() {
+    public String getReportSummary() {
         return report;
     }
 

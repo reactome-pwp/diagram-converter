@@ -1,7 +1,7 @@
-package org.reactome.server.diagram.converter.tasks.reaction;
+package org.reactome.server.diagram.converter.tasks.impl;
 
 import org.reactome.server.diagram.converter.qa.common.data.ShapeType;
-import org.reactome.server.diagram.converter.tasks.common.ConverterTask;
+import org.reactome.server.diagram.converter.tasks.common.AbstractConverterTask;
 import org.reactome.server.diagram.converter.tasks.common.annotation.FinalTask;
 import org.reactome.server.graph.domain.model.Pathway;
 import org.reactome.server.graph.domain.model.ReactionLikeEvent;
@@ -28,7 +28,7 @@ import java.util.Map;
  */
 @SuppressWarnings("unused")
 @FinalTask
-public class RemainingReactionCategories implements ConverterTask {
+public class T902_RemainingReactionCategories extends AbstractConverterTask {
 
     private static final Logger logger = LoggerFactory.getLogger("converter");
 
@@ -37,12 +37,7 @@ public class RemainingReactionCategories implements ConverterTask {
     private String report = "Not executed";
 
     @Override
-    public String getName() {
-        return "Orphan reactions categorisation";
-    }
-
-    @Override
-    public String getReport() {
+    public String getReportSummary() {
         return report;
     }
 

@@ -7,7 +7,7 @@ public interface ConverterTask {
 
     String getName();
 
-    String getReport();
+    String getReportSummary();
 
     void run();
 
