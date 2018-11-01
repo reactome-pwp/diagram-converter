@@ -11,7 +11,4 @@ import java.lang.annotation.Target;
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface InitialTask {
-
-    boolean mandatory() default false;
-
 }
