@@ -11,16 +11,9 @@ import org.slf4j.LoggerFactory;
 import java.util.*;
 
 /**
- * This class is responsible for annotating the trivial molecules in every diagram.
- * The list of trivial molecules is specified in a tsv file (trivialChemicals.txt)
- * with 2 columns. The first column is mandatory and has the identifier of the molecule
- * (e.g. chEBI Id) while the second column is optional and contains the name of the molecule.
- * <p>
- * For example:
- * 15377	H2O
- * 16761	ADP
- * 15422	ATP
- * <p>
+ * This class is responsible for annotating the house keeping molecules (trivial molecules) in every diagram.
+ * The list of trivial molecules is retrieved from the graph database.
+ *
  * NOTE: To function properly, the class requires a map of physical entities produced by the
  * {@link org.reactome.server.diagram.converter.graph.DiagramGraphFactory DiagramGraphFactory}
  *
