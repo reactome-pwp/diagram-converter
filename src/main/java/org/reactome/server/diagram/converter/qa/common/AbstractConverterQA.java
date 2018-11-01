@@ -1,6 +1,7 @@
 package org.reactome.server.diagram.converter.qa.common;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -25,7 +26,7 @@ public abstract class AbstractConverterQA implements ConverterQA {
 
     protected abstract String getHeader();
 
-    public List<String> getReport(List<String> lines) {
+    public List<String> getReport(Collection<String> lines) {
         if (!lines.isEmpty()) {
             List<String> rtn = new ArrayList<>(lines);
             rtn.add(0, getHeader());
