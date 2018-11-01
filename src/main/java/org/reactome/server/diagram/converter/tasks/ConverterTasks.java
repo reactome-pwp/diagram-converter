@@ -36,31 +36,26 @@ public abstract class ConverterTasks {
 
         int d = 0;
         Set<Class<? extends ConverterTask>> tasks = reflections.getSubTypesOf(ConverterTask.class);
-        for (Class<?> task : tasks)
+        for (Class<?> task : tasks) {
             if (task.getAnnotation(Deprecated.class) != null) d++;
             else {
-                for (Annotation annotation : task.getAnnotations())
+                for (Annotation annotation : task.getAnnotations()) {
                     if (annotation instanceof InitialTask) {
                         if (all) {
                             initialTasks.add(task);
-                        } else {
-                            InitialTask initialTask = (InitialTask) annotation;
-                            if (initialTask.mandatory()) {
-                                initialTasks.add(task);
-                            }
+                        } else if (((InitialTask) annotation).mandatory()) {
+                            initialTasks.add(task);
                         }
-
                     } else if (annotation instanceof FinalTask) {
                         if (all) {
                             finalTasks.add(task);
-                        } else {
-                            FinalTask initialTask = (FinalTask) annotation;
-                            if (initialTask.mandatory()) {
-                                finalTasks.add(task);
-                            }
+                        } else if (((FinalTask) annotation).mandatory()) {
+                            finalTasks.add(task);
                         }
                     }
+                }
             }
+        }
         int a = initialTasks.size() + finalTasks.size();
         int t = a + d;
         System.out.println(String.format("\r\t>%3d task%s found:", t, t == 1 ? "" : "s"));
