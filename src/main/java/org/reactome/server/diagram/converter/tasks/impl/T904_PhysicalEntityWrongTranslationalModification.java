@@ -89,7 +89,7 @@ public class T904_PhysicalEntityWrongTranslationalModification extends AbstractC
                 "OPTIONAL MATCH (a)-[:created]->(pe) " +
                 "OPTIONAL MATCH (m)-[:modified]->(pe) " +
                 "WITH DISTINCT pe, tm, psi, a, m " +
-                "ORDER BY m.displayName, a.displayName " +
+                "ORDER BY m.displayName, a.displayName, pe.stId, tm.displayName " +
                 "RETURN DISTINCT pe.stId + ',\"' + pe.displayName + '\",\"' + tm.displayName + '\",' + tm.schemaClass + ',\"' + psi.displayName + '\",\"' + a.displayName + '\",\"' + m.displayName + '\"' AS line";
         try {
             Collection<String> res = ads.getCustomQueryResults(String.class, query, params);
