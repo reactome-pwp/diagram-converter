@@ -5,10 +5,9 @@ import org.reactome.server.diagram.converter.layout.output.Diagram;
 import org.reactome.server.diagram.converter.tasks.common.ConverterTask;
 import org.reactome.server.diagram.converter.tasks.common.annotation.FinalTask;
 import org.reactome.server.diagram.converter.tasks.common.annotation.InitialTask;
-import org.reactome.server.graph.domain.model.DatabaseObject;
 import org.reactome.server.graph.domain.model.Pathway;
 import org.reactome.server.graph.domain.model.Species;
-import org.reactome.server.graph.service.DatabaseObjectService;
+import org.reactome.server.graph.service.SpeciesService;
 import org.reactome.server.graph.utils.ReactomeGraphCore;
 import org.reflections.Reflections;
 import org.slf4j.Logger;
@@ -92,16 +91,15 @@ public abstract class ConverterTasks {
         }
     }
 
-    private static void setTarget(String[] target, Collection<Pathway> pathways){
-        if(target.length == 1){
+    private static void setTarget(String[] target, Collection<Pathway> pathways) {
+        if (target.length == 1) {
             String t = target[0];
-            if(t.toLowerCase().equals("all")) {
+            if (t.toLowerCase().equals("all")) {
                 ConverterTasks.target = "all";
                 return;
             }
-            DatabaseObjectService dos = ReactomeGraphCore.getService(DatabaseObjectService.class);
-            DatabaseObject obj = dos.findById(t);
-            if(obj instanceof Species){
+            Species obj = ReactomeGraphCore.getService(SpeciesService.class).getSpecies(t);
+            if (obj != null) {
                 ConverterTasks.target = obj;
                 return;
             }
