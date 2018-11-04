@@ -49,7 +49,7 @@ public class T116_StoichiometryMismatch extends AbstractConverterQA implements D
 
     @Override
     public void run(Diagram diagram) {
-        if (diagram.getNodes() == null) return; //This scenario is reported in T101_DiagramEmpty
+        if (diagram.getNodes() == null) return; //This is reported in T101_DiagramEmpty
 
         Map<Long, Map<Connector.Type, Map<Long, Integer>>> rxns = getReactionParticipans(diagram);
 
@@ -65,6 +65,7 @@ public class T116_StoichiometryMismatch extends AbstractConverterQA implements D
                     case INPUT:
                     case OUTPUT:
                         Map<Connector.Type, Map<Long, Integer>> rle = rxns.get(edge.reactomeId);
+                        if(rle == null) continue; //This is reported in T702_DiagramMissingReaction
                         Map<Long, Integer> participants = rle.get(connector.type);
                         try {
                             expected = participants.get(node.reactomeId);
