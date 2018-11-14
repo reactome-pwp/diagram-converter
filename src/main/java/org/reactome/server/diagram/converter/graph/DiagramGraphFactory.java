@@ -10,6 +10,7 @@ import org.reactome.server.diagram.converter.graph.query.QueryResult;
 import org.reactome.server.diagram.converter.graph.query.SubpathwaysQueryResult;
 import org.reactome.server.diagram.converter.layout.output.Diagram;
 import org.reactome.server.diagram.converter.layout.output.Node;
+import org.reactome.server.diagram.converter.qa.diagram.T105_RenderableClassMismatch;
 import org.reactome.server.graph.exception.CustomQueryException;
 import org.reactome.server.graph.service.AdvancedDatabaseObjectService;
 import org.reactome.server.graph.utils.ReactomeGraphCore;
@@ -58,11 +59,10 @@ public class DiagramGraphFactory {
                 if(!processNodes.contains(node.reactomeId)) node.renderableClass = "EncapsulatedNode";
             }
 
-            if(structuresDrug.contains(node.reactomeId)){
-                //Uncomment next line when there is a need to add it to the RenderableClassMismatch test result since it has already been executed at this point
-                //T105_RenderableClassMismatch.add(diagram.getStableId(), diagram.getDisplayName(), node.reactomeId, node.schemaClass, node.displayName, node.renderableClass,"EntitySetDrug");
-                //noinspection StringConcatenationInLoop
-                node.renderableClass += "Drug";
+            if(structuresDrug.contains(node.reactomeId) && !node.renderableClass.endsWith("Drug")) {
+                String rightRC = node.renderableClass + "Drug";
+                T105_RenderableClassMismatch.add(diagram.getStableId(), diagram.getDisplayName(), node.reactomeId, node.schemaClass, node.displayName, node.renderableClass, rightRC);
+                node.renderableClass = rightRC ;
             }
         }
 

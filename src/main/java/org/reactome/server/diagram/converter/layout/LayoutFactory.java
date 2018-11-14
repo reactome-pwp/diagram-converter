@@ -7,6 +7,9 @@ import org.reactome.server.diagram.converter.layout.input.model.Process;
 import org.reactome.server.diagram.converter.layout.output.*;
 import org.reactome.server.diagram.converter.qa.diagram.*;
 import org.reactome.server.diagram.converter.utils.TestReportsHelper;
+import org.reactome.server.graph.domain.model.Drug;
+import org.reactome.server.graph.service.DatabaseObjectService;
+import org.reactome.server.graph.utils.ReactomeGraphCore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,6 +25,7 @@ public abstract class LayoutFactory {
 
     private static Logger logger = LoggerFactory.getLogger("converter");
     private static Diagram outputDiagram = null;
+    private static DatabaseObjectService dos = ReactomeGraphCore.getService(DatabaseObjectService.class);
 
     public static Diagram getDiagramFromProcess(Process inputProcess, GKInstance pathway, String stId) {
 
@@ -198,8 +202,12 @@ public abstract class LayoutFactory {
         try {
             if (obj.schemaClass.equals("SimpleEntity") && !obj.renderableClass.equals("Chemical")) {
                 correction = "Chemical";
-            } else if (obj.schemaClass.endsWith("ChemicalDrug") && !obj.renderableClass.equals("ChemicalDrug")) {
-                correction = "ChemicalDrug";
+            } else if (obj.schemaClass.equals("Drug")) {
+                Drug drug = dos.findById(obj.reactomeId);
+                String drugType = drug.getDrugType().getDisplayName();
+                if (!obj.renderableClass.equals(drugType)) {
+                    correction = drugType;
+                }
             } else if (obj.schemaClass.equals("OtherEntity") && !obj.renderableClass.equals("Entity")) {
                 correction = "Entity";
             } else if (obj.schemaClass.equals("Complex") && !obj.renderableClass.equals("Complex")) {
