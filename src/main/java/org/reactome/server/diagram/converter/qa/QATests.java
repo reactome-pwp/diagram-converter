@@ -120,6 +120,7 @@ public class QATests {
 
         List<Report> reports = new ArrayList<>();
         for (Class<?> test : tests) {
+            if (test.getAnnotation(Deprecated.class) != null) continue;
             try {
                 ConverterQA qa = (ConverterQA) test.newInstance();
                 storeCSV(qa.getNumeratedName(), qa.getReport());
