@@ -4,6 +4,7 @@ import org.reactome.server.diagram.converter.layout.output.*;
 import org.reactome.server.diagram.converter.qa.common.AbstractConverterQA;
 import org.reactome.server.diagram.converter.qa.common.QAPriority;
 import org.reactome.server.diagram.converter.qa.common.annotation.DiagramTest;
+import org.reactome.server.diagram.converter.utils.reports.TestReportsHelper;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -30,7 +31,7 @@ public class T108_IsolatedGlyphs extends AbstractConverterQA implements DiagramQ
 
     @Override
     protected String getHeader() {
-        return "Diagram,DiagramName,PhysicalEntity,PhysicalEntityName";
+        return "Diagram,DiagramName,PhysicalEntity,PhysicalEntityName,Created,Modified";
     }
 
     @Override
@@ -71,7 +72,12 @@ public class T108_IsolatedGlyphs extends AbstractConverterQA implements DiagramQ
         if (nodesMap.size() > 0) {
             for (Node node : nodesMap.values()) {
                 diagram.removeNode(node);
-                lines.add(String.format("%s,\"%s\",%s,\"%s\"", diagram.getStableId(), diagram.getDisplayName(), node.reactomeId, node.displayName));
+                lines.add(String.format("%s,\"%s\",%s,\"%s\",%s",
+                        diagram.getStableId(),
+                        diagram.getDisplayName(),
+                        node.reactomeId,
+                        node.displayName,
+                        TestReportsHelper.getCreatedModified(diagram.getDbId())));
             }
         }
     }

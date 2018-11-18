@@ -5,7 +5,8 @@ import org.reactome.server.diagram.converter.layout.output.Node;
 import org.reactome.server.diagram.converter.qa.common.AbstractConverterQA;
 import org.reactome.server.diagram.converter.qa.common.QAPriority;
 import org.reactome.server.diagram.converter.qa.common.annotation.DiagramTest;
-import org.reactome.server.diagram.converter.utils.TestReportsHelper;
+import org.reactome.server.diagram.converter.utils.reports.Participant;
+import org.reactome.server.diagram.converter.utils.reports.TestReportsHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,9 +44,9 @@ public class T103_ExtraParticipantInDiagram extends AbstractConverterQA implemen
 
     @Override
     public void run(Diagram diagram) {
-        Map<Long, String> map = TestReportsHelper.getParticipantsSchemaClass(diagram.getDbId());
+        Map<Long, Participant> participants = TestReportsHelper.getDiagramParticipants(diagram.getDbId());
         for (Node node : diagram.getNodes()) {
-            String targetSchemaClass = map.get(node.reactomeId);
+            Participant targetSchemaClass = participants.get(node.reactomeId);
             if (targetSchemaClass == null) {
                 if (!"Pathway".equals(node.schemaClass) && !"ProcessNode".equals(node.renderableClass)) {
                     boolean isFadeOut = node.isFadeOut != null && node.isFadeOut;

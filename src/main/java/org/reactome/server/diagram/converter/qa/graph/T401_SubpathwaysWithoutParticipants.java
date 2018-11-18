@@ -4,7 +4,7 @@ import org.reactome.server.diagram.converter.graph.output.Graph;
 import org.reactome.server.diagram.converter.qa.common.AbstractConverterQA;
 import org.reactome.server.diagram.converter.qa.common.QAPriority;
 import org.reactome.server.diagram.converter.qa.common.annotation.GraphTest;
-import org.reactome.server.diagram.converter.utils.SupathwayDetails;
+import org.reactome.server.diagram.converter.utils.reports.SupathwayDetails;
 import org.reactome.server.graph.exception.CustomQueryException;
 import org.reactome.server.graph.service.AdvancedDatabaseObjectService;
 import org.reactome.server.graph.utils.ReactomeGraphCore;

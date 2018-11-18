@@ -7,7 +7,7 @@ import org.reactome.server.diagram.converter.layout.output.Node;
 import org.reactome.server.diagram.converter.qa.common.AbstractConverterQA;
 import org.reactome.server.diagram.converter.qa.common.QAPriority;
 import org.reactome.server.diagram.converter.qa.common.annotation.DiagramTest;
-import org.reactome.server.diagram.converter.utils.TestReportsHelper;
+import org.reactome.server.diagram.converter.utils.reports.TestReportsHelper;
 import org.reactome.server.graph.domain.model.ReactionLikeEvent;
 import org.reactome.server.graph.exception.CustomQueryException;
 import org.reactome.server.graph.service.AdvancedDatabaseObjectService;

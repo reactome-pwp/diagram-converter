@@ -13,7 +13,7 @@ import org.reactome.server.diagram.converter.qa.common.annotation.PostTest;
 import org.reactome.server.diagram.converter.qa.diagram.DiagramQA;
 import org.reactome.server.diagram.converter.qa.graph.GraphQA;
 import org.reactome.server.diagram.converter.qa.post.PostQA;
-import org.reactome.server.diagram.converter.utils.Report;
+import org.reactome.server.diagram.converter.utils.reports.Report;
 import org.reflections.Reflections;
 
 import java.io.File;

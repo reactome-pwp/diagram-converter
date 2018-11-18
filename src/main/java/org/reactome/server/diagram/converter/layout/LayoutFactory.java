@@ -6,10 +6,8 @@ import org.reactome.server.diagram.converter.layout.input.model.*;
 import org.reactome.server.diagram.converter.layout.input.model.Process;
 import org.reactome.server.diagram.converter.layout.output.*;
 import org.reactome.server.diagram.converter.qa.diagram.*;
-import org.reactome.server.diagram.converter.utils.TestReportsHelper;
-import org.reactome.server.graph.domain.model.Drug;
-import org.reactome.server.graph.service.DatabaseObjectService;
-import org.reactome.server.graph.utils.ReactomeGraphCore;
+import org.reactome.server.diagram.converter.utils.reports.Participant;
+import org.reactome.server.diagram.converter.utils.reports.TestReportsHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,9 +21,9 @@ import java.util.*;
  */
 public abstract class LayoutFactory {
 
+    private static final String SEPARATOR = ",";
     private static Logger logger = LoggerFactory.getLogger("converter");
     private static Diagram outputDiagram = null;
-    private static DatabaseObjectService dos = ReactomeGraphCore.getService(DatabaseObjectService.class);
 
     public static Diagram getDiagramFromProcess(Process inputProcess, GKInstance pathway, String stId) {
 
@@ -42,11 +40,11 @@ public abstract class LayoutFactory {
             outputDiagram.setForNormalDraw(inputProcess.isForNormalDraw());
 
             //Parse General list-fields
-            outputDiagram.setNormalComponents(ListToSet(extractListFromString(inputProcess.getNormalComponents(), ",")));
-            outputDiagram.setDiseaseComponents(ListToSet(extractListFromString(inputProcess.getDiseaseComponents(), ",")));
-            outputDiagram.setCrossedComponents(ListToSet(extractListFromString(inputProcess.getCrossedComponents(), ",")));
-            outputDiagram.setNotFadeOut(ListToSet(extractListFromString(inputProcess.getOverlaidComponents(), ",")));
-            outputDiagram.setLofNodes(ListToSet(extractListFromString(inputProcess.getLofNodes(), ",")));
+            outputDiagram.setNormalComponents(ListToSet(extractListFromString(inputProcess.getNormalComponents(), SEPARATOR)));
+            outputDiagram.setDiseaseComponents(ListToSet(extractListFromString(inputProcess.getDiseaseComponents(), SEPARATOR)));
+            outputDiagram.setCrossedComponents(ListToSet(extractListFromString(inputProcess.getCrossedComponents(), SEPARATOR)));
+            outputDiagram.setNotFadeOut(ListToSet(extractListFromString(inputProcess.getOverlaidComponents(), SEPARATOR)));
+            outputDiagram.setLofNodes(ListToSet(extractListFromString(inputProcess.getLofNodes(), SEPARATOR)));
 
             //Parse Nodes
             List<NodeCommon> nodes = extractNodesList(inputProcess.getNodes());
@@ -113,7 +111,7 @@ public abstract class LayoutFactory {
             return null;
         }
 
-        Map<Long, String> participantsSchemaClass = TestReportsHelper.getParticipantsSchemaClass(outputDiagram.getDbId());
+        Map<Long, Participant> participants = TestReportsHelper.getDiagramParticipants(outputDiagram.getDbId());
 
         List<Object> inputNodesList = inputNodes.getOrgGkRenderProcessNodeOrOrgGkRenderRenderableChemicalOrOrgGkRenderRenderableChemicalDrug();
         for (Object inputNode : inputNodesList) {
@@ -127,8 +125,8 @@ public abstract class LayoutFactory {
                 } else {
                     try {
                         Node node = new Node(inputNode);
-                        if (!fixSchemaClass(node, participantsSchemaClass)) continue;
-                        fixBrokenRenderableClass(node);
+                        if (!fixSchemaClass(node, participants)) continue;
+                        fixBrokenRenderableClass(node, participants);
                         rtn.add(node);
                     } catch (RuntimeException e) {
                         try {
@@ -146,8 +144,9 @@ public abstract class LayoutFactory {
     }
 
     // Sometimes a node does not have a schemaClass
-    private static boolean fixSchemaClass(Node node, Map<Long, String> map) {
-        String targetSchemaClass = map.get(node.reactomeId);
+    private static boolean fixSchemaClass(Node node, Map<Long, Participant> map) {
+        Participant participant = map.get(node.reactomeId);
+        String targetSchemaClass = participant != null ? participant.getSchemaClass() : null;
         boolean rtn = true;
         if (targetSchemaClass == null) {
             if (node.schemaClass == null) {
@@ -195,29 +194,11 @@ public abstract class LayoutFactory {
         return rtn;
     }
 
-    private static final Set<String> SETS_TYPES = new HashSet<>(Arrays.asList("OpenSet", "CandidateSet", "DefineSet", "DefinedSet", "EntitySet"));
-
-    private static void fixBrokenRenderableClass(DiagramObject obj) {
-        String correction = "";
-        try {
-            if (obj.schemaClass.equals("SimpleEntity") && !obj.renderableClass.equals("Chemical")) {
-                correction = "Chemical";
-            } else if (obj.schemaClass.equals("Drug")) {
-                Drug drug = dos.findById(obj.reactomeId);
-                String drugType = drug.getDrugType().getDisplayName();
-                if (!obj.renderableClass.equals(drugType)) {
-                    correction = drugType;
-                }
-            } else if (obj.schemaClass.equals("OtherEntity") && !obj.renderableClass.equals("Entity")) {
-                correction = "Entity";
-            } else if (obj.schemaClass.equals("Complex") && !obj.renderableClass.equals("Complex")) {
-                correction = "Complex";
-            } else if (obj.schemaClass.equals("GenomeEncodedEntity") && !obj.renderableClass.equals("Entity")) {
-                correction = "Entity";
-            } else if (SETS_TYPES.contains(obj.schemaClass) && !obj.renderableClass.equals("EntitySet")) {
-                correction = "EntitySet";
-            }
-            if (!correction.isEmpty()) {
+    private static void fixBrokenRenderableClass(DiagramObject obj, Map<Long, Participant> participants) {
+        Participant participant = participants.get(obj.reactomeId);
+        if (participant != null) {
+            String correction = participant.getRenderableClass();
+            if (!obj.renderableClass.equals(correction)) {
                 //Reports has to be done BEFORE correcting it
                 T105_RenderableClassMismatch.add(
                         outputDiagram.getStableId(),
@@ -230,8 +211,6 @@ public abstract class LayoutFactory {
                 );
                 obj.renderableClass = correction;
             }
-        } catch (NullPointerException e) {
-            logger.error(e.getMessage(), e);
         }
     }
 
@@ -247,7 +226,7 @@ public abstract class LayoutFactory {
         return edge;
     }
 
-    private static List<ReactionPart> processReactionParts(Long edgeId, List<ReactionPart> reactionParts) {
+    private static void processReactionParts(Long edgeId, List<ReactionPart> reactionParts) {
         if (reactionParts != null) {
             Set<Long> aux = new HashSet<>();
             Iterator<ReactionPart> it = reactionParts.iterator();
@@ -264,7 +243,6 @@ public abstract class LayoutFactory {
                 }
             }
         }
-        return reactionParts;
     }
 
     /*
@@ -282,6 +260,7 @@ public abstract class LayoutFactory {
     /*
      * Convert a string of values into a list of longs
      */
+    @SuppressWarnings("SameParameterValue")
     private static List<Long> extractListFromString(String inputString, String separator) {
         List<Long> outputList = null;
         if (inputString != null) {

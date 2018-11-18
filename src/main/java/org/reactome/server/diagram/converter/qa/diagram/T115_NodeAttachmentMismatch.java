@@ -4,7 +4,7 @@ import org.reactome.server.diagram.converter.layout.output.*;
 import org.reactome.server.diagram.converter.qa.common.AbstractConverterQA;
 import org.reactome.server.diagram.converter.qa.common.QAPriority;
 import org.reactome.server.diagram.converter.qa.common.annotation.DiagramTest;
-import org.reactome.server.diagram.converter.utils.TestReportsHelper;
+import org.reactome.server.diagram.converter.utils.reports.TestReportsHelper;
 import org.reactome.server.graph.domain.model.AbstractModifiedResidue;
 import org.reactome.server.graph.domain.model.EntityWithAccessionedSequence;
 import org.reactome.server.graph.domain.model.TranslationalModification;

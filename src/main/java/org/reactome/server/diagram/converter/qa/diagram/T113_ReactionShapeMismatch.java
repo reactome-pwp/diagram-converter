@@ -10,7 +10,7 @@ import org.reactome.server.diagram.converter.qa.common.QAPriority;
 import org.reactome.server.diagram.converter.qa.common.annotation.DiagramTest;
 import org.reactome.server.diagram.converter.qa.common.data.ReactionShape;
 import org.reactome.server.diagram.converter.qa.common.data.ShapeType;
-import org.reactome.server.diagram.converter.utils.TestReportsHelper;
+import org.reactome.server.diagram.converter.utils.reports.TestReportsHelper;
 import org.reactome.server.graph.exception.CustomQueryException;
 import org.reactome.server.graph.service.AdvancedDatabaseObjectService;
 import org.reactome.server.graph.utils.ReactomeGraphCore;
