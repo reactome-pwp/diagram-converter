@@ -9,7 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
+ * @author Kostas Sidiropoulos (ksidiro@ebi.ac.uk)
+ * @author Antonio Fabregat (fabregat@ebi.ac.uk)
  */
 @SuppressWarnings("unused")
 @ConverterReport
@@ -38,7 +39,7 @@ public class T112_UnidentifiedCompartments extends AbstractConverterQA implement
     }
 
     public static void add(String diagram, String diagramName, Long compartment){
-        lines.add(String.format("%s,\"%s\",%s,%s,%s,%s",
+        lines.add(String.format("%s,\"%s\",%s,%s",
                 diagram,
                 diagramName,
                 compartment,

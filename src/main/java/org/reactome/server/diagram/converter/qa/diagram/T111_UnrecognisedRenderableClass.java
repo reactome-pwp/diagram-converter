@@ -9,8 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
- * @author Antonio Fabregat <fabregat@ebi.ac.uk>
+ * @author Kostas Sidiropoulos (ksidiro@ebi.ac.uk)
+ * @author Antonio Fabregat (fabregat@ebi.ac.uk)
  */
 @SuppressWarnings("unused")
 @ConverterReport
@@ -39,7 +39,7 @@ public class T111_UnrecognisedRenderableClass extends AbstractConverterQA implem
     }
 
     public static void add(String diagram, String diagramName, Long entity, String renderableClass){
-        lines.add(String.format("%s,\"%s\",%s,\"%s\",%s,%s,%s",
+        lines.add(String.format("%s,\"%s\",%s,\"%s\",%s",
                 diagram,
                 diagramName,
                 entity,
