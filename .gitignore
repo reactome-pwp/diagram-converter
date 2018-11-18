@@ -27,7 +27,7 @@ local.properties
 .loadpath
 
 logs
-reports
+/reports
 
 # External tool builders
 .externalToolBuilders/
