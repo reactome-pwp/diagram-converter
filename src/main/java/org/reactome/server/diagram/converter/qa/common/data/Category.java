@@ -3,7 +3,7 @@ package org.reactome.server.diagram.converter.qa.common.data;
 /**
  * @author Antonio Fabregat (fabregat@ebi.ac.uk)
  */
-public enum ShapeType {
+public enum Category {
 
     TRANSITION("transition"),
     BINDING("binding"),
@@ -13,7 +13,7 @@ public enum ShapeType {
 
     private String name;
 
-    ShapeType(String name) {
+    Category(String name) {
         this.name = name;
     }
 
@@ -21,14 +21,14 @@ public enum ShapeType {
         return name;
     }
 
-    public static ShapeType getShapeType(String name) {
-        for (ShapeType value : values()) {
+    public static Category getShapeType(String name) {
+        for (Category value : values()) {
             if (value.name.equals(name)) return value;
         }
-        throw new IllegalArgumentException("'" + name + "' does not correspond to any ShapeType");
+        throw new IllegalArgumentException("'" + name + "' does not correspond to any Category");
     }
 
-    public boolean equals(ShapeType that) {
+    public boolean equals(Category that) {
         if (this == that) return true;
         //noinspection RedundantIfStatement
         if ((this == UNCERTAIN && that == OMITTED) || (this == OMITTED && that == UNCERTAIN)) return true;

@@ -3,17 +3,17 @@ package org.reactome.server.diagram.converter.qa.common.data;
 /**
  * @author Antonio Fabregat (fabregat@ebi.ac.uk)
  */
-public class ReactionShape {
+public class ReactionCategory {
 
     //The following two fields are automatically populated
     private Long dbId;
-    private String shape;
+    private String category;
 
     public Long getDbId() {
         return dbId;
     }
 
-    public ShapeType getShape() {
-        return ShapeType.getShapeType(shape);
+    public Category getCategory() {
+        return Category.getShapeType(category);
     }
 }

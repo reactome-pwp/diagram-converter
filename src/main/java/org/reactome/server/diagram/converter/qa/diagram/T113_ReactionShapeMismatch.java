@@ -8,8 +8,8 @@ import org.reactome.server.diagram.converter.layout.util.ShapeBuilder;
 import org.reactome.server.diagram.converter.qa.common.AbstractConverterQA;
 import org.reactome.server.diagram.converter.qa.common.QAPriority;
 import org.reactome.server.diagram.converter.qa.common.annotation.DiagramTest;
-import org.reactome.server.diagram.converter.qa.common.data.ReactionShape;
-import org.reactome.server.diagram.converter.qa.common.data.ShapeType;
+import org.reactome.server.diagram.converter.qa.common.data.Category;
+import org.reactome.server.diagram.converter.qa.common.data.ReactionCategory;
 import org.reactome.server.diagram.converter.utils.reports.TestReportsHelper;
 import org.reactome.server.graph.exception.CustomQueryException;
 import org.reactome.server.graph.service.AdvancedDatabaseObjectService;
@@ -58,13 +58,13 @@ public class T113_ReactionShapeMismatch extends AbstractConverterQA implements D
 
     @Override
     public void run(Diagram diagram) {
-        final Map<Long, ShapeType> reactionShape = getReactionsType(diagram.getStableId());
+        final Map<Long, Category> reactionCategory = getReactionsCategory(diagram.getStableId());
         for (Edge edge : diagram.getEdges()) {
             if(edge.isFadeOut != null && edge.isFadeOut) continue;
-            ShapeType rxnDiagramShape = getShapeType(edge);
-            ShapeType rxnGraphDBShape = reactionShape.get(edge.reactomeId);
-            if (rxnGraphDBShape == null) continue; //Already checked in {@link T703_ExtraReactionInDiagram})
-            if (!rxnDiagramShape.equals(rxnGraphDBShape)) {
+            Category rxnDiagramCategory = getShapeCategory(edge);
+            Category rxnGraphDBCategory = reactionCategory.get(edge.reactomeId);
+            if (rxnGraphDBCategory == null) continue; //Already checked in {@link T703_ExtraReactionInDiagram})
+            if (!rxnDiagramCategory.equals(rxnGraphDBCategory)) {
                 List<String> lines = map.computeIfAbsent(diagram.getStableId(), k -> new ArrayList<>());
                 lines.add(String.format("%s,\"%s\",%s,\"%s\",%s,%s,%s,%s",
                         diagram.getStableId(),
@@ -72,12 +72,12 @@ public class T113_ReactionShapeMismatch extends AbstractConverterQA implements D
                         edge.reactomeId,
                         edge.displayName,
                         edge.schemaClass,
-                        rxnDiagramShape.getName(),
-                        rxnGraphDBShape.getName(),
+                        rxnDiagramCategory.getName(),
+                        rxnGraphDBCategory.getName(),
                         TestReportsHelper.getCreatedModified(edge.reactomeId)));
 
                 if (FIX_CATEGORIES) {
-                    edge.reactionShape = getCorrectShape(edge.reactionShape, rxnDiagramShape, rxnGraphDBShape);
+                    edge.reactionShape = getCorrectShape(edge.reactionShape, rxnDiagramCategory, rxnGraphDBCategory);
                 }
             }
 
@@ -86,31 +86,31 @@ public class T113_ReactionShapeMismatch extends AbstractConverterQA implements D
             //inferred categories or (2) we simply use what is received in the original diagram XML.
             if (FIX_CATEGORIES) {
                 //Case 1: We want to store the inferred categories but keeping those that are UNCERTAIN from the XML
-                if (rxnGraphDBShape.equals(ShapeType.OMITTED) && rxnDiagramShape.equals(ShapeType.UNCERTAIN)) {
-                    setCategory(edge.reactomeId, rxnDiagramShape);
+                if (rxnGraphDBCategory.equals(Category.OMITTED) && rxnDiagramCategory.equals(Category.UNCERTAIN)) {
+                    setCategory(edge.reactomeId, rxnDiagramCategory);
                 } else {
-                    setCategory(edge.reactomeId, rxnGraphDBShape);
+                    setCategory(edge.reactomeId, rxnGraphDBCategory);
                 }
             } else {
                 //Case 2: We do not fix the categories, so we store what was found in the original diagram XML
-                setCategory(edge.reactomeId, rxnDiagramShape);
+                setCategory(edge.reactomeId, rxnDiagramCategory);
             }
 
         }
     }
 
-    private ShapeType getShapeType(Edge edge){
+    private Category getShapeCategory(Edge edge){
         switch (edge.reactionShape.type){
-            case CIRCLE: return ShapeType.BINDING;
-            case DOUBLE_CIRCLE: return ShapeType.DISSOCIATION;
+            case CIRCLE: return Category.BINDING;
+            case DOUBLE_CIRCLE: return Category.DISSOCIATION;
             case BOX:
-                if(edge.reactionShape.s == null || edge.reactionShape.s.trim().isEmpty()) return ShapeType.TRANSITION;
-                if("?".equals(edge.reactionShape.s)) return ShapeType.UNCERTAIN;
+                if(edge.reactionShape.s == null || edge.reactionShape.s.trim().isEmpty()) return Category.TRANSITION;
+                if("?".equals(edge.reactionShape.s)) return Category.UNCERTAIN;
         }
-        return ShapeType.OMITTED;
+        return Category.OMITTED;
     }
 
-    private Map<Long, ShapeType> getReactionsType(String stId) {
+    private Map<Long, Category> getReactionsCategory(String stId) {
         String query = "" +
                 "MATCH path=(p:Pathway{stId:{stId}})-[:hasEvent*]->(rle:ReactionLikeEvent) " +
                 "WHERE SINGLE(x IN NODES(path) WHERE (x:Pathway) AND x.hasDiagram) " +
@@ -135,82 +135,47 @@ public class T113_ReactionShapeMismatch extends AbstractConverterQA implements D
                 "                           ELSE {transition} " +
                 "                         END " +
                 "         ELSE {transition} " +
-                "       END AS shape";
+                "       END AS category";
         final Map<String, Object> params = new HashMap<>();
         params.put("stId", stId);
-        params.put("transition", ShapeType.TRANSITION.getName());
-        params.put("binding", ShapeType.BINDING.getName());
-        params.put("dissociation", ShapeType.DISSOCIATION.getName());
-        params.put("omitted", ShapeType.OMITTED.getName());
-        Map<Long, ShapeType> map = new HashMap<>();
+        params.put("transition", Category.TRANSITION.getName());
+        params.put("binding", Category.BINDING.getName());
+        params.put("dissociation", Category.DISSOCIATION.getName());
+        params.put("omitted", Category.OMITTED.getName());
+        Map<Long, Category> map = new HashMap<>();
         try {
-            Collection<ReactionShape> shapes = ads.getCustomQueryResults(ReactionShape.class, query, params);
-            for (ReactionShape reactionShape : shapes) map.put(reactionShape.getDbId(), reactionShape.getShape());
+            Collection<ReactionCategory> categories = ads.getCustomQueryResults(ReactionCategory.class, query, params);
+            for (ReactionCategory reactionCategory : categories) map.put(reactionCategory.getDbId(), reactionCategory.getCategory());
         } catch (CustomQueryException e) { /*Nothing here*/ }
         return map;
     }
 
-    private Shape getCorrectShape(Shape currentShape, ShapeType currentType, ShapeType newType) {
-        Shape newShape = currentShape;
+    private Shape getCorrectShape(Shape currentShape, Category currentCategory, Category newShapeCategory) {
         Coordinate c = currentShape.getCentre();
-        switch (currentType) {
-            case TRANSITION:
-                switch (newType) {
-                    case BINDING:
-                        newShape = ShapeBuilder.createReactionCircle(c);
-                        break;
-                    case DISSOCIATION:
-                        newShape = ShapeBuilder.createReactionDoubleCircle(c);
-                        break;
-                }
-                break;
-
+        switch (newShapeCategory) {
             case BINDING:
-                switch (newType) {
-                    case TRANSITION:
-                        newShape = ShapeBuilder.createReactionBox(c, "");
-                        break;
-                    case DISSOCIATION:
-                        newShape = ShapeBuilder.createReactionDoubleCircle(c);
-                        break;
-                }
-                break;
-
+                return ShapeBuilder.createReactionCircle(c);
             case DISSOCIATION:
-                switch (newType){
-                    case TRANSITION:
-                        newShape = ShapeBuilder.createReactionBox(c, "");
-                        break;
-                    case BINDING:
-                        newShape = ShapeBuilder.createReactionDoubleCircle(c);
-                        break;
-                }
-                break;
-
-            case UNCERTAIN:
+                return ShapeBuilder.createReactionDoubleCircle(c);
+            case TRANSITION:
+                return ShapeBuilder.createReactionBox(c, "");
             case OMITTED:
-                switch (newType){
-                    case TRANSITION:
-                        newShape = ShapeBuilder.createReactionBox(c, "");
-                        break;
-                    case BINDING:
-                        newShape = ShapeBuilder.createReactionDoubleCircle(c);
-                        break;
-                    case DISSOCIATION:
-                        newShape = ShapeBuilder.createReactionDoubleCircle(c);
-                        break;
-                }
+                String symbol = currentCategory.equals(Category.UNCERTAIN) ? "?" : "\\\\";
+                return ShapeBuilder.createReactionBox(c, symbol);
+            case UNCERTAIN:
+                return ShapeBuilder.createReactionBox(c, "?");
+            default:
+                return currentShape;
         }
-        return newShape;
     }
 
-    private void setCategory(Long dbId, ShapeType shapeType){
+    private void setCategory(Long dbId, Category category){
         String query = "" +
                 "MATCH (rle:ReactionLikeEvent{dbId:{dbId}}) " +
                 "SET rle.category={category} ";
         Map<String, Object> params = new HashMap<>();
         params.put("dbId", dbId);
-        params.put("category", shapeType.getName());
+        params.put("category", category.getName());
         ads.customQuery(query, params);
     }
 }

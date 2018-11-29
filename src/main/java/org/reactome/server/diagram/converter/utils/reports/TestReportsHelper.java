@@ -51,13 +51,15 @@ public abstract class TestReportsHelper {
                 "OPTIONAL MATCH (pe)-[:referenceEntity]->(re:ReferenceEntity) " +
                 "RETURN DISTINCT pe.dbId AS dbId, pe.schemaClass AS schemaClass, " +
                 "       CASE " +
-                "         WHEN (pe:EntitySet)                                               THEN 'EntitySet' " +
-                "         WHEN (pe:OtherEntity) OR (pe:Polymer) OR (pe:GenomeEncodedEntity) THEN 'Entity' " +
-                "         WHEN (pe:SimpleEntity)                                            THEN 'Chemical' " +
-                "         WHEN (re:ReferenceRNASequence)                                    THEN 'RNA' " +
-                "         WHEN (re:ReferenceDNASequence)                                    THEN 'Gene' " +
-                "         WHEN (re:ReferenceSequence)                                       THEN 'Protein' " +
-                "         ELSE                                                              pe.schemaClass " +
+                "         WHEN pe.schemaClass = 'OtherEntity'         THEN 'Entity' " +
+                "         WHEN pe.schemaClass = 'Polymer'             THEN 'Entity' " +
+                "         WHEN pe.schemaClass = 'GenomeEncodedEntity' THEN 'Entity' " +
+                "         WHEN pe.schemaClass = 'SimpleEntity'        THEN 'Chemical' " +
+                "         WHEN (pe:EntitySet)                         THEN 'EntitySet' " +
+                "         WHEN (re:ReferenceRNASequence)              THEN 'RNA' " +
+                "         WHEN (re:ReferenceDNASequence)              THEN 'Gene' " +
+                "         WHEN (re:ReferenceSequence)                 THEN 'Protein' " +
+                "         ELSE                                        pe.schemaClass " +
                 "       END AS renderableClass " +
                 "UNION " +
                 "MATCH (p:Pathway{hasDiagram:True, dbId:{dbId}})-[:hasEvent*]->(s:Pathway{hasDiagram:True}) " +
@@ -71,13 +73,15 @@ public abstract class TestReportsHelper {
                 "OPTIONAL MATCH (pe)-[:referenceEntity]->(re:ReferenceEntity) " +
                 "RETURN DISTINCT pe.dbId AS dbId, pe.schemaClass AS schemaClass, " +
                 "       CASE " +
-                "         WHEN (pe:EntitySet)                                               THEN 'EntitySet' " +
-                "         WHEN (pe:OtherEntity) OR (pe:Polymer) OR (pe:GenomeEncodedEntity) THEN 'Entity' " +
-                "         WHEN (pe:SimpleEntity)                                            THEN 'Chemical' " +
-                "         WHEN (re:ReferenceRNASequence)                                    THEN 'RNA' " +
-                "         WHEN (re:ReferenceDNASequence)                                    THEN 'Gene' " +
-                "         WHEN (re:ReferenceSequence)                                       THEN 'Protein' " +
-                "         ELSE                                                              pe.schemaClass " +
+                "         WHEN pe.schemaClass = 'OtherEntity'         THEN 'Entity' " +
+                "         WHEN pe.schemaClass = 'Polymer'             THEN 'Entity' " +
+                "         WHEN pe.schemaClass = 'GenomeEncodedEntity' THEN 'Entity' " +
+                "         WHEN pe.schemaClass = 'SimpleEntity'        THEN 'Chemical' " +
+                "         WHEN (pe:EntitySet)                         THEN 'EntitySet' " +
+                "         WHEN (re:ReferenceRNASequence)              THEN 'RNA' " +
+                "         WHEN (re:ReferenceDNASequence)              THEN 'Gene' " +
+                "         WHEN (re:ReferenceSequence)                 THEN 'Protein' " +
+                "         ELSE                                        pe.schemaClass " +
                 "       END AS renderableClass ";
         Map<String, Object> params = new HashMap<>();
         params.put("dbId", diagramDbId);
@@ -85,7 +89,6 @@ public abstract class TestReportsHelper {
             for (Participant participant : ads.getCustomQueryResults(Participant.class, query, params)) {
                 cache.put(participant.getDbId(), participant);
             }
-
         } catch (CustomQueryException e) {
             e.printStackTrace();
         }

@@ -1,6 +1,6 @@
 package org.reactome.server.diagram.converter.tasks.impl;
 
-import org.reactome.server.diagram.converter.qa.common.data.ShapeType;
+import org.reactome.server.diagram.converter.qa.common.data.Category;
 import org.reactome.server.diagram.converter.tasks.common.AbstractConverterTask;
 import org.reactome.server.diagram.converter.tasks.common.annotation.FinalTask;
 import org.reactome.server.graph.domain.model.Pathway;
@@ -90,10 +90,10 @@ public class T902_RemainingReactionCategories extends AbstractConverterTask {
                 "         ELSE {transition} " +
                 "       END " +
                 "RETURN COUNT(DISTINCT rle) AS updated";
-        params.put("transition", ShapeType.TRANSITION.getName());
-        params.put("binding", ShapeType.BINDING.getName());
-        params.put("dissociation", ShapeType.DISSOCIATION.getName());
-        params.put("omitted", ShapeType.OMITTED.getName());
+        params.put("transition", Category.TRANSITION.getName());
+        params.put("binding", Category.BINDING.getName());
+        params.put("dissociation", Category.DISSOCIATION.getName());
+        params.put("omitted", Category.OMITTED.getName());
         try {
             Integer c = ads.getCustomQueryResult(Integer.class, query, params);
             report = String.format("The 'category' field has been filled up for %,d orphan reactions", c);
