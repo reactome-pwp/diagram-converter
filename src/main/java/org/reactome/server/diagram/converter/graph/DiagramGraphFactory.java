@@ -88,7 +88,7 @@ public class DiagramGraphFactory {
         query = "" +
                 "MATCH path=(p:Pathway{dbId:{dbId}})-[:hasEvent*]->(rle:ReactionLikeEvent) " +
                 "WHERE SINGLE(x IN NODES(path) WHERE (x:Pathway) AND x.hasDiagram) " +
-                "MATCH (rle)-[:input|output|catalystActivity|entityFunctionalStatus|physicalEntity|regulatedBy|regulator|hasComponent|hasMember|hasCandidate|repeatedUnit*]->(pe:PhysicalEntity) " +
+                "MATCH (rle)-[:input|output|catalystActivity|physicalEntity|entityFunctionalStatus|diseaseEntity|regulatedBy|regulator|hasComponent|hasMember|hasCandidate|repeatedUnit*]->(pe:PhysicalEntity) " +
                 "WITH COLLECT(DISTINCT pe) AS pes " +
                 "UNWIND pes AS pe " +
                 "OPTIONAL MATCH (pe)-[:hasComponent|hasMember|hasCandidate|repeatedUnit]->(children:PhysicalEntity) " +
@@ -127,7 +127,7 @@ public class DiagramGraphFactory {
                 "OPTIONAL MATCH (rle)-[:input]->(i:PhysicalEntity) " +
                 "OPTIONAL MATCH (rle)-[:output]->(o:PhysicalEntity) " +
                 "OPTIONAL MATCH (rle)-[:catalystActivity|physicalEntity*]->(c:PhysicalEntity) " +
-                "OPTIONAL MATCH (rle)-[:entityFunctionalStatus|physicalEntity*]->(e:PhysicalEntity) " +
+                "OPTIONAL MATCH (rle)-[:entityFunctionalStatus|diseaseEntity*]->(e:PhysicalEntity) " +
                 "OPTIONAL MATCH (rle)-[:regulatedBy]->(reg:Regulation)-[:regulator]->(r:PhysicalEntity) " +
                 "OPTIONAL MATCH prep=(p)-[:hasEvent*]->(pre:ReactionLikeEvent)<-[:precedingEvent]-(rle) " +
                 "WHERE SINGLE(x IN NODES(prep) WHERE (x:Pathway) AND x.hasDiagram) " +
