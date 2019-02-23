@@ -63,7 +63,7 @@ public abstract class TestReportsHelper {
                 "       END AS renderableClass " +
                 "UNION " +
                 "MATCH (p:Pathway{hasDiagram:True, dbId:{dbId}})-[:hasEvent*]->(s:Pathway{hasDiagram:True}) " +
-                "RETURN DISTINCT s.dbId AS dbId, s.schemaClass AS schemaClass, 'ProcessNode' AS renderableClass " +
+                "RETURN DISTINCT s.dbId AS dbId, 'Pathway' AS schemaClass, 'ProcessNode' AS renderableClass " +
                 "UNION " +
                 "MATCH (:Pathway{hasDiagram:True, dbId:{dbId}})-[:normalPathway]->(p:Pathway), " +
                 "      path=(p)-[:hasEvent*]->(rle:ReactionLikeEvent) " +
