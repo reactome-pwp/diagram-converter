@@ -35,7 +35,7 @@ public abstract class ConverterTasks {
     private static Object target;
 
     public static void initialise(String[] target, Collection<Pathway> pathways) {
-        System.out.println("· Diagram converter tasks initialisation:");
+        System.out.println("\r· Diagram converter tasks initialisation:");
         System.out.print("\t>Initialising converter tasks infrastructure...");
 
         setTarget(target, pathways);
