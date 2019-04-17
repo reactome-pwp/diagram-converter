@@ -85,7 +85,7 @@ public class T904_PhysicalEntityWrongTranslationalModification extends AbstractC
 
         query += "" +
 //              "MATCH (psi:PsiMod)<-[:psiMod]-(tm:TranslationalModification)<-[:hasModifiedResidue]-(pe:PhysicalEntity{speciesName:{speciesName}}) " +
-                "WHERE psi.abbreviation IS NULL " +
+                "WHERE psi.label IS NULL " +
                 "OPTIONAL MATCH (a)-[:created]->(pe) " +
                 "OPTIONAL MATCH (m)-[:modified]->(pe) " +
                 "WITH DISTINCT pe, tm, psi, CASE WHEN a IS NULL THEN 'null' ELSE a.displayName END AS created, CASE WHEN m IS NULL THEN 'null' ELSE m.displayName END AS modified " +

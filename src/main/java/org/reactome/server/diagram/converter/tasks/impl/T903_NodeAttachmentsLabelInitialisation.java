@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory;
 import java.util.*;
 
 /**
- * Sets label fields for all {@link AbstractModifiedResidue} instances based on the PSI-MOD abbreviation.
+ * Sets label fields for all {@link AbstractModifiedResidue} instances based on the PSI-MOD label.
  *
  * @author Antonio Fabregat (fabregat@ebi.ac.uk)
  */
@@ -66,7 +66,7 @@ public class T903_NodeAttachmentsLabelInitialisation extends AbstractConverterTa
                 "WITH DISTINCT tm, " +
                 "     CASE WHEN (tm:GroupModifiedResidue) AND NOT m IS NULL AND psi.dbId IN {glycans} THEN 'G' " +
                 "          WHEN (tm:CrosslinkedResidue) AND NOT m IS NULL THEN 'CL' " +
-                "          ELSE psi.abbreviation END AS label " +
+                "          ELSE psi.label END AS label " +
                 "WHERE NOT label IS NULL " +
                 "SET tm.label = label " +
                 "RETURN COUNT(DISTINCT tm) AS tms";
