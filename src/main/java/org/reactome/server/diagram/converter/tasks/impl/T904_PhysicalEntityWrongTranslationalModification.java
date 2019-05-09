@@ -46,7 +46,7 @@ public class T904_PhysicalEntityWrongTranslationalModification extends AbstractC
 
     @Override
     protected String getHeader() {
-        return "EWAS_Id,EWAS_Name,Modification,ModificationType,PSIMod,Created,Modified";
+        return "EWAS_Id,EWAS_Name,Modification,ModificationType,PSI_Id,PSIMod,Created,Modified";
     }
 
     @Override
@@ -90,7 +90,7 @@ public class T904_PhysicalEntityWrongTranslationalModification extends AbstractC
                 "OPTIONAL MATCH (m)-[:modified]->(pe) " +
                 "WITH DISTINCT pe, tm, psi, CASE WHEN a IS NULL THEN 'null' ELSE a.displayName END AS created, CASE WHEN m IS NULL THEN 'null' ELSE m.displayName END AS modified " +
                 "ORDER BY modified, created, pe.stId, tm.displayName " +
-                "RETURN DISTINCT pe.stId + ',\"' + pe.displayName + '\",\"' + tm.displayName+ '\",' + tm.schemaClass + ',\"' + psi.displayName + '\",\"' + created + '\",\"' + modified + '\"' AS line";
+                "RETURN DISTINCT pe.stId + ',\"' + pe.displayName + '\",\"' + tm.displayName+ '\",' + tm.schemaClass + ',\"' + psi.dbId + ',\"' + psi.displayName + '\",\"' + created + '\",\"' + modified + '\"' AS line";
         try {
             Collection<String> res = ads.getCustomQueryResults(String.class, query, params);
             if (res.size() > 0) {
