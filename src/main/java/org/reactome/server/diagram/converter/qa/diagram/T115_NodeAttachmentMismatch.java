@@ -68,7 +68,6 @@ public class T115_NodeAttachmentMismatch extends AbstractConverterQA implements 
                     } else {
                         List<TranslationalModification> l = expected.get(attach.reactomeId);
                         if (l == null || l.remove(0) == null) {
-                            //} expected.remove(attach.reactomeId) == null) {
                             attachExtraList.add(attach);
                             it.remove();
                         }
