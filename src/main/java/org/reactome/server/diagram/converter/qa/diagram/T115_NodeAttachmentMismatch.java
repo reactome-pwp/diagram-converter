@@ -55,16 +55,23 @@ public class T115_NodeAttachmentMismatch extends AbstractConverterQA implements 
             if (node.isFadeOut != null && node.isFadeOut) continue;
 
             //For every node, the map is filled up with the whole TM so removing is fine since next time will be filled again
-            Map<Long, TranslationalModification> expected = getTranslationalModifications(modifiedEwass.get(node.reactomeId));
+            Map<Long, List<TranslationalModification>> expected = getTranslationalModifications(modifiedEwass.get(node.reactomeId));
 
             List<NodeAttachment> attachExtraList = new ArrayList<>();
             if (node.nodeAttachments != null) {
                 Iterator<NodeAttachment> it = node.nodeAttachments.iterator();
-                while(it.hasNext()){ //Iterating while possibly removing from the iterated list
+                while (it.hasNext()) { //Iterating while possibly removing from the iterated list
                     NodeAttachment attach = it.next();
-                    if (attach.reactomeId == null || expected.remove(attach.reactomeId) == null) {
+                    if (attach.reactomeId == null) {
                         attachExtraList.add(attach);
                         it.remove();
+                    } else {
+                        List<TranslationalModification> l = expected.get(attach.reactomeId);
+                        if (l == null || l.remove(0) == null) {
+                            //} expected.remove(attach.reactomeId) == null) {
+                            attachExtraList.add(attach);
+                            it.remove();
+                        }
                     }
                 }
             }
@@ -72,16 +79,25 @@ public class T115_NodeAttachmentMismatch extends AbstractConverterQA implements 
             for (NodeAttachment attachExtra : attachExtraList)
                 report(diagram, node, "EXTRA", attachExtra.reactomeId, attachExtra.description);
 
-            for (TranslationalModification attachMissing : expected.values())
-                report(diagram, node, "MISSING", attachMissing.getDbId(), attachMissing.getDisplayName());
+            for (List<TranslationalModification> list : expected.values()) {
+                for (TranslationalModification attachMissing : list) {
+                    report(diagram, node, "MISSING", attachMissing.getDbId(), attachMissing.getDisplayName());
+                }
+            }
         }
     }
 
-    private Map<Long, TranslationalModification> getTranslationalModifications(EntityWithAccessionedSequence ewas) {
-        Map<Long, TranslationalModification> map = new HashMap<>();
-        if (ewas != null) for (AbstractModifiedResidue amr : ewas.getHasModifiedResidue())
-            if (amr instanceof TranslationalModification)
-                map.put(amr.getDbId(), (TranslationalModification) amr);
+    private Map<Long, List<TranslationalModification>> getTranslationalModifications(EntityWithAccessionedSequence ewas) {
+        Map<Long, List<TranslationalModification>> map = new HashMap<>();
+        if (ewas != null) {
+            for (AbstractModifiedResidue amr : ewas.getHasModifiedResidue()) {
+                if (amr instanceof TranslationalModification) {
+                    List<TranslationalModification> l = map.getOrDefault(amr.getDbId(), new ArrayList<>());
+                    l.add((TranslationalModification) amr);
+                    map.put(amr.getDbId(), l);
+                }
+            }
+        }
         return map;
     }
 
