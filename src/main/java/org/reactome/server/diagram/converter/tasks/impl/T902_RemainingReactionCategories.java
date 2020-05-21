@@ -74,8 +74,7 @@ public class T902_RemainingReactionCategories extends AbstractConverterTask {
                 "WITH DISTINCT rle, REDUCE(n=0, i IN ii | n + i.stoichiometry) AS ni, COLLECT(DISTINCT o) AS oo " +
                 "WITH DISTINCT rle, ni, REDUCE(n=0, o IN oo | n + o.stoichiometry) AS no " +
                 "WITH rle, ni-no AS d " +
-                "SET rle.category = " +
-                "       CASE " +
+                "WITH rle, CASE " +
                 "         WHEN (rle:BlackBoxEvent) THEN {omitted} " +
                 "         WHEN (rle:Polymerisation) OR (rle:Depolymerisation) THEN {transition} " +
                 "         WHEN (rle)-[:catalystActivity]->() THEN {transition} " +
@@ -88,7 +87,8 @@ public class T902_RemainingReactionCategories extends AbstractConverterTask {
                 "                           ELSE {transition} " +
                 "                         END " +
                 "         ELSE {transition} " +
-                "       END " +
+                "       END AS category " +
+                "SET rle.category = category " +
                 "RETURN COUNT(DISTINCT rle) AS updated";
         params.put("transition", Category.TRANSITION.getName());
         params.put("binding", Category.BINDING.getName());
