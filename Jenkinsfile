@@ -52,9 +52,9 @@ pipeline{
 				script{
 					def s3Path = "${env.S3_RELEASE_DIRECTORY_URL}/${currentRelease}/diagram_converter"
 					def diagramArchive = "diagrams-v${currentRelease}.tgz"
-					sh "tar -zcvf ${diagramArchive} ${diagramFolder}"
-					sh "mv ${diagramFolder} ${env.ABS_DOWNLOAD_PATH}/${currentRelease}/" 
-					sh "gzip reports/"
+					//sh "tar -zcvf ${diagramArchive} ${diagramFolder}"
+					//sh "mv ${diagramFolder} ${env.ABS_DOWNLOAD_PATH}/${currentRelease}/" 
+					sh "gzip reports/*"
 					sh "aws s3 --no-progress cp ${diagramArchive} $s3Path/"
 					sh "aws s3 --no-progress --recursive cp reports/ $s3Path/reports/"
 					sh "rm -r ${diagramArchive} reports"
