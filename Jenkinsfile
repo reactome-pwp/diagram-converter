@@ -7,7 +7,7 @@ pipeline{
 	agent any
 
 	stages{
-		// This stage checks that upstream projects AddLinks-Download and Orthoinference were run successfully for their last build.
+		// This stage checks that upstream project GenerateGraphDatabaseAndAnalysisCore was run successfully.
 		stage('Check Graph DB & Analysis Core build succeeded'){
 			steps{
 				script{
