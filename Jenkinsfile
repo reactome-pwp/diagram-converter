@@ -17,7 +17,7 @@ pipeline{
 					if (graphDBUrl.getStatus() == 404) {
 						error("GenerateGraphDatabaseAndAnalysisCore has not yet been run. Please complete a successful build.")
 					} else {
-						def graphDBJson = new JsonSlurper().parseText(graphDBStatusUrl.getContent())
+						def graphDBJson = new JsonSlurper().parseText(graphDBUrl.getContent())
 						if (graphDBJson['result'] != "SUCCESS"){
 							error("Most recent GenerateGraphDatabaseAndAnalysisCore build status: " + graphDBJson['result'] + ". Please complete a successful build.")
 						}
