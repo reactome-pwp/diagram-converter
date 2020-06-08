@@ -2,7 +2,7 @@ import groovy.json.JsonSlurper
 // This Jenkinsfile is used by Jenkins to run the DiagramConverter step of Reactome's release.
 // It requires that the GenerateGraphDatabaseAndAnalysisCore step has been run successfully before it can be run.
 def currentRelease
-
+def diagramFolder = "diagram"
 pipeline{
 	agent any
 
@@ -25,6 +25,7 @@ pipeline{
 				}
 			}
 		}
+		/*
 		// This stage builds the jar file using maven.
 		stage('Setup: Build jar file'){
 			steps{
@@ -36,13 +37,27 @@ pipeline{
 		stage('Main: Run Diagram-Converter'){
 			steps{
 				script{
-					def diagramFolder = "diagram"
 					sh "mkdir ${diagramFolder}"
 					withCredentials([usernamePassword(credentialsId: 'mySQLUsernamePassword', passwordVariable: 'mysqlPass', usernameVariable: 'mysqlUser')]){
 						withCredentials([usernamePassword(credentialsId: 'neo4jUsernamePassword', passwordVariable: 'neo4jPass', usernameVariable: 'neo4jUser')]){
 							sh "java -jar target/diagram-converter-jar-with-dependencies.jar --graph_user $neo4jUser --graph_password $neo4jPass --rel_user $mysqlUser --rel_password $mysqlPass --rel_database ${env.REACTOME} --output ./${diagramFolder}"
 						}
 					}
+				}
+			}
+		}
+		*/
+		stage('Post: Archive Outputs'){
+			steps{
+				script{
+					def s3Path = "${env.S3_RELEASE_DIRECTORY_URL}/${currentRelease}/diagram_converter"
+					def diagramArchive = "diagrams-v${currentRelease}.tgz"
+					sh "tar -zcvf ${diagramArchive} ${diagramFolder}"
+					sh "mv ${diagramFolder} ${env.ABS_DOWNLOAD_PATH}/${currentRelease}/" 
+					sh "gzip reports/"
+					sh "aws s3 --no-progress cp ${diagramArchive} $s3Path/"
+					sh "aws s3 --no-progress --recursive cp reports/ $s3Path/reports/"
+					sh "rm -r ${diagramArchive} reports"
 				}
 			}
 		}
