@@ -25,7 +25,6 @@ pipeline{
 				}
 			}
 		}
-		/*
 		// This stage builds the jar file using maven.
 		stage('Setup: Build jar file'){
 			steps{
@@ -34,6 +33,7 @@ pipeline{
 				}
 			}
 		}
+		// Execute the jar file, producing the diagram JSON files.
 		stage('Main: Run Diagram-Converter'){
 			steps{
 				script{
@@ -46,14 +46,14 @@ pipeline{
 				}
 			}
 		}
-		*/
+		// Archive everything on S3, and move the 'diagram' folder to the download/vXX folder.
 		stage('Post: Archive Outputs'){
 			steps{
 				script{
 					def s3Path = "${env.S3_RELEASE_DIRECTORY_URL}/${currentRelease}/diagram_converter"
 					def diagramArchive = "diagrams-v${currentRelease}.tgz"
-					//sh "tar -zcvf ${diagramArchive} ${diagramFolder}"
-					//sh "mv ${diagramFolder} ${env.ABS_DOWNLOAD_PATH}/${currentRelease}/" 
+					sh "tar -zcvf ${diagramArchive} ${diagramFolder}"
+					sh "mv ${diagramFolder} ${env.ABS_DOWNLOAD_PATH}/${currentRelease}/" 
 					sh "gzip reports/*"
 					sh "aws s3 --no-progress cp ${diagramArchive} $s3Path/"
 					sh "aws s3 --no-progress --recursive cp reports/ $s3Path/reports/"
