@@ -81,7 +81,7 @@ pipeline{
 		            def finalGraphDbArchive = "reactome.graphdb.tgz"
 		            def releaseVersion = utils.getReleaseVersion()
 		            def downloadPath = "${env.ABS_DOWNLOAD_PATH}/${releaseVersion}"
-		            sh "cp diagram-converter_graph_database.dump*tgz ${finalGraphDbArchive}"
+		            sh "cp diagram_converter_graph_database.dump*tgz ${finalGraphDbArchive}"
 		            sh "cp ${finalGraphDbArchive} ${downloadPath}/"
 		            sh "mv ${env.OUTPUT_FOLDER} ${downloadPath}/ "
 		        }
