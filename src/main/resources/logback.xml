@@ -43,8 +43,8 @@
     <logger name="org.springframework" level="ERROR" />
     <logger name="org.reflections.Reflections" level="ERROR" />
     <!-- Below packages log a lot of unnecessary information if not adjusted (jcook 2020) -->
-    <logger name="org.apache" level="WARN" />
-    <logger name="httpclient" level="WARN" /> 
+    <logger name="org.apache" level="ERROR" />
+    <logger name="httpclient" level="ERROR" /> 
 
 
 
