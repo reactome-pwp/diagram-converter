@@ -7,7 +7,7 @@
     <version>2.0.0</version>
     <packaging>jar</packaging>
 
-    <name>diagram-converter</name>
+    <name>Diagram Converter</name>
 
     <organization>
         <name>The European Bioinformatics Institute</name>
