@@ -62,7 +62,7 @@ pipeline{
 				def previousDiagramsArchive = "diagrams-v${previousReleaseVersion}.tgz"
 				sh "mkdir -p ${previousReleaseVersion}"
 				// Download previous diagram-converter output files and extract them.
-				sh "aws s3 --no-progress cp s3://reactome/private/releases/${previousReleaseVersion}/diagram_converter/${previousDiagramsArchive} ${previousReleaseVersion}/"
+				sh "aws s3 --no-progress cp s3://reactome/private/releases/${previousReleaseVersion}/diagram_converter/data/${previousDiagramsArchive} ${previousReleaseVersion}/"
 				dir("${previousReleaseVersion}"){
 					sh "tar -xf ${previousDiagramsArchive}"
 				}
