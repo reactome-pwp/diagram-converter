@@ -53,9 +53,16 @@
 
         <!--Reactome-base for MYSQL Adapter-->
         <dependency>
-            <groupId>org.reactome.base</groupId>
+            <groupId>org.
+            </groupId>
             <artifactId>reactome-base</artifactId>
             <version>${reactome.base}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>commons-httpclient</groupId>
+                    <artifactId>commons-httpclient</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <!--JSAP console reader-->
