@@ -53,8 +53,7 @@
 
         <!--Reactome-base for MYSQL Adapter-->
         <dependency>
-            <groupId>org.
-            </groupId>
+            <groupId>org.reactome.base</groupId>
             <artifactId>reactome-base</artifactId>
             <version>${reactome.base}</version>
             <exclusions>
