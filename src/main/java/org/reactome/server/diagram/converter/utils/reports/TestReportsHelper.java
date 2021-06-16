@@ -16,15 +16,13 @@ public abstract class TestReportsHelper {
     private static AdvancedDatabaseObjectService ads = ReactomeGraphCore.getService(AdvancedDatabaseObjectService.class);
 
     public static String getCreatedModified(Long dbId) {
-        Map<String, Object> parametersMap = new HashMap<>();
-        parametersMap.put("dbId", dbId);
         try {
             CurationDetails rtn = ads.getCustomQueryResult(CurationDetails.class, "" +
-                            "MATCH (d:DatabaseObject{dbId:{dbId}}) " +
+                            "MATCH (d:DatabaseObject{dbId:$dbId}) " +
                             "OPTIONAL MATCH (a)-[:created]->(d) " +
                             "OPTIONAL MATCH (m)-[:modified]->(d) " +
                             "RETURN a.displayName As created, m.displayName AS modified",
-                    parametersMap);
+                    Map.of("dbId", dbId));
             return rtn.toString();
         } catch (NullPointerException e) {
             return "N/A, N/A";  //dbId is not in the database
@@ -44,7 +42,7 @@ public abstract class TestReportsHelper {
         cache = new HashMap<>();
 
         String query = "" +
-                "MATCH path=(p:Pathway{hasDiagram:True, dbId:{dbId}})-[:hasEvent*]->(rle:ReactionLikeEvent) " +
+                "MATCH path=(p:Pathway{hasDiagram:True, dbId:$dbId})-[:hasEvent*]->(rle:ReactionLikeEvent) " +
                 "WHERE SINGLE(x IN NODES(path) WHERE (x:Pathway) AND x.hasDiagram) " +
                 "WITH DISTINCT rle " +
                 "MATCH (rle)-[:input|output|catalystActivity|physicalEntity|entityFunctionalStatus|diseaseEntity|regulatedBy|regulator*]->(pe:PhysicalEntity) " +
@@ -62,10 +60,10 @@ public abstract class TestReportsHelper {
                 "         ELSE                                        pe.schemaClass " +
                 "       END AS renderableClass " +
                 "UNION " +
-                "MATCH (p:Pathway{hasDiagram:True, dbId:{dbId}})-[:hasEvent*]->(s:Pathway{hasDiagram:True}) " +
+                "MATCH (p:Pathway{hasDiagram:True, dbId:$dbId})-[:hasEvent*]->(s:Pathway{hasDiagram:True}) " +
                 "RETURN DISTINCT s.dbId AS dbId, 'Pathway' AS schemaClass, 'ProcessNode' AS renderableClass " +
                 "UNION " +
-                "MATCH (:Pathway{hasDiagram:True, dbId:{dbId}})-[:normalPathway]->(p:Pathway), " +
+                "MATCH (:Pathway{hasDiagram:True, dbId:$dbId})-[:normalPathway]->(p:Pathway), " +
                 "      path=(p)-[:hasEvent*]->(rle:ReactionLikeEvent) " +
                 "WHERE SINGLE(x IN NODES(path) WHERE (x:Pathway) AND x.hasDiagram) " +
                 "WITH DISTINCT rle " +

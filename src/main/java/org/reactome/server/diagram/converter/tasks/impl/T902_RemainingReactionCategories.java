@@ -51,12 +51,12 @@ public class T902_RemainingReactionCategories extends AbstractConverterTask {
             query = "MATCH (rle:ReactionLikeEvent) " +
                     "WHERE rle.category IS NULL ";
         } else if (target instanceof Species) {
-            query = "MATCH (rle:ReactionLikeEvent)-[:species]->(:Species{displayName:{speciesName}}) " +
+            query = "MATCH (rle:ReactionLikeEvent)-[:species]->(:Species{displayName:$speciesName}) " +
                     "WHERE rle.category IS NULL ";
             params.put("speciesName", ((Species) target).getDisplayName());
         } else if (target instanceof Collection) {
             query = "MATCH path=(p:Pathway{hasDiagram:true})-[:hasEvent*]->(rle:ReactionLikeEvent) " +
-                    "WHERE p.stId IN {stIds} AND rle.category IS NULL AND SINGLE(x IN NODES(path) WHERE (x:Pathway) AND x.hasDiagram) " +
+                    "WHERE p.stId IN $stIds AND rle.category IS NULL AND SINGLE(x IN NODES(path) WHERE (x:Pathway) AND x.hasDiagram) " +
                     "WITH DISTINCT rle ";
             params.put("stIds", target);
         } else {
@@ -75,20 +75,20 @@ public class T902_RemainingReactionCategories extends AbstractConverterTask {
                 "WITH DISTINCT rle, ni, REDUCE(n=0, o IN oo | n + o.stoichiometry) AS no " +
                 "WITH rle, ni-no AS d " +
                 "WITH rle, CASE " +
-                "         WHEN (rle:BlackBoxEvent) THEN {omitted} " +
-                "         WHEN (rle:Polymerisation) OR (rle:Depolymerisation) THEN {transition} " +
-                "         WHEN (rle)-[:catalystActivity]->() THEN {transition} " +
+                "         WHEN (rle:BlackBoxEvent) THEN $omitted " +
+                "         WHEN (rle:Polymerisation) OR (rle:Depolymerisation) THEN $transition " +
+                "         WHEN (rle)-[:catalystActivity]->() THEN $transition " +
                 "         WHEN d > 0 THEN CASE " +
-                "                           WHEN (rle)-[:output]->(:Complex) THEN {binding} " +
-                "                           ELSE {transition} " +
+                "                           WHEN (rle)-[:output]->(:Complex) THEN $binding " +
+                "                           ELSE $transition " +
                 "                         END " +
                 "         WHEN d < 0 THEN CASE " +
-                "                           WHEN (rle)-[:input]->(:Complex) THEN {dissociation} " +
-                "                           ELSE {transition} " +
+                "                           WHEN (rle)-[:input]->(:Complex) THEN $dissociation " +
+                "                           ELSE $transition " +
                 "                         END " +
-                "         ELSE {transition} " +
+                "         ELSE $transition " +
                 "       END AS category " +
-                "SET rle.category = category " +
+                //"SET rle.category = category " + // TODO REMOVE THIS
                 "RETURN COUNT(DISTINCT rle) AS updated";
         params.put("transition", Category.TRANSITION.getName());
         params.put("binding", Category.BINDING.getName());
