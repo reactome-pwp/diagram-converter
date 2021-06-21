@@ -68,7 +68,7 @@ public class T903_NodeAttachmentsLabelInitialisation extends AbstractConverterTa
                 "          WHEN ((tm:CrosslinkedResidue) AND NOT m IS NULL) THEN 'CL' " +
                 "          ELSE psi.label END AS label " +
                 "WHERE NOT label IS NULL " +
-                //"SET tm.label = label " + // TODO REMOVE THIS
+                "SET tm.label = label " +
                 "RETURN COUNT(DISTINCT tm) AS tms";
         try {
             params.put("glycans", glycans);

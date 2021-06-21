@@ -88,7 +88,7 @@ public class T902_RemainingReactionCategories extends AbstractConverterTask {
                 "                         END " +
                 "         ELSE $transition " +
                 "       END AS category " +
-                //"SET rle.category = category " + // TODO REMOVE THIS
+                "SET rle.category = category " +
                 "RETURN COUNT(DISTINCT rle) AS updated";
         params.put("transition", Category.TRANSITION.getName());
         params.put("binding", Category.BINDING.getName());
