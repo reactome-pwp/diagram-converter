@@ -60,6 +60,9 @@ Using the -t switch, the user can specify a target species or a list of diagrams
   - -t:"Homo sapiens"
   - -t:R-HSA-5654738,R-HSA-5655291,R-HSA-2219530,R-HSA-5637815 
 
+#### Omitting logs
+To omit logs use this VM Argument `-Dlogback.configurationFile=src/main/resources/logback.xml` 
+
 ##### Important
 In case of connection to a remote server via ssh there might be a "No X11 DISPLAY variable was set" error. Then try unsetting the DISPLAY using the following command:
 
