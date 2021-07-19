@@ -39,7 +39,7 @@ pipeline{
 					sh "mkdir -p ${env.OUTPUT_FOLDER}"
 					withCredentials([usernamePassword(credentialsId: 'mySQLUsernamePassword', passwordVariable: 'mysqlPass', usernameVariable: 'mysqlUser')]){
 						withCredentials([usernamePassword(credentialsId: 'neo4jUsernamePassword', passwordVariable: 'neo4jPass', usernameVariable: 'neo4jUser')]){
-				 			sh "java -Dlogback.configurationFile=src/main/resources/logback.xml -jar target/diagram-converter-jar-with-dependencies.jar --graph_user $neo4jUser --graph_password $neo4jPass --rel_user $mysqlUser --rel_password $mysqlPass --rel_database ${env.REACTOME_DB} --output ./${env.OUTPUT_FOLDER}"
+				 			sh "java -Dlogback.configurationFile=src/main/resources/logback.xml -jar target/diagram-converter-exec.jar --graph_user $neo4jUser --graph_password $neo4jPass --rel_user $mysqlUser --rel_password $mysqlPass --rel_database ${env.REACTOME_DB} --output ./${env.OUTPUT_FOLDER}"
 					        	// Create archive that will be stored on S3.
 							sh "tar -zcf diagrams-v${releaseVersion}.tgz ${env.OUTPUT_FOLDER}/"
 							// Restart tomcat7 and neo4j services after updates were made to graph db.

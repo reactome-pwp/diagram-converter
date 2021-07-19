@@ -32,13 +32,13 @@ To learn more about the techniques and methods we use to boost the rendering of 
   
 4. Diagram-core Help: --help 
     ```console
-    java -jar target/diagram-converter.jar --help  
+    java -jar target/diagram-converter-exec.jar --help  
     ```
 
 5. Convert all pathway diagrams (ensure special characters are escaped)
 
         ```console
-        java -jar target/diagram-converter.jar
+        java -jar target/diagram-converter-exec.jar
              -a graph_db_host
              -b graph_db_port
              -c graph_db_user
