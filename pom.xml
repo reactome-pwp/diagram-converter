@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.reactome.server.diagram</groupId>
@@ -28,18 +29,19 @@
     <properties>
         <jdk.version>11</jdk.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <main.class>org.reactome.server.diagram.converter.Main</main.class>
 
         <reactome.graph.core>2.0.0-SNAPSHOT</reactome.graph.core>
         <reactome.base>2.1.0-SNAPSHOT</reactome.base>
         <jasp.version>2.1</jasp.version>
         <javax.activation.version>1.2.0</javax.activation.version>
         <jaxb.api.version>2.3.0</jaxb.api.version>
+
+        <spring.boot.version>2.5.2</spring.boot.version>
         <maven.compiler.version>3.8.1</maven.compiler.version>
         <maven.jar.version>3.2.0</maven.jar.version>
-
         <maven-assembly-plugin.version>3.3.0</maven-assembly-plugin.version>
         <maven-resources-plugin.version>3.2.0</maven-resources-plugin.version>
-        <main.class>org.reactome.server.diagram.converter.Main</main.class>
     </properties>
 
     <dependencies>
@@ -116,10 +118,40 @@
                 <filtering>true</filtering>
             </testResource>
         </testResources>
+
         <plugins>
+            <!-- Generate the jar only -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>${maven.jar.version}</version>
+                <executions>
+                    <execution>
+                        <id>default-jar</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                        <configuration>
+                            <excludes>
+                                <exclude>**/logback.xml</exclude>
+                            </excludes>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>exec-jar</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                        <configuration>
+                            <classifier>exec</classifier>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>${spring.boot.version}</version>
                 <configuration>
                     <fork>true</fork>
                     <mainClass>${main.class}</mainClass>
@@ -148,17 +180,7 @@
                 </configuration>
             </plugin>
 
-            <!-- Generate the jar only -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <version>${maven.jar.version}</version>
-                <configuration>
-                    <excludes>
-                        <exclude>**/logback.xml</exclude>
-                    </excludes>
-                </configuration>
-            </plugin>
+
         </plugins>
     </build>
 
