@@ -33,7 +33,7 @@
         <jdk.version>1.8</jdk.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <reactome.graph.core>1.1.26-SNAPSHOT</reactome.graph.core>
+        <reactome.graph.core>1.1.27</reactome.graph.core>
         <reactome.base>2.1.0-SNAPSHOT</reactome.base>
         <jasp.version>2.1</jasp.version>
 
