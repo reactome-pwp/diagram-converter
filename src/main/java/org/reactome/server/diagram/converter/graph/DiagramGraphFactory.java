@@ -70,7 +70,7 @@ public class DiagramGraphFactory {
         parametersMap.put("list", greenboxes);
         String query = "" +
                 "MATCH (p:Pathway)-[:species]->(s:Species) " +
-                "WHERE p.dbId IN {list} " +
+                "WHERE p.dbId IN $list " +
                 "RETURN DISTINCT p.dbId AS dbId, " +
                 "                p.stId AS stId, " +
                 "                p.displayName AS displayName, " +
@@ -86,7 +86,7 @@ public class DiagramGraphFactory {
         }
 
         query = "" +
-                "MATCH path=(p:Pathway{dbId:{dbId}})-[:hasEvent*]->(rle:ReactionLikeEvent) " +
+                "MATCH path=(p:Pathway{dbId:$dbId})-[:hasEvent*]->(rle:ReactionLikeEvent) " +
                 "WHERE SINGLE(x IN NODES(path) WHERE (x:Pathway) AND x.hasDiagram) " +
                 "MATCH (rle)-[:input|output|catalystActivity|physicalEntity|entityFunctionalStatus|diseaseEntity|regulatedBy|regulator|hasComponent|hasMember|hasCandidate|repeatedUnit*]->(pe:PhysicalEntity) " +
                 "WITH COLLECT(DISTINCT pe) AS pes " +
@@ -121,7 +121,7 @@ public class DiagramGraphFactory {
     private Collection<EventNode> getGraphEdges(Diagram diagram) {
         List<EventNode> rtn = new ArrayList<>();
         String query = "" +
-                "MATCH path=(p:Pathway{dbId:{dbId}})-[:hasEvent*]->(:ReactionLikeEvent) " +
+                "MATCH path=(p:Pathway{dbId:$dbId})-[:hasEvent*]->(:ReactionLikeEvent) " +
                 "WHERE SINGLE(x IN NODES(path) WHERE (x:Pathway) AND x.hasDiagram) " +
                 "WITH DISTINCT p, LAST(NODES(path)) AS rle " +
                 "OPTIONAL MATCH (rle)-[:input]->(i:PhysicalEntity) " +
@@ -158,7 +158,7 @@ public class DiagramGraphFactory {
         Set<SubpathwayNode> rtn = new HashSet<>();
 
         String query = "" +
-                "MATCH path=(p:Pathway{dbId:{dbId}})-[:hasEvent*]->(s:Event) " +
+                "MATCH path=(p:Pathway{dbId:$dbId})-[:hasEvent*]->(s:Event) " +
                 "WHERE NONE(x IN NODES(path) WHERE (x:ReactionLikeEvent)) AND NONE(x IN TAIL(NODES(path)) WHERE x.hasDiagram) " +
                 "WITH DISTINCT s, SIZE(TAIL(NODES(path))) AS level " +
                 "MATCH path=(s)-[:hasEvent*]->(rle:ReactionLikeEvent) " +
@@ -183,7 +183,7 @@ public class DiagramGraphFactory {
 
     private Collection<Long> getProcessNodes(Long dbId) {
         String query = "" +
-                "MATCH path=(p:Pathway{dbId:{dbId}})-[:hasEvent*]->(sp:Pathway{hasDiagram:True}) " +
+                "MATCH path=(p:Pathway{dbId:$dbId})-[:hasEvent*]->(sp:Pathway{hasDiagram:True}) " +
                 "WHERE SINGLE(x IN TAIL(NODES(path)) WHERE NOT x.hasDiagram IS NULL AND x.hasDiagram) " +
                 "RETURN DISTINCT sp.dbId";
         Map<String, Object> params = new HashMap<>();
@@ -197,7 +197,7 @@ public class DiagramGraphFactory {
 
     private Collection<Long> getStructuresDrug(Long dbId) {
         String query = "" +
-                "MATCH path=(p:Pathway{dbId:{dbId}})-[:hasEvent*]->(rle:ReactionLikeEvent) " +
+                "MATCH path=(p:Pathway{dbId:$dbId})-[:hasEvent*]->(rle:ReactionLikeEvent) " +
                 "WHERE SINGLE(x IN NODES(path) WHERE NOT x.hasDiagram IS NULL AND x.hasDiagram) " +
                 "WITH DISTINCT rle " +
                 "MATCH (rle)-[:input|output|catalystActivity|physicalEntity|regulatedBy|regulator*]->(pe:PhysicalEntity)-[:hasComponent|hasMember|hasCandidate*]->(p:Drug) " +
