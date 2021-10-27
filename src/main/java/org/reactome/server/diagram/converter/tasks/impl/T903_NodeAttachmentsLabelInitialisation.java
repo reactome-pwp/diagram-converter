@@ -43,12 +43,12 @@ public class T903_NodeAttachmentsLabelInitialisation extends AbstractConverterTa
         if (target instanceof String && target.equals("all")) {
             query = "MATCH (tm:TranslationalModification) ";
         } else if (target instanceof Species) {
-            query = "MATCH (tm:TranslationalModification)<-[:hasModifiedResidue]-(:PhysicalEntity)-[:species]->(:Species{displayName:{speciesName}}) " +
+            query = "MATCH (tm:TranslationalModification)<-[:hasModifiedResidue]-(:PhysicalEntity)-[:species]->(:Species{displayName:$speciesName}) " +
                     "WITH DISTINCT tm ";
             params.put("speciesName", ((Species) target).getDisplayName());
         } else if (target instanceof Collection) {
             query = "MATCH path=(p:Pathway{hasDiagram:true})-[:hasEvent*]->(rle:ReactionLikeEvent) " +
-                    "WHERE p.stId IN {stIds} AND SINGLE(x IN NODES(path) WHERE (x:Pathway) AND x.hasDiagram) " +
+                    "WHERE p.stId IN $stIds AND SINGLE(x IN NODES(path) WHERE (x:Pathway) AND x.hasDiagram) " +
                     "WITH DISTINCT rle " +
                     "MATCH (rle)-[:input|output|catalystActivity|physicalEntity|regulatedBy|regulator|hasComponent|hasMember|hasCandidate|repeatedUnit*]->(:PhysicalEntity)-[:hasModifiedResidue]->(tm:TranslationalModification) " +
                     "WITH DISTINCT tm ";
@@ -64,8 +64,8 @@ public class T903_NodeAttachmentsLabelInitialisation extends AbstractConverterTa
                 "OPTIONAL MATCH (tm)-[:psiMod]->(psi) " +
                 "OPTIONAL MATCH (tm)-[:modification]->(m) " +
                 "WITH DISTINCT tm, " +
-                "     CASE WHEN (tm:GroupModifiedResidue) AND NOT m IS NULL AND psi.dbId IN {glycans} THEN 'G' " +
-                "          WHEN (tm:CrosslinkedResidue) AND NOT m IS NULL THEN 'CL' " +
+                "     CASE WHEN ((tm:GroupModifiedResidue) AND NOT m IS NULL AND psi.dbId IN $glycans) THEN 'G' " +
+                "          WHEN ((tm:CrosslinkedResidue) AND NOT m IS NULL) THEN 'CL' " +
                 "          ELSE psi.label END AS label " +
                 "WHERE NOT label IS NULL " +
                 "SET tm.label = label " +

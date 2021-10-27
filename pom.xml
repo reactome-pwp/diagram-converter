@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.reactome.server.diagram</groupId>
     <artifactId>diagram-converter</artifactId>
-    <version>2.0.0</version>
+    <version>3.0.0</version>
     <packaging>jar</packaging>
 
     <name>Diagram Converter</name>
@@ -18,29 +19,29 @@
         <developer>
             <id>ksidiro</id>
             <name>Kostas Sidiropoulos</name>
-            <email>ksdiro@ebi.ac.uk</email>
-            <organization>http://www.ebi.ac.uk/</organization>
         </developer>
         <developer>
             <id>fabregat</id>
             <name>Antonio Fabregat</name>
-            <email>fabregat@ebi.ac.uk</email>
-            <organization>http://www.ebi.ac.uk/</organization>
         </developer>
     </developers>
 
     <properties>
-        <jdk.version>1.8</jdk.version>
+        <jdk.version>11</jdk.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <main.class>org.reactome.server.diagram.converter.Main</main.class>
 
-        <reactome.graph.core>1.1.27</reactome.graph.core>
+        <reactome.graph.core>2.0.0</reactome.graph.core>
         <reactome.base>2.1.0-SNAPSHOT</reactome.base>
         <jasp.version>2.1</jasp.version>
+        <javax.activation.version>1.2.0</javax.activation.version>
+        <jaxb.api.version>2.3.0</jaxb.api.version>
 
-        <maven.compiler.version>3.5.1</maven.compiler.version>
-        <maven.jar.version>2.6</maven.jar.version>
-        <jdk.version>1.8</jdk.version>
-        <junit.version>4.12</junit.version>
+        <spring.boot.version>2.5.3</spring.boot.version>
+        <maven.compiler.version>3.8.1</maven.compiler.version>
+        <maven.jar.version>3.2.0</maven.jar.version>
+        <maven-assembly-plugin.version>3.3.0</maven-assembly-plugin.version>
+        <maven-resources-plugin.version>3.2.0</maven-resources-plugin.version>
     </properties>
 
     <dependencies>
@@ -71,18 +72,35 @@
             <version>${jasp.version}</version>
         </dependency>
 
-        <!-- JUnit -->
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>${junit.version}</version>
-            <scope>test</scope>
-        </dependency>
-
         <dependency>
             <groupId>org.jdom</groupId>
             <artifactId>jdom</artifactId>
             <version>1.1.3</version>
+        </dependency>
+
+        <!-- Open JDK remove javax.xml.bind -->
+        <dependency>
+            <groupId>com.sun.activation</groupId>
+            <artifactId>javax.activation</artifactId>
+            <version>${javax.activation.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>javax.xml.bind</groupId>
+            <artifactId>jaxb-api</artifactId>
+            <version>${jaxb.api.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.sun.xml.bind</groupId>
+            <artifactId>jaxb-core</artifactId>
+            <version>${jaxb.api.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.sun.xml.bind</groupId>
+            <artifactId>jaxb-impl</artifactId>
+            <version>${jaxb.api.version}</version>
         </dependency>
     </dependencies>
 
@@ -100,11 +118,57 @@
                 <filtering>true</filtering>
             </testResource>
         </testResources>
+
         <plugins>
+            <!-- Generate the jar only -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>${maven.jar.version}</version>
+                <executions>
+                    <execution>
+                        <id>default-jar</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                        <configuration>
+                            <excludes>
+                                <exclude>**/logback.xml</exclude>
+                            </excludes>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>exec-jar</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                        <configuration>
+                            <classifier>exec</classifier>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>${spring.boot.version}</version>
+                <configuration>
+                    <fork>true</fork>
+                    <mainClass>${main.class}</mainClass>
+                    <classifier>exec</classifier>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>
-                <version>3.0.1</version>
+                <version>${maven-resources-plugin.version}</version>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -116,42 +180,7 @@
                 </configuration>
             </plugin>
 
-            <!-- Generate the jar only -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <version>${maven.jar.version}</version>
-                <configuration>
-                    <excludes>
-                        <exclude>**/logback.xml</exclude>
-                    </excludes>
-                </configuration>
-            </plugin>
 
-            <!-- Generate jar with dependencies -->
-            <plugin>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <version>2.6</version>
-                <configuration>
-                    <archive>
-                        <manifest>
-                            <mainClass>org.reactome.server.diagram.converter.Main</mainClass>
-                        </manifest>
-                    </archive>
-                    <descriptorRefs>
-                        <descriptorRef>jar-with-dependencies</descriptorRef>
-                    </descriptorRefs>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>make-assembly</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>single</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
         </plugins>
     </build>
 
@@ -160,7 +189,7 @@
         <repository>
             <id>nexus-ebi-repo</id>
             <name>The EBI internal repository</name>
-            <url>http://www.ebi.ac.uk/Tools/maven/repos/content/groups/ebi-repo/</url>
+            <url>https://www.ebi.ac.uk/Tools/maven/repos/content/groups/ebi-repo/</url>
             <releases>
             </releases>
             <snapshots>
@@ -171,7 +200,7 @@
         <repository>
             <id>nexus-ebi-snapshot-repo</id>
             <name>The EBI internal snapshot repository</name>
-            <url>http://www.ebi.ac.uk/Tools/maven/repos/content/groups/ebi-snapshots/</url>
+            <url>https://www.ebi.ac.uk/Tools/maven/repos/content/groups/ebi-snapshots/</url>
             <releases>
                 <enabled>false</enabled>
             </releases>

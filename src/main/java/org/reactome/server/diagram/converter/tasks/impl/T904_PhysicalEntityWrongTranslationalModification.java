@@ -67,12 +67,12 @@ public class T904_PhysicalEntityWrongTranslationalModification extends AbstractC
             query = "MATCH (psi:PsiMod)<-[:psiMod]-(tm:TranslationalModification)<-[:hasModifiedResidue]-(pe:PhysicalEntity) " +
                     "WITH DISTINCT pe, tm, psi ";
         } else if (target instanceof Species) {
-            query = "MATCH (psi:PsiMod)<-[:psiMod]-(tm:TranslationalModification)<-[:hasModifiedResidue]-(pe:PhysicalEntity)-[:species]->(:Species{displayName:{speciesName}}) " +
+            query = "MATCH (psi:PsiMod)<-[:psiMod]-(tm:TranslationalModification)<-[:hasModifiedResidue]-(pe:PhysicalEntity)-[:species]->(:Species{displayName:$speciesName}) " +
                     "WITH DISTINCT pe, tm, psi ";
             params.put("speciesName", ((Species) target).getDisplayName());
         } else if (target instanceof Collection) {
             query = "MATCH path=(p:Pathway{hasDiagram:true})-[:hasEvent*]->(rle:ReactionLikeEvent) " +
-                    "WHERE p.stId IN {stIds} AND SINGLE(x IN NODES(path) WHERE (x:Pathway) AND x.hasDiagram) " +
+                    "WHERE p.stId IN $stIds AND SINGLE(x IN NODES(path) WHERE (x:Pathway) AND x.hasDiagram) " +
                     "WITH DISTINCT rle " +
                     "MATCH (rle)-[:input|output|catalystActivity|physicalEntity|regulatedBy|regulator|hasComponent|hasMember|hasCandidate|repeatedUnit*]->(pe:PhysicalEntity)-[:hasModifiedResidue]->(tm:TranslationalModification)-[:psiMod]->(psi:PsiMod) " +
                     "WITH DISTINCT pe, tm, psi ";

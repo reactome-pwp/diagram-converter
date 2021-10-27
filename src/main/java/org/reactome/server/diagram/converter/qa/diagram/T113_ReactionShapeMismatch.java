@@ -112,7 +112,7 @@ public class T113_ReactionShapeMismatch extends AbstractConverterQA implements D
 
     private Map<Long, Category> getReactionsCategory(String stId) {
         String query = "" +
-                "MATCH path=(p:Pathway{stId:{stId}})-[:hasEvent*]->(rle:ReactionLikeEvent) " +
+                "MATCH path=(p:Pathway{stId:$stId})-[:hasEvent*]->(rle:ReactionLikeEvent) " +
                 "WHERE SINGLE(x IN NODES(path) WHERE (x:Pathway) AND x.hasDiagram) " +
                 "WITH DISTINCT rle " +
                 "OPTIONAL MATCH (rle)-[i:input]->(:PhysicalEntity) " +
@@ -123,18 +123,18 @@ public class T113_ReactionShapeMismatch extends AbstractConverterQA implements D
                 "WITH rle, ni-no AS d " +
                 "RETURN rle.dbId AS dbId, " +
                 "       CASE " +
-                "         WHEN (rle:BlackBoxEvent) THEN {omitted} " +
-                "         WHEN (rle:Polymerisation) OR (rle:Depolymerisation) THEN {transition} " +
-                "         WHEN (rle)-[:catalystActivity]->() THEN {transition} " +
+                "         WHEN (rle:BlackBoxEvent) THEN $omitted " +
+                "         WHEN ((rle:Polymerisation) OR (rle:Depolymerisation)) THEN $transition " +
+                "         WHEN ((rle)-[:catalystActivity]->()) THEN $transition " +
                 "         WHEN d > 0 THEN CASE " +
-                "                           WHEN (rle)-[:output]->(:Complex) THEN {binding} " +
-                "                           ELSE {transition} " +
+                "                           WHEN ((rle)-[:output]->(:Complex)) THEN $binding " +
+                "                           ELSE $transition " +
                 "                         END " +
                 "         WHEN d < 0 THEN CASE " +
-                "                           WHEN (rle)-[:input]->(:Complex) THEN {dissociation} " +
-                "                           ELSE {transition} " +
+                "                           WHEN ((rle)-[:input]->(:Complex)) THEN $dissociation " +
+                "                           ELSE $transition " +
                 "                         END " +
-                "         ELSE {transition} " +
+                "         ELSE $transition " +
                 "       END AS category";
         final Map<String, Object> params = new HashMap<>();
         params.put("stId", stId);
@@ -171,8 +171,8 @@ public class T113_ReactionShapeMismatch extends AbstractConverterQA implements D
 
     private void setCategory(Long dbId, Category category){
         String query = "" +
-                "MATCH (rle:ReactionLikeEvent{dbId:{dbId}}) " +
-                "SET rle.category={category} ";
+                "MATCH (rle:ReactionLikeEvent{dbId:$dbId}) " +
+                "SET rle.category=$category ";
         Map<String, Object> params = new HashMap<>();
         params.put("dbId", dbId);
         params.put("category", category.getName());
