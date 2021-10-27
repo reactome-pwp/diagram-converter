@@ -5,7 +5,7 @@
 
     <groupId>org.reactome.server.diagram</groupId>
     <artifactId>diagram-converter</artifactId>
-    <version>3.0.0-SNAPSHOT</version>
+    <version>3.0.0</version>
     <packaging>jar</packaging>
 
     <name>Diagram Converter</name>
@@ -31,7 +31,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <main.class>org.reactome.server.diagram.converter.Main</main.class>
 
-        <reactome.graph.core>2.0.0-SNAPSHOT</reactome.graph.core>
+        <reactome.graph.core>2.0.0</reactome.graph.core>
         <reactome.base>2.1.0-SNAPSHOT</reactome.base>
         <jasp.version>2.1</jasp.version>
         <javax.activation.version>1.2.0</javax.activation.version>
