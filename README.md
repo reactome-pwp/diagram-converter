@@ -39,8 +39,7 @@ To learn more about the techniques and methods we use to boost the rendering of 
 
         ```console
         java -jar target/diagram-converter-exec.jar
-             -a graph_db_host
-             -b graph_db_port
+             -a graph_db_bolt_url
              -c graph_db_user
              -d graph_db_password
              
