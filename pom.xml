@@ -5,7 +5,7 @@
 
     <groupId>org.reactome.server.diagram</groupId>
     <artifactId>diagram-converter</artifactId>
-    <version>3.0.0</version>
+    <version>3.0.1</version>
     <packaging>jar</packaging>
 
     <name>Diagram Converter</name>
@@ -37,7 +37,7 @@
         <javax.activation.version>1.2.0</javax.activation.version>
         <jaxb.api.version>2.3.0</jaxb.api.version>
 
-        <spring.boot.version>2.5.3</spring.boot.version>
+        <spring.boot.version>2.6.4</spring.boot.version>
         <maven.compiler.version>3.8.1</maven.compiler.version>
         <maven.jar.version>3.2.0</maven.jar.version>
         <maven-assembly-plugin.version>3.3.0</maven-assembly-plugin.version>
