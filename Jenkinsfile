@@ -93,6 +93,7 @@ pipeline{
 		            def downloadPath = "${env.ABS_DOWNLOAD_PATH}/${releaseVersion}"
 		            sh "cp diagram_converter_graph_database.dump*tgz ${finalGraphDbArchive}"
 		            sh "cp ${finalGraphDbArchive} ${downloadPath}/"
+			    sh "rm -rf ${downloadPath}/diagram"
 		            sh "mv ${env.OUTPUT_FOLDER} ${downloadPath}/ "
 		        }
 		    }
