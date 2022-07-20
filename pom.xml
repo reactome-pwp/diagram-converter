@@ -35,8 +35,7 @@
         <reactome.base>2.1.0-SNAPSHOT</reactome.base>
         <jasp.version>2.1</jasp.version>
         <javax.activation.version>1.2.0</javax.activation.version>
-        <jaxb.core.version>4.0.0</jaxb.core.version>
-        <jaxb.api.version>2.3.1</jaxb.api.version>
+        <jaxb.api.version>2.3.0</jaxb.api.version>
 
         <spring.boot.version>2.7.1</spring.boot.version>
         <maven.compiler.version>3.8.1</maven.compiler.version>
@@ -95,13 +94,13 @@
         <dependency>
             <groupId>com.sun.xml.bind</groupId>
             <artifactId>jaxb-core</artifactId>
-            <version>${jaxb.core.version}</version>
+            <version>${jaxb.api.version}</version>
         </dependency>
 
         <dependency>
             <groupId>com.sun.xml.bind</groupId>
             <artifactId>jaxb-impl</artifactId>
-            <version>${jaxb.core.version}</version>
+            <version>${jaxb.api.version}</version>
         </dependency>
     </dependencies>
 
