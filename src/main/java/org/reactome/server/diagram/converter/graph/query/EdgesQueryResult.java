@@ -84,7 +84,7 @@ public class EdgesQueryResult extends QueryResult implements CustomQuery {
 
         if (!r.get("inputs").isNull()) edgesQueryResult.setInputs(r.get("inputs").asList(Value::asLong));
         if (!r.get("outputs").isNull()) edgesQueryResult.setOutputs(r.get("outputs").asList(Value::asLong));
-        if (!r.get("catalyst").isNull()) edgesQueryResult.setCatalysts(r.get("catalyst").asList(Value::asLong));
+        if (!r.get("catalysts").isNull()) edgesQueryResult.setCatalysts(r.get("catalysts").asList(Value::asLong));
         if (!r.get("efs").isNull()) edgesQueryResult.setEfs(r.get("efs").asList(Value::asLong));
         if (!r.get("regulation").isNull()) edgesQueryResult.setRegulation(r.get("regulation").asList(RegulationQueryResult::build));
         if (!r.get("preceding").isNull()) edgesQueryResult.setPreceding(r.get("preceding").asList(Value::asLong));
