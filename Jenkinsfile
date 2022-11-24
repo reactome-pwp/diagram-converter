@@ -52,6 +52,24 @@ pipeline{
 				}
 			}
 		}
+		stage('Confirm Converter Output Error Free'){
+			steps{
+				// This asks for confirmation the configuration file has been updated for this release.
+				// This is a locally-scoped secret file accessed at Jenkins -> Releases -> ## (release number) -> Credentials -> Config
+				script{
+					def userInput = input(
+					id: 'userInput', message: "Can comfirm ther are no errors in the output from running the converter",
+					parameters: [
+						[$class: 'BooleanParameterDefinition', defaultValue: true, name: 'response']
+					])
+
+					if (!userInput){
+						error("Please re-run the Converter step")
+					}
+				}
+			}
+		}
+		
 		// There are generally over 30k JSON diagram files produced in a typical release.
 		// This stage gets the file counts between the current and previous release, which allows for quick review.
 		stage('Post: Compare previous release file number') {
