@@ -5,14 +5,20 @@
 
     <groupId>org.reactome.server.diagram</groupId>
     <artifactId>diagram-converter</artifactId>
-    <version>3.0.2</version>
+    <version>3.0.3</version>
     <packaging>jar</packaging>
 
     <name>Diagram Converter</name>
 
+    <parent>
+        <groupId>org.reactome.server</groupId>
+        <artifactId>reactome-parent</artifactId>
+        <version>1.0.0</version>
+    </parent>
+
     <organization>
         <name>The European Bioinformatics Institute</name>
-        <url>http://www.ebi.ac.uk/</url>
+        <url>https://www.ebi.ac.uk/</url>
     </organization>
 
     <developers>
@@ -27,21 +33,9 @@
     </developers>
 
     <properties>
-        <jdk.version>11</jdk.version>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
         <main.class>org.reactome.server.diagram.converter.Main</main.class>
 
-        <reactome.graph.core>2.0.4</reactome.graph.core>
-        <reactome.base>2.1.0-SNAPSHOT</reactome.base>
-        <jasp.version>2.1</jasp.version>
-        <javax.activation.version>1.2.0</javax.activation.version>
-        <jaxb.api.version>2.3.0</jaxb.api.version>
-
-        <spring.boot.version>2.7.1</spring.boot.version>
-        <maven.compiler.version>3.8.1</maven.compiler.version>
-        <maven.jar.version>3.2.0</maven.jar.version>
-        <maven-assembly-plugin.version>3.3.0</maven-assembly-plugin.version>
-        <maven-resources-plugin.version>3.2.0</maven-resources-plugin.version>
     </properties>
 
     <dependencies>
@@ -49,14 +43,12 @@
         <dependency>
             <groupId>org.reactome.server.graph</groupId>
             <artifactId>graph-core</artifactId>
-            <version>${reactome.graph.core}</version>
         </dependency>
 
         <!--Reactome-base for MYSQL Adapter-->
         <dependency>
             <groupId>org.reactome.base</groupId>
             <artifactId>reactome-base</artifactId>
-            <version>${reactome.base}</version>
             <exclusions>
                 <exclusion>
                     <groupId>commons-httpclient</groupId>
@@ -69,38 +61,32 @@
         <dependency>
             <groupId>com.martiansoftware</groupId>
             <artifactId>jsap</artifactId>
-            <version>${jasp.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.jdom</groupId>
             <artifactId>jdom</artifactId>
-            <version>1.1.3</version>
         </dependency>
 
         <!-- Open JDK remove javax.xml.bind -->
         <dependency>
             <groupId>com.sun.activation</groupId>
             <artifactId>javax.activation</artifactId>
-            <version>${javax.activation.version}</version>
         </dependency>
 
         <dependency>
             <groupId>javax.xml.bind</groupId>
             <artifactId>jaxb-api</artifactId>
-            <version>${jaxb.api.version}</version>
         </dependency>
 
         <dependency>
             <groupId>com.sun.xml.bind</groupId>
             <artifactId>jaxb-core</artifactId>
-            <version>${jaxb.api.version}</version>
         </dependency>
 
         <dependency>
             <groupId>com.sun.xml.bind</groupId>
             <artifactId>jaxb-impl</artifactId>
-            <version>${jaxb.api.version}</version>
         </dependency>
     </dependencies>
 
@@ -151,7 +137,7 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <version>${spring.boot.version}</version>
+                <version>${spring-boot.version}</version>
                 <configuration>
                     <fork>true</fork>
                     <mainClass>${main.class}</mainClass>
@@ -175,12 +161,10 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>${maven.compiler.version}</version>
                 <configuration>
-                    <source>${jdk.version}</source>
-                    <target>${jdk.version}</target>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
                 </configuration>
             </plugin>
-
-
         </plugins>
     </build>
 
@@ -208,6 +192,5 @@
             </snapshots>
         </repository>
     </repositories>
-
 
 </project>
