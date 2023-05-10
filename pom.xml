@@ -58,6 +58,12 @@
             </exclusions>
         </dependency>
 
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>2.15.0</version>
+        </dependency>
+             
         <!--JSAP console reader-->
         <dependency>
             <groupId>com.martiansoftware</groupId>
