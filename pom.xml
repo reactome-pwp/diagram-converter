@@ -49,6 +49,7 @@
         <dependency>
             <groupId>org.reactome.base</groupId>
             <artifactId>reactome-base</artifactId>
+            <version>2.2.2-SNAPSHOT</version>
             <exclusions>
                 <exclusion>
                     <groupId>commons-httpclient</groupId>
@@ -57,6 +58,12 @@
             </exclusions>
         </dependency>
 
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>2.15.0</version>
+        </dependency>
+             
         <!--JSAP console reader-->
         <dependency>
             <groupId>com.martiansoftware</groupId>
