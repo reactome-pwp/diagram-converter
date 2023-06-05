@@ -206,6 +206,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link OrgGkRenderRenderableCell }
+     *
+     */
+    public OrgGkRenderRenderableCell createOrgGkRenderRenderableCell() {
+        return new OrgGkRenderRenderableCell();
+    }
+
+    /**
      * Create an instance of {@link OrgGkRenderRenderableProteinDrug }
      * 
      */
