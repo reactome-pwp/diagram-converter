@@ -13,7 +13,7 @@
     <parent>
         <groupId>org.reactome.maven</groupId>
         <artifactId>reactome-parent</artifactId>
-        <version>1.0.2</version>
+        <version>1.0.3-SNAPSHOT</version>
     </parent>
 
     <organization>
@@ -61,9 +61,8 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>2.15.0</version>
         </dependency>
-             
+
         <!--JSAP console reader-->
         <dependency>
             <groupId>com.martiansoftware</groupId>
