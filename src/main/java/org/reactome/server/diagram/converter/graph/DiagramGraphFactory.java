@@ -53,16 +53,16 @@ public class DiagramGraphFactory {
         Collection<Long> structuresDrug = getStructuresDrug(diagram.getDbId()); //So far these are Complexes or EntitySets
         List<Long> greenboxes = new ArrayList<>();
         for (Node node : diagram.getNodes()) {
-            if(node.renderableClass.equals("ProcessNode")){
+            if (node.renderableClass.equals("ProcessNode")) {
                 greenboxes.add(node.reactomeId);
                 //Changing the renderableClass here won't alter the RenderableClassMismatch test result since it has already been executed at this point
-                if(!processNodes.contains(node.reactomeId)) node.renderableClass = "EncapsulatedNode";
+                if (!processNodes.contains(node.reactomeId)) node.renderableClass = "EncapsulatedNode";
             }
 
-            if(structuresDrug.contains(node.reactomeId) && !node.renderableClass.endsWith("Drug")) {
+            if (structuresDrug.contains(node.reactomeId) && !node.renderableClass.endsWith("Drug")) {
                 String rightRC = node.renderableClass + "Drug";
                 T105_RenderableClassMismatch.add(diagram.getStableId(), diagram.getDisplayName(), node.reactomeId, node.schemaClass, node.displayName, node.renderableClass, rightRC);
-                node.renderableClass = rightRC ;
+                node.renderableClass = rightRC;
             }
         }
 
@@ -85,21 +85,22 @@ public class DiagramGraphFactory {
             e.printStackTrace();
         }
 
+        //language=Cypher
         query = "" +
                 "MATCH path=(p:Pathway{dbId:$dbId})-[:hasEvent*]->(rle:ReactionLikeEvent) " +
-                "WHERE SINGLE(x IN NODES(path) WHERE (x:Pathway) AND x.hasDiagram) " +
-                "MATCH (rle)-[:input|output|catalystActivity|physicalEntity|entityFunctionalStatus|diseaseEntity|regulatedBy|regulator|hasComponent|hasMember|hasCandidate|repeatedUnit*]->(pe:PhysicalEntity) " +
-                "WITH COLLECT(DISTINCT pe) AS pes " +
+                "WHERE single(x IN nodes(path) WHERE (x:Pathway) AND x.hasDiagram) " +
+                "MATCH (rle)-[:input|output|catalystActivity|physicalEntity|entityFunctionalStatus|diseaseEntity|regulatedBy|regulator|hasComponent|hasMember|hasCandidate|repeatedUnit|proteinMarker|RNAMarker*]->(pe:PhysicalEntity) " +
+                "WITH collect(DISTINCT pe) AS pes " +
                 "UNWIND pes AS pe " +
-                "OPTIONAL MATCH (pe)-[:hasComponent|hasMember|hasCandidate|repeatedUnit]->(children:PhysicalEntity) " +
-                "OPTIONAL MATCH (parent:PhysicalEntity)-[:hasComponent|hasMember|hasCandidate|repeatedUnit]->(pe) " +
+                "OPTIONAL MATCH (pe)-[:hasComponent|hasMember|hasCandidate|repeatedUnit|proteinMarker|RNAMarker]->(children:PhysicalEntity) " +
+                "OPTIONAL MATCH (parent:PhysicalEntity)-[:hasComponent|hasMember|hasCandidate|repeatedUnit|proteinMarker|RNAMarker]->(pe) " +
                 "WHERE parent IN pes " +
                 "OPTIONAL MATCH (pe)-[:referenceEntity]->(re:ReferenceEntity) " +
                 "OPTIONAL MATCH (pe)-[:species]->(s:Species) " +
                 "RETURN pe.dbId AS dbId, pe.stId AS stId, pe.displayName AS displayName, pe.schemaClass AS schemaClass, " +
-                "       s.dbId AS speciesID, " +
-                "       COLLECT(DISTINCT children.dbId) AS children, " +
-                "       COLLECT(DISTINCT parent.dbId) AS parents, " +
+                "       pe.referenceType AS referenceType, s.dbId AS speciesID, " +
+                "       collect(DISTINCT children.dbId) AS children, " +
+                "       collect(DISTINCT parent.dbId) AS parents, " +
                 "       CASE WHEN re.variantIdentifier IS NULL THEN re.identifier ELSE re.variantIdentifier END AS identifier, " +
                 "       re.geneName AS geneNames";
 
@@ -146,7 +147,7 @@ public class DiagramGraphFactory {
         try {
             Collection<EdgesQueryResult> edgesQueryResults = advancedDatabaseObjectService.getCustomQueryResults(EdgesQueryResult.class, query, parametersMap);
             for (EdgesQueryResult result : edgesQueryResults) {
-               rtn.add(new EventNode(result, diagram.getDiagramIds(result.getDbId())));
+                rtn.add(new EventNode(result, diagram.getDiagramIds(result.getDbId())));
             }
         } catch (CustomQueryException e) {
             e.printStackTrace();
