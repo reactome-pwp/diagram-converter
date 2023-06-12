@@ -201,7 +201,7 @@ public class DiagramGraphFactory {
                 "MATCH path=(p:Pathway{dbId:$dbId})-[:hasEvent*]->(rle:ReactionLikeEvent) " +
                 "WHERE SINGLE(x IN NODES(path) WHERE NOT x.hasDiagram IS NULL AND x.hasDiagram) " +
                 "WITH DISTINCT rle " +
-                "MATCH (rle)-[:input|output|catalystActivity|physicalEntity|regulatedBy|regulator*]->(pe:PhysicalEntity)-[:hasComponent|hasMember|hasCandidate*]->(p:Drug) " +
+                "MATCH (rle)-[:input|output|catalystActivity|physicalEntity|regulatedBy|regulator*]->(pe:PhysicalEntity)-[:hasComponent|hasMember|hasCandidate|proteinMarker|RNAMarker*]->(p:Drug) " +
                 "RETURN DISTINCT pe.dbId";
         Map<String, Object> params = new HashMap<>();
         params.put("dbId", dbId);

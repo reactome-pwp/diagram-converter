@@ -74,7 +74,7 @@ public class T904_PhysicalEntityWrongTranslationalModification extends AbstractC
             query = "MATCH path=(p:Pathway{hasDiagram:true})-[:hasEvent*]->(rle:ReactionLikeEvent) " +
                     "WHERE p.stId IN $stIds AND SINGLE(x IN NODES(path) WHERE (x:Pathway) AND x.hasDiagram) " +
                     "WITH DISTINCT rle " +
-                    "MATCH (rle)-[:input|output|catalystActivity|physicalEntity|regulatedBy|regulator|hasComponent|hasMember|hasCandidate|repeatedUnit*]->(pe:PhysicalEntity)-[:hasModifiedResidue]->(tm:TranslationalModification)-[:psiMod]->(psi:PsiMod) " +
+                    "MATCH (rle)-[:input|output|catalystActivity|physicalEntity|regulatedBy|regulator|hasComponent|hasMember|hasCandidate|repeatedUnit|proteinMarker|RNAMarker*]->(pe:PhysicalEntity)-[:hasModifiedResidue]->(tm:TranslationalModification)-[:psiMod]->(psi:PsiMod) " +
                     "WITH DISTINCT pe, tm, psi ";
             params.put("stIds", target);
         } else {
