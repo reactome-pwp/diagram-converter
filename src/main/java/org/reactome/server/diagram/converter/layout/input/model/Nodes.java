@@ -59,6 +59,7 @@ public class Nodes {
         @XmlElement(name = "org.gk.render.RenderableGene", type = OrgGkRenderRenderableGene.class),
         @XmlElement(name = "org.gk.render.RenderableEntitySet", type = OrgGkRenderRenderableEntitySet.class),
         @XmlElement(name = "org.gk.render.RenderableProtein", type = OrgGkRenderRenderableProtein.class),
+        @XmlElement(name = "org.gk.render.RenderableCell", type = OrgGkRenderRenderableCell.class),
         @XmlElement(name = "org.gk.render.RenderableProteinDrug", type = OrgGkRenderRenderableProteinDrug.class),
         @XmlElement(name = "org.gk.render.RenderableRNA", type = OrgGkRenderRenderableRNA.class),
         @XmlElement(name = "org.gk.render.RenderableRNADrug", type = OrgGkRenderRenderableRNADrug.class),
@@ -93,6 +94,7 @@ public class Nodes {
      * {@link OrgGkRenderRenderableGene }
      * {@link OrgGkRenderRenderableEntitySet }
      * {@link OrgGkRenderRenderableProtein }
+     * {@link OrgGkRenderRenderableCell }
      * {@link OrgGkRenderRenderableProteinDrug }
      * {@link OrgGkRenderRenderableRNA }
      * {@link OrgGkRenderRenderableRNADrug }

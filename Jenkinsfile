@@ -52,6 +52,7 @@ pipeline{
 				}
 			}
 		}
+		
 		// There are generally over 30k JSON diagram files produced in a typical release.
 		// This stage gets the file counts between the current and previous release, which allows for quick review.
 		stage('Post: Compare previous release file number') {
