@@ -88,12 +88,15 @@ public class T113_ReactionShapeMismatch extends AbstractConverterQA implements D
                 //Case 1: We want to store the inferred categories but keeping those that are UNCERTAIN from the XML
                 if (rxnGraphDBCategory.equals(Category.OMITTED) && rxnDiagramCategory.equals(Category.UNCERTAIN)) {
                     setCategory(edge.reactomeId, rxnDiagramCategory);
+                    edge.reactionType = rxnDiagramCategory.getName();
                 } else {
                     setCategory(edge.reactomeId, rxnGraphDBCategory);
+                    edge.reactionType = rxnGraphDBCategory.getName();
                 }
             } else {
                 //Case 2: We do not fix the categories, so we store what was found in the original diagram XML
                 setCategory(edge.reactomeId, rxnDiagramCategory);
+                edge.reactionType = rxnDiagramCategory.getName();
             }
 
         }
