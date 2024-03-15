@@ -21,7 +21,8 @@ public abstract class TestReportsHelper {
                             "MATCH (d:DatabaseObject{dbId:$dbId}) " +
                             "OPTIONAL MATCH (a)-[:created]->(d) " +
                             "OPTIONAL MATCH (m)-[:modified]->(d) " +
-                            "RETURN a.displayName As created, m.displayName AS modified",
+                            "RETURN a.displayName As created, m.displayName AS modified " +
+                            "ORDER BY m.dateTime DESC LIMIT 1",
                     Map.of("dbId", dbId));
             return rtn.toString();
         } catch (NullPointerException e) {
