@@ -22,6 +22,7 @@ public class Edge extends EdgeCommon {
             this.points = List.of(p1, midPoint, p2);
             this.position = midPoint;
             this.segments = getSegments(this.points);
+            this.setReactionShape();
             this.points = null;
         }
     }

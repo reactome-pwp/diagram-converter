@@ -27,6 +27,7 @@ public class Main {
         SimpleJSAP jsap = new SimpleJSAP(Main.class.getName(), "Connect to Reactome Graph Database",
                 new Parameter[]{
                         new FlaggedOption("graph_host", JSAP.STRING_PARSER, "bolt://localhost:7687", JSAP.NOT_REQUIRED, 'a', "graph_host", "The neo4j host")
+                        , new FlaggedOption("graph_database", JSAP.STRING_PARSER, "graph.db", JSAP.REQUIRED, 'b', "graph_database", "The neo4j database")
                         , new FlaggedOption("graph_user", JSAP.STRING_PARSER, "neo4j", JSAP.NOT_REQUIRED, 'c', "graph_user", "The neo4j user")
                         , new FlaggedOption("graph_password", JSAP.STRING_PARSER, "neo4j", JSAP.REQUIRED, 'd', "graph_password", "The neo4j password")
 
@@ -50,6 +51,7 @@ public class Main {
                 config.getString("graph_host"),
                 config.getString("graph_user"),
                 config.getString("graph_password"),
+                config.getString("graph_database"),
                 ReactomeNeo4jConfig.class
         );
         Integer version = ReactomeGraphCore.getService(GeneralService.class).getDBInfo().getVersion();
