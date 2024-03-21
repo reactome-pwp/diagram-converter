@@ -19,7 +19,7 @@ pipeline{
 		stage('Check Graph DB & Analysis Core build succeeded'){
 			steps{
 				script{
-                    			utils.checkUpstreamBuildsSucceeded("GenerateGraphDatabaseAndAnalysisCore")
+                    utils.checkUpstreamBuildsSucceeded("GenerateGraphDatabaseAndAnalysisCore")
 				}
 			}
 		}
