@@ -2,9 +2,11 @@ package org.reactome.server.diagram.converter.layout;
 
 import org.gk.model.GKInstance;
 import org.gk.model.ReactomeJavaConstants;
-import org.gk.pathwaylayout.DiagramGeneratorFromDB;
-import org.gk.pathwaylayout.PathwayDiagramXMLGenerator;
+import org.gk.pathwaylayout.*;
+import org.gk.persistence.DiagramGKBReader;
 import org.gk.persistence.MySQLAdaptor;
+import org.gk.render.Node;
+import org.gk.render.RenderablePathway;
 import org.reactome.server.diagram.converter.layout.exceptions.DiagramNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -67,6 +69,7 @@ public class DiagramFetcher {
         GKInstance diagram = diagramHelper.getPathwayDiagram(pathway);
         if(diagram!=null){
             PathwayDiagramXMLGenerator xmlGenerator = new PathwayDiagramXMLGenerator();
+            xmlGenerator.setTightNodes(false);
             return xmlGenerator.generateXMLForPathwayDiagram(diagram, pathway);
         }
         return null;
