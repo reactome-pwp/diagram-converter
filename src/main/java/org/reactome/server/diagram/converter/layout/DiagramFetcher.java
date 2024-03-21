@@ -3,7 +3,6 @@ package org.reactome.server.diagram.converter.layout;
 import org.gk.model.GKInstance;
 import org.gk.model.ReactomeJavaConstants;
 import org.gk.pathwaylayout.DiagramGeneratorFromDB;
-import org.gk.pathwaylayout.PathwayDiagramXMLGenerator;
 import org.gk.persistence.MySQLAdaptor;
 import org.reactome.server.diagram.converter.layout.exceptions.DiagramNotFoundException;
 import org.slf4j.Logger;
@@ -66,8 +65,7 @@ public class DiagramFetcher {
         // Find PathwayDiagram
         GKInstance diagram = diagramHelper.getPathwayDiagram(pathway);
         if(diagram!=null){
-            PathwayDiagramXMLGenerator xmlGenerator = new PathwayDiagramXMLGenerator();
-            return xmlGenerator.generateXMLForPathwayDiagram(diagram, pathway);
+            return (String) diagram.getAttributeValue("storedATXML");
         }
         return null;
     }
