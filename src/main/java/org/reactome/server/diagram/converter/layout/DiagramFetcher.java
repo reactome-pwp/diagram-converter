@@ -68,14 +68,8 @@ public class DiagramFetcher {
         // Find PathwayDiagram
         GKInstance diagram = diagramHelper.getPathwayDiagram(pathway);
         if(diagram!=null){
-//            return (String) diagram.getAttributeValue("storedATXML");
-            DiseasePathwayImageEditor diseaseHelper = new DiseasePathwayImageEditorViaEFS();
-            diseaseHelper.setPathway(pathway);
-            diseaseHelper.setPersistenceAdaptor(diagram.getDbAdaptor());
-            System.out.println(" -- Font used: " +diseaseHelper.getFont().toString());
-
-
             PathwayDiagramXMLGenerator xmlGenerator = new PathwayDiagramXMLGenerator();
+            xmlGenerator.setTightNodes(false);
             return xmlGenerator.generateXMLForPathwayDiagram(diagram, pathway);
         }
         return null;
