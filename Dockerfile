@@ -37,3 +37,5 @@ ARG JAR_FILE=target/diagram-converter-exec.jar
 WORKDIR ${REPO_DIR}
 
 COPY --from=build-jar ${REPO_DIR}/${JAR_FILE} ./target/
+
+COPY --from=build-jar ${REPO_DIR}/src/main/resources/ ./resources/
