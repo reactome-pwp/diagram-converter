@@ -23,7 +23,10 @@ public class T903_NodeAttachmentsLabelInitialisation extends AbstractConverterTa
 
     // List of psiMod dbIds that correspond to glycans when GroupModifiedResidue instances have a modification
     // Provided by Bijay Jassal
-    private static final List<Long> glycans = Arrays.asList(1467184L, 1467185L, 1467292L, 2022987L, 913651L, 913631L, 2243916L, 2022865L, 3238099L, 448181L, 5615587L, 2063975L);
+    private static final List<Long> glycans = Arrays.asList(
+            1467184L, 1467185L, 1467292L, 2022987L, 913651L, 913631L,
+            2243916L, 2022865L, 3238099L, 448181L, 5615587L, 2063975L
+    );
 
     private static final Logger logger = LoggerFactory.getLogger("converter");
 
