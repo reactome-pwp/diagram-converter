@@ -30,25 +30,41 @@ public class DiagramFetcher {
         identifier = identifier.trim().split("\\.")[0];
         try {
             if (identifier.startsWith("REACT")) {
-                return getInstance(dba.fetchInstanceByAttribute(ReactomeJavaConstants.StableIdentifier, "oldIdentifier", "=", identifier));
+                return getInstance(dba.fetchInstanceByAttribute(
+                        ReactomeJavaConstants.StableIdentifier,
+                        "oldIdentifier",
+                        "=",
+                        identifier
+                ));
             } else if (identifier.startsWith("R-")) {
-                return getInstance(dba.fetchInstanceByAttribute(ReactomeJavaConstants.StableIdentifier, ReactomeJavaConstants.identifier, "=", identifier));
+                return getInstance(dba.fetchInstanceByAttribute(
+                        ReactomeJavaConstants.StableIdentifier,
+                        ReactomeJavaConstants.identifier,
+                        "=",
+                        identifier
+                ));
             } else {
                 return dba.fetchInstance(Long.parseLong(identifier));
             }
-        } catch (Exception e){
+        } catch (Exception e) {
             throw new DiagramNotFoundException("No diagram found for " + identifier);
         }
     }
 
     private GKInstance getInstance(Collection<GKInstance> target) throws Exception {
-        if(target==null || target.size()!=1) throw new Exception("Many options have been found fot the specified identifier");
+        if (target == null || target.size() != 1)
+            throw new Exception("Many options have been found fot the specified identifier");
         GKInstance stId = target.iterator().next();
-        return (GKInstance) dba.fetchInstanceByAttribute(ReactomeJavaConstants.DatabaseObject, ReactomeJavaConstants.stableIdentifier, "=", stId).iterator().next();
+        return (GKInstance) dba.fetchInstanceByAttribute(
+                ReactomeJavaConstants.DatabaseObject,
+                ReactomeJavaConstants.stableIdentifier,
+                "=",
+                stId
+        ).iterator().next();
     }
 
     public String getPathwayStableId(GKInstance instance) throws Exception {
-        if (instance.getSchemClass().isValidAttribute(ReactomeJavaConstants.stableIdentifier)){
+        if (instance.getSchemClass().isValidAttribute(ReactomeJavaConstants.stableIdentifier)) {
             GKInstance stId = (GKInstance) instance.getAttributeValue(ReactomeJavaConstants.stableIdentifier);
             return (String) stId.getAttributeValue(ReactomeJavaConstants.identifier);
         }
@@ -67,7 +83,7 @@ public class DiagramFetcher {
         diagramHelper.setMySQLAdaptor(dba);
         // Find PathwayDiagram
         GKInstance diagram = diagramHelper.getPathwayDiagram(pathway);
-        if(diagram!=null){
+        if (diagram != null) {
             PathwayDiagramXMLGenerator xmlGenerator = new PathwayDiagramXMLGenerator();
             xmlGenerator.setTightNodes(false);
             return xmlGenerator.generateXMLForPathwayDiagram(diagram, pathway);
